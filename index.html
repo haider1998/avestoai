@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AvestoAI | Google Hackathon: The Future of Financial Intelligence is Here</title>
+    <title>AvestoAI | Google Hackathon: The Future of Financial Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     <style>
         :root {
@@ -14,11 +14,6 @@
             --google-red: #EA4335;
             --google-yellow: #FBBC04;
             --google-green: #34A853;
-            --primary-purple: #8B5CF6;
-            --primary-blue: #3B82F6;
-            --accent-cyan: #06B6D4;
-            --accent-green: #10B981;
-            --accent-yellow: #F59E0B;
             --dark-bg: #0B0F19;
             --card-bg: #111827;
             --card-hover: #1F2937;
@@ -27,11 +22,9 @@
             --text-muted: #9CA3AF;
             --border-color: #374151;
             --gradient-google: linear-gradient(135deg, var(--google-blue) 0%, var(--google-green) 50%, var(--google-yellow) 100%);
-            --gradient-primary: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 100%);
-            --gradient-accent: linear-gradient(45deg, var(--primary-purple), var(--primary-blue), var(--accent-cyan));
-            --navbar-height: clamp(70px, 8vh, 90px);
-            --section-padding: clamp(60px, 12vh, 120px);
-            --card-padding: clamp(24px, 4vw, 40px);
+            --navbar-height: 70px;
+            --section-padding: 80px;
+            --card-padding: 32px;
         }
 
         * {
@@ -41,7 +34,7 @@
         }
 
         html {
-            font-size: clamp(14px, 1.5vw, 16px);
+            font-size: 16px;
             scroll-behavior: smooth;
         }
 
@@ -52,33 +45,34 @@
             line-height: 1.6;
             overflow-x: hidden;
             scroll-padding-top: var(--navbar-height);
+            font-size: 15px;
         }
 
-        /* Enhanced Typography System */
-        .display-1 { font-size: clamp(3.5rem, 9vw, 7rem); font-weight: 900; line-height: 1.05; font-family: 'Outfit', sans-serif; }
-        .display-2 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; font-family: 'Outfit', sans-serif; }
-        .heading-1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.2; }
-        .heading-2 { font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 600; line-height: 1.3; }
-        .heading-3 { font-size: clamp(1.25rem, 3vw, 1.875rem); font-weight: 600; line-height: 1.3; }
-        .body-large { font-size: clamp(1.125rem, 2.5vw, 1.5rem); line-height: 1.7; }
-        .body-medium { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; }
-        .body-small { font-size: clamp(0.875rem, 1.5vw, 1.125rem); line-height: 1.5; }
-        .caption { font-size: clamp(0.75rem, 1.25vw, 1rem); line-height: 1.4; }
-        .code { font-family: 'JetBrains Mono', monospace; font-size: clamp(0.875rem, 1.5vw, 1.125rem); }
+        /* Optimized Typography System */
+        .display-1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; font-family: 'Outfit', sans-serif; }
+        .display-2 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.15; font-family: 'Outfit', sans-serif; }
+        .heading-1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.2; }
+        .heading-2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 600; line-height: 1.3; }
+        .heading-3 { font-size: clamp(1.125rem, 2.5vw, 1.5rem); font-weight: 600; line-height: 1.3; }
+        .body-large { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; }
+        .body-medium { font-size: clamp(0.875rem, 1.5vw, 1rem); line-height: 1.5; }
+        .body-small { font-size: clamp(0.8rem, 1.25vw, 0.875rem); line-height: 1.4; }
+        .caption { font-size: clamp(0.75rem, 1vw, 0.8rem); line-height: 1.3; }
+        .code { font-family: 'JetBrains Mono', monospace; font-size: clamp(0.8rem, 1.25vw, 0.875rem); }
 
-        /* Enhanced Responsive Grid System */
+        /* Container System */
         .container { 
-            max-width: min(1400px, 95vw); 
+            max-width: 1200px; 
             margin: 0 auto; 
-            padding: 0 clamp(16px, 4vw, 24px); 
+            padding: 0 clamp(16px, 3vw, 24px); 
         }
 
-        .grid { display: grid; gap: clamp(20px, 4vw, 32px); }
-        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr)); }
-        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
-        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+        .grid { display: grid; gap: clamp(20px, 3vw, 32px); }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 
-        /* Enhanced Animated Background */
+        /* Optimized Animated Background */
         .animated-bg {
             position: fixed;
             top: 0;
@@ -99,65 +93,55 @@
         .shape {
             position: absolute;
             border-radius: 50%;
-            filter: blur(clamp(40px, 6vw, 80px));
-            animation: float 25s infinite linear;
+            filter: blur(60px);
+            animation: float 30s infinite linear;
+            will-change: transform;
         }
 
         .shape:nth-child(1) { 
-            width: clamp(300px, 30vw, 500px); 
-            height: clamp(300px, 30vw, 500px); 
-            background: radial-gradient(circle, rgba(66, 133, 244, 0.15) 0%, transparent 70%); 
-            top: 5%; left: 0%; animation-duration: 30s; 
+            width: 400px; height: 400px; 
+            background: radial-gradient(circle, rgba(66, 133, 244, 0.1) 0%, transparent 70%); 
+            top: 10%; left: 5%; 
         }
         .shape:nth-child(2) { 
-            width: clamp(250px, 25vw, 400px); 
-            height: clamp(250px, 25vw, 400px); 
-            background: radial-gradient(circle, rgba(52, 168, 83, 0.12) 0%, transparent 70%); 
-            top: 40%; right: 5%; animation-duration: 35s; animation-direction: reverse; 
+            width: 300px; height: 300px; 
+            background: radial-gradient(circle, rgba(52, 168, 83, 0.08) 0%, transparent 70%); 
+            top: 50%; right: 10%; animation-direction: reverse; 
         }
         .shape:nth-child(3) { 
-            width: clamp(200px, 20vw, 350px); 
-            height: clamp(200px, 20vw, 350px); 
-            background: radial-gradient(circle, rgba(251, 188, 4, 0.08) 0%, transparent 70%); 
-            bottom: 15%; left: 35%; animation-duration: 40s; 
-        }
-        .shape:nth-child(4) { 
-            width: clamp(180px, 18vw, 300px); 
-            height: clamp(180px, 18vw, 300px); 
-            background: radial-gradient(circle, rgba(234, 67, 53, 0.06) 0%, transparent 70%); 
-            top: 70%; right: 30%; animation-duration: 45s; animation-direction: reverse; 
+            width: 250px; height: 250px; 
+            background: radial-gradient(circle, rgba(251, 188, 4, 0.06) 0%, transparent 70%); 
+            bottom: 20%; left: 40%; 
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
-            25% { transform: translateY(-30px) rotate(90deg) scale(1.1); }
-            50% { transform: translateY(-60px) rotate(180deg) scale(0.9); }
-            75% { transform: translateY(-30px) rotate(270deg) scale(1.1); }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
         }
 
-        /* Enhanced Navigation */
+        /* Navigation */
         .navbar {
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
             background: rgba(11, 15, 25, 0.9);
-            backdrop-filter: blur(25px);
-            border-bottom: 1px solid rgba(66, 133, 244, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(66, 133, 244, 0.2);
+            transition: all 0.3s ease;
             height: var(--navbar-height);
         }
 
         .navbar.scrolled {
-            background: rgba(11, 15, 25, 0.98);
-            box-shadow: 0 10px 40px rgba(66, 133, 244, 0.2);
-            border-bottom-color: rgba(66, 133, 244, 0.5);
+            background: rgba(11, 15, 25, 0.95);
+            box-shadow: 0 8px 32px rgba(66, 133, 244, 0.15);
+            border-bottom-color: rgba(66, 133, 244, 0.4);
         }
 
         .nav-container {
-            max-width: min(1400px, 95vw);
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 clamp(16px, 4vw, 24px);
+            padding: 0 clamp(16px, 3vw, 24px);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -166,34 +150,19 @@
 
         .nav-logo {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-size: 1.75rem;
             font-weight: 900;
             background: var(--gradient-google);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            position: relative;
             text-decoration: none;
-        }
-
-        .nav-logo::after {
-            content: '🚀';
-            position: absolute;
-            right: -35px;
-            top: -8px;
-            font-size: 0.8em;
-            animation: rocket 3s ease-in-out infinite;
-        }
-
-        @keyframes rocket {
-            0%, 100% { opacity: 0.6; transform: scale(1) rotate(-15deg); }
-            50% { opacity: 1; transform: scale(1.3) rotate(15deg); }
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: clamp(24px, 4vw, 48px);
+            gap: clamp(24px, 3vw, 40px);
             margin: 0;
             padding: 0;
         }
@@ -202,27 +171,27 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.9rem;
             position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: clamp(0.875rem, 1.5vw, 1.125rem);
-            padding: clamp(8px, 1.5vw, 12px) 0;
+            transition: all 0.3s ease;
+            padding: 8px 0;
         }
 
         .nav-menu a:hover {
             color: var(--google-blue);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .nav-menu a::after {
             content: '';
             position: absolute;
-            bottom: -2px;
+            bottom: 0;
             left: 0;
             width: 0;
-            height: 3px;
+            height: 2px;
             background: var(--gradient-google);
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 2px;
+            transition: width 0.3s ease;
+            border-radius: 1px;
         }
 
         .nav-menu a:hover::after {
@@ -233,17 +202,12 @@
             display: none;
             flex-direction: column;
             cursor: pointer;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background-color 0.2s ease;
-        }
-
-        .mobile-menu-toggle:hover {
-            background-color: rgba(66, 133, 244, 0.15);
+            padding: 8px;
+            border-radius: 6px;
         }
 
         .mobile-menu-toggle span {
-            width: 26px;
+            width: 24px;
             height: 3px;
             background: var(--text-secondary);
             margin: 3px 0;
@@ -251,18 +215,18 @@
             border-radius: 2px;
         }
 
-        .mobile-menu-toggle.active span:nth-child(1) { transform: rotate(-45deg) translate(-6px, 7px); }
+        .mobile-menu-toggle.active span:nth-child(1) { transform: rotate(-45deg) translate(-5px, 6px); }
         .mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
-        .mobile-menu-toggle.active span:nth-child(3) { transform: rotate(45deg) translate(-6px, -7px); }
+        .mobile-menu-toggle.active span:nth-child(3) { transform: rotate(45deg) translate(-5px, -6px); }
 
-        /* Enhanced Hero Section */
+        /* Hero Section */
         .hero-section {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: radial-gradient(ellipse at center top, rgba(66, 133, 244, 0.2) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center top, rgba(66, 133, 244, 0.15) 0%, transparent 70%);
             overflow: hidden;
             padding: var(--navbar-height) 0 var(--section-padding);
         }
@@ -271,58 +235,38 @@
             text-align: center;
             position: relative;
             z-index: 2;
-            max-width: min(1100px, 90vw);
-            padding: clamp(20px, 4vw, 40px);
+            max-width: 1000px;
+            padding: clamp(20px, 3vw, 40px);
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
-            gap: clamp(10px, 2vw, 16px);
-            background: rgba(66, 133, 244, 0.15);
+            gap: 12px;
+            background: rgba(66, 133, 244, 0.1);
             border: 2px solid var(--google-blue);
-            padding: clamp(16px, 3vw, 24px) clamp(28px, 5vw, 42px);
+            padding: 16px 32px;
             border-radius: 50px;
-            font-weight: 800;
+            font-weight: 700;
             color: var(--google-blue);
-            margin-bottom: clamp(40px, 8vw, 60px);
-            animation: glow 4s ease-in-out infinite alternate;
-            backdrop-filter: blur(20px);
-            position: relative;
-            overflow: hidden;
-            font-size: clamp(0.875rem, 2vw, 1.25rem);
-            box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3);
-        }
-
-        .hero-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            animation: shimmer 4s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            margin-bottom: 40px;
+            backdrop-filter: blur(15px);
+            font-size: 0.9rem;
+            animation: glow 3s ease-in-out infinite alternate;
         }
 
         @keyframes glow {
-            from { box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3), 0 0 40px rgba(66, 133, 244, 0.2); }
-            to { box-shadow: 0 15px 40px rgba(66, 133, 244, 0.5), 0 0 60px rgba(66, 133, 244, 0.4); }
+            from { box-shadow: 0 0 20px rgba(66, 133, 244, 0.3); }
+            to { box-shadow: 0 0 40px rgba(66, 133, 244, 0.6); }
         }
 
         .hero-title .gradient-text {
             background: var(--gradient-google);
-            background-size: 400% 400%;
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: gradientShift 5s ease-in-out infinite;
-            position: relative;
+            animation: gradientShift 4s ease-in-out infinite;
         }
 
         @keyframes gradientShift {
@@ -332,67 +276,100 @@
 
         .hero-subtitle {
             color: var(--text-muted);
-            margin-bottom: clamp(50px, 10vw, 80px);
+            margin-bottom: 50px;
             opacity: 0;
-            animation: fadeInUp 1.5s ease 0.8s forwards;
-            max-width: min(950px, 90vw);
+            animation: fadeInUp 1.2s ease 0.5s forwards;
+            max-width: 800px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        /* Enhanced CTA Buttons */
+        /* CTA Buttons */
         .hero-cta {
             display: flex;
-            gap: clamp(20px, 4vw, 32px);
+            gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: clamp(50px, 10vw, 80px);
+            margin-top: 50px;
             opacity: 0;
-            animation: fadeInUp 1.5s ease 1.8s forwards;
+            animation: fadeInUp 1.2s ease 1.5s forwards;
         }
 
         .cta-button {
             position: relative;
             display: inline-flex;
             align-items: center;
-            gap: clamp(10px, 2vw, 16px);
-            padding: clamp(18px, 3vw, 26px) clamp(36px, 6vw, 54px);
-            font-weight: 800;
+            gap: 12px;
+            padding: 18px 36px;
+            font-weight: 700;
             text-decoration: none;
             border-radius: 50px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s ease;
             overflow: hidden;
             justify-content: center;
-            min-width: clamp(200px, 40vw, 240px);
-            font-size: clamp(0.875rem, 2vw, 1.25rem);
-            position: relative;
+            min-width: 200px;
+            font-size: 0.95rem;
         }
 
         .cta-primary {
             background: var(--gradient-google);
             color: white;
-            box-shadow: 0 25px 50px rgba(66, 133, 244, 0.4);
+            box-shadow: 0 20px 40px rgba(66, 133, 244, 0.4);
         }
 
         .cta-primary:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 35px 70px rgba(66, 133, 244, 0.6);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(66, 133, 244, 0.6);
         }
 
         .cta-secondary {
             background: transparent;
-            border: 3px solid var(--google-blue);
+            border: 2px solid var(--google-blue);
             color: var(--google-blue);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(15px);
         }
 
         .cta-secondary:hover {
-            background: rgba(66, 133, 244, 0.2);
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 25px 50px rgba(66, 133, 244, 0.4);
+            background: rgba(66, 133, 244, 0.15);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(66, 133, 244, 0.4);
         }
 
-        /* Enhanced Problem Statement */
+        /* Sections */
+        .section {
+            padding: var(--section-padding) 0;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: clamp(60px, 8vw, 100px);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-google);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 24px auto 0;
+        }
+
+        /* Problem Section */
         .problem-section {
             background: linear-gradient(135deg, rgba(234, 67, 53, 0.05) 0%, rgba(66, 133, 244, 0.05) 100%);
             border-top: 2px solid rgba(234, 67, 53, 0.3);
@@ -402,8 +379,8 @@
         .problem-stats {
             display: flex;
             justify-content: space-between;
-            gap: clamp(20px, 4vw, 40px);
-            margin: clamp(40px, 8vw, 60px) 0;
+            gap: 30px;
+            margin: 50px 0;
             flex-wrap: wrap;
         }
 
@@ -415,7 +392,7 @@
 
         .problem-number {
             font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 900;
             background: linear-gradient(135deg, var(--google-red), var(--google-blue));
             -webkit-background-clip: text;
@@ -425,78 +402,26 @@
             line-height: 1;
         }
 
-        /* Enhanced Sections */
-        .section {
-            padding: var(--section-padding) 0;
-            position: relative;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: clamp(80px, 15vw, 120px);
-        }
-
-        .section-title {
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -16px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: clamp(80px, 15vw, 120px);
-            height: 5px;
-            background: var(--gradient-google);
-            border-radius: 3px;
-        }
-
-        .section-subtitle {
-            color: var(--text-muted);
-            max-width: min(900px, 90vw);
-            margin: clamp(30px, 6vw, 40px) auto 0;
-        }
-
-        /* Enhanced Stats Section */
+        /* Stats Section */
         .stats-section {
-            background: rgba(31, 41, 55, 0.5);
-            border-top: 2px solid rgba(66, 133, 244, 0.4);
-            border-bottom: 2px solid rgba(66, 133, 244, 0.4);
+            background: rgba(31, 41, 55, 0.4);
+            border-top: 2px solid rgba(66, 133, 244, 0.3);
+            border-bottom: 2px solid rgba(66, 133, 244, 0.3);
         }
 
         .stat-item {
             text-align: center;
             padding: var(--card-padding);
-            background: rgba(66, 133, 244, 0.08);
-            border-radius: clamp(20px, 4vw, 28px);
-            border: 2px solid rgba(66, 133, 244, 0.3);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: var(--gradient-google);
-            transform: scaleX(0);
-            transition: transform 0.6s ease;
+            background: rgba(66, 133, 244, 0.05);
+            border-radius: 20px;
+            border: 2px solid rgba(66, 133, 244, 0.2);
+            transition: all 0.3s ease;
         }
 
         .stat-item:hover {
-            transform: translateY(-12px) scale(1.02);
+            transform: translateY(-8px);
             border-color: var(--google-blue);
-            box-shadow: 0 30px 60px rgba(66, 133, 244, 0.4);
-        }
-
-        .stat-item:hover::before {
-            transform: scaleX(1);
+            box-shadow: 0 20px 40px rgba(66, 133, 244, 0.3);
         }
 
         .stat-number {
@@ -508,22 +433,24 @@
             background-clip: text;
             display: block;
             line-height: 1;
-            margin-bottom: clamp(16px, 3vw, 24px);
+            margin-bottom: 16px;
+            font-size: clamp(2rem, 4vw, 3rem);
         }
 
         .stat-label {
             color: var(--text-muted);
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
-        /* Enhanced Feature Cards */
+        /* Feature Cards */
         .feature-card {
-            background: rgba(31, 41, 55, 0.8);
-            backdrop-filter: blur(30px);
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(25px);
             border: 2px solid rgba(75, 85, 99, 0.6);
-            border-radius: clamp(24px, 4vw, 32px);
+            border-radius: 24px;
             padding: var(--card-padding);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.5s ease;
             position: relative;
             overflow: hidden;
         }
@@ -534,16 +461,16 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
+            height: 4px;
             background: var(--gradient-google);
             transform: scaleX(0);
-            transition: transform 0.6s ease;
+            transition: transform 0.5s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-16px) scale(1.03);
+            transform: translateY(-12px) scale(1.02);
             border-color: var(--google-blue);
-            box-shadow: 0 40px 80px rgba(66, 133, 244, 0.3);
+            box-shadow: 0 30px 60px rgba(66, 133, 244, 0.25);
         }
 
         .feature-card:hover::before {
@@ -551,23 +478,18 @@
         }
 
         .feature-icon {
-            margin-bottom: clamp(24px, 4vw, 36px);
+            margin-bottom: 24px;
             display: block;
             background: var(--gradient-google);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: iconPulse 4s ease-in-out infinite;
-        }
-
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
         }
 
         .feature-card h4 {
             color: var(--text-primary);
-            margin-bottom: clamp(18px, 3vw, 26px);
+            margin-bottom: 18px;
         }
 
         .feature-card p {
@@ -576,82 +498,51 @@
 
         .highlight-text {
             color: var(--google-blue);
-            font-weight: 800;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95em;
-            padding: 3px 8px;
-            background: rgba(66, 133, 244, 0.15);
-            border-radius: 6px;
-            border: 1px solid rgba(66, 133, 244, 0.3);
+            font-size: 0.85em;
+            padding: 2px 6px;
+            background: rgba(66, 133, 244, 0.1);
+            border-radius: 4px;
         }
 
-        /* Enhanced Architecture Section */
+        /* Architecture Section */
         .architecture-section {
-            background: rgba(17, 24, 39, 0.9);
+            background: rgba(17, 24, 39, 0.8);
         }
 
         .architecture-overview {
             background: linear-gradient(135deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%);
-            border: 3px solid var(--google-blue);
-            border-radius: clamp(24px, 4vw, 36px);
+            border: 2px solid var(--google-blue);
+            border-radius: 24px;
             padding: var(--card-padding);
-            margin: clamp(40px, 8vw, 60px) 0;
+            margin: 50px 0;
             position: relative;
-            overflow: hidden;
-        }
-
-        .architecture-overview::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-google);
-            opacity: 0.05;
-            border-radius: calc(clamp(24px, 4vw, 36px) - 3px);
         }
 
         .mermaid-container {
             background: linear-gradient(135deg, #0D1117 0%, #161B22 100%);
-            border: 3px solid var(--border-color);
-            border-radius: clamp(24px, 4vw, 32px);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
             padding: var(--card-padding);
             overflow: hidden;
             position: relative;
-            margin: clamp(50px, 10vw, 80px) 0;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .mermaid-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-google);
-            opacity: 0.04;
-            border-radius: calc(clamp(24px, 4vw, 32px) - 3px);
-        }
-
-        .mermaid {
-            font-family: 'Inter', sans-serif !important;
-            background: transparent !important;
+            margin: 50px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .architecture-features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-            gap: clamp(24px, 4vw, 36px);
-            margin-top: clamp(50px, 10vw, 70px);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 50px;
         }
 
         .arch-feature {
-            background: rgba(66, 133, 244, 0.08);
-            border: 2px solid rgba(66, 133, 244, 0.25);
-            border-radius: clamp(20px, 4vw, 24px);
-            padding: clamp(24px, 4vw, 32px);
+            background: rgba(66, 133, 244, 0.05);
+            border: 2px solid rgba(66, 133, 244, 0.2);
+            border-radius: 16px;
+            padding: 24px;
             transition: all 0.3s ease;
         }
 
@@ -663,40 +554,39 @@
 
         /* Google Values Section */
         .google-values-section {
-            background: linear-gradient(135deg, rgba(66, 133, 244, 0.08) 0%, rgba(52, 168, 83, 0.05) 100%);
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.06) 0%, rgba(52, 168, 83, 0.04) 100%);
         }
 
         .google-value-card {
             background: rgba(31, 41, 55, 0.8);
-            border: 3px solid transparent;
-            border-radius: clamp(24px, 4vw, 32px);
+            border: 2px solid transparent;
+            border-radius: 24px;
             padding: var(--card-padding);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             text-align: center;
         }
 
-        .google-value-card:nth-child(1) { border-color: rgba(66, 133, 244, 0.4); }
-        .google-value-card:nth-child(2) { border-color: rgba(234, 67, 53, 0.4); }
-        .google-value-card:nth-child(3) { border-color: rgba(251, 188, 4, 0.4); }
-        .google-value-card:nth-child(4) { border-color: rgba(52, 168, 83, 0.4); }
+        .google-value-card:nth-child(1) { border-color: rgba(66, 133, 244, 0.3); }
+        .google-value-card:nth-child(2) { border-color: rgba(234, 67, 53, 0.3); }
+        .google-value-card:nth-child(3) { border-color: rgba(251, 188, 4, 0.3); }
+        .google-value-card:nth-child(4) { border-color: rgba(52, 168, 83, 0.3); }
 
         .google-value-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(66, 133, 244, 0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(66, 133, 244, 0.2);
         }
 
         .google-value-icon {
-            width: clamp(70px, 14vw, 90px);
-            height: clamp(70px, 14vw, 90px);
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto clamp(24px, 4vw, 36px);
-            font-size: clamp(28px, 6vw, 42px);
-            position: relative;
+            margin: 0 auto 24px;
+            font-size: 28px;
         }
 
         .google-value-card:nth-child(1) .google-value-icon { background: linear-gradient(135deg, var(--google-blue), rgba(66, 133, 244, 0.7)); }
@@ -704,97 +594,24 @@
         .google-value-card:nth-child(3) .google-value-icon { background: linear-gradient(135deg, var(--google-yellow), rgba(251, 188, 4, 0.7)); }
         .google-value-card:nth-child(4) .google-value-icon { background: linear-gradient(135deg, var(--google-green), rgba(52, 168, 83, 0.7)); }
 
-        .google-value-icon::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            background: var(--gradient-google);
-            border-radius: 50%;
-            z-index: -1;
-            animation: rotate 4s linear infinite;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Team Section */
-        .team-section {
-            background: rgba(17, 24, 39, 0.6);
-        }
-
-        .team-card {
-            background: rgba(31, 41, 55, 0.9);
-            border: 2px solid rgba(66, 133, 244, 0.3);
-            border-radius: clamp(24px, 4vw, 32px);
-            padding: var(--card-padding);
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .team-card:hover {
-            transform: translateY(-12px);
-            border-color: var(--google-blue);
-            box-shadow: 0 25px 50px rgba(66, 133, 244, 0.25);
-        }
-
-        .team-avatar {
-            width: clamp(90px, 16vw, 130px);
-            height: clamp(90px, 16vw, 130px);
-            border-radius: 50%;
-            background: var(--gradient-google);
-            margin: 0 auto clamp(24px, 4vw, 36px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 800;
-            position: relative;
-        }
-
-        .team-avatar::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            background: var(--gradient-google);
-            border-radius: 50%;
-            z-index: -1;
-            animation: rotate 4s linear infinite;
-        }
-
         /* Competitive Advantage Section */
         .advantage-section {
-            background: linear-gradient(135deg, rgba(52, 168, 83, 0.05) 0%, rgba(66, 133, 244, 0.08) 100%);
+            background: linear-gradient(135deg, rgba(52, 168, 83, 0.04) 0%, rgba(66, 133, 244, 0.06) 100%);
         }
 
         .advantage-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-            gap: clamp(24px, 4vw, 32px);
-            margin-top: clamp(50px, 10vw, 70px);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 50px;
         }
 
         .advantage-card {
             background: rgba(31, 41, 55, 0.8);
-            border: 2px solid rgba(52, 168, 83, 0.3);
-            border-radius: clamp(20px, 4vw, 24px);
-            padding: clamp(24px, 4vw, 32px);
+            border: 2px solid rgba(52, 168, 83, 0.2);
+            border-radius: 16px;
+            padding: 24px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .advantage-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--google-green), var(--google-blue));
-            transform: scaleX(0);
-            transition: transform 0.5s ease;
         }
 
         .advantage-card:hover {
@@ -803,72 +620,91 @@
             box-shadow: 0 20px 40px rgba(52, 168, 83, 0.2);
         }
 
-        .advantage-card:hover::before {
-            transform: scaleX(1);
+        /* Team Section */
+        .team-section {
+            background: rgba(17, 24, 39, 0.5);
         }
 
-        /* Enhanced Final CTA */
+        .team-card {
+            background: rgba(31, 41, 55, 0.8);
+            border: 2px solid rgba(66, 133, 244, 0.2);
+            border-radius: 24px;
+            padding: var(--card-padding);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--google-blue);
+            box-shadow: 0 20px 40px rgba(66, 133, 244, 0.2);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient-google);
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+        }
+
+        /* Final CTA */
         .final-cta-box {
             text-align: center;
-            background: linear-gradient(135deg, rgba(31, 41, 55, 0.95) 0%, rgba(17, 24, 39, 0.98) 100%);
-            backdrop-filter: blur(30px);
-            border: 3px solid var(--google-blue);
-            border-radius: clamp(28px, 5vw, 40px);
-            padding: clamp(70px, 14vw, 100px) var(--card-padding);
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%);
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--google-blue);
+            border-radius: 28px;
+            padding: clamp(60px, 10vw, 80px) var(--card-padding);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 100px rgba(66, 133, 244, 0.5);
+            box-shadow: 0 0 80px rgba(66, 133, 244, 0.4);
         }
 
-        .final-cta-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-google);
-            opacity: 0.1;
-            border-radius: calc(clamp(28px, 5vw, 40px) - 3px);
-            z-index: -1;
-        }
-
-        /* Enhanced Footer */
+        /* Footer */
         .footer {
-            background: rgba(11, 15, 25, 0.99);
-            border-top: 3px solid rgba(66, 133, 244, 0.4);
-            padding: clamp(70px, 14vw, 90px) 0 clamp(50px, 10vw, 60px);
+            background: rgba(11, 15, 25, 0.98);
+            border-top: 2px solid rgba(66, 133, 244, 0.3);
+            padding: 60px 0 40px;
         }
 
         .footer-section h4 {
             color: var(--text-primary);
-            margin-bottom: clamp(24px, 4vw, 32px);
-            font-weight: 800;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
         }
 
         .footer-section p, .footer-section a {
             color: var(--text-muted);
             text-decoration: none;
             transition: all 0.3s ease;
-            margin-bottom: clamp(10px, 2vw, 14px);
+            margin-bottom: 8px;
             display: block;
+            font-size: 0.9rem;
         }
 
         .footer-section a:hover {
             color: var(--google-blue);
-            transform: translateX(8px);
+            transform: translateX(5px);
         }
 
-        /* Animation Classes */
+        /* Animations */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(50px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .animate-on-scroll {
             opacity: 0;
-            transform: translateY(50px);
-            transition: all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(30px);
+            transition: all 0.8s ease;
         }
 
         .animate-on-scroll.animated {
@@ -887,30 +723,30 @@
                 width: 100%;
                 height: calc(100vh - var(--navbar-height));
                 background: rgba(11, 15, 25, 0.98);
-                backdrop-filter: blur(30px);
+                backdrop-filter: blur(25px);
                 flex-direction: column;
                 justify-content: flex-start;
                 align-items: center;
-                padding-top: clamp(50px, 10vw, 70px);
-                gap: clamp(35px, 7vw, 45px);
-                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                padding-top: 40px;
+                gap: 30px;
+                transition: left 0.3s ease;
             }
 
             .nav-menu.active { left: 0; }
             
             .nav-menu a {
-                font-size: clamp(1.25rem, 4vw, 1.4rem);
-                padding: clamp(15px, 3vw, 20px) 0;
+                font-size: 1.1rem;
+                padding: 12px 0;
             }
 
             .hero-cta {
                 flex-direction: column;
                 align-items: center;
-                gap: clamp(20px, 4vw, 24px);
+                gap: 16px;
             }
 
             .cta-button {
-                width: min(320px, 90vw);
+                width: 280px;
             }
 
             .problem-stats {
@@ -920,6 +756,14 @@
 
             .problem-stat {
                 min-width: auto;
+            }
+
+            html {
+                font-size: 14px;
+            }
+
+            body {
+                font-size: 14px;
             }
         }
 
@@ -935,34 +779,44 @@
             .advantage-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (min-width: 1200px) {
+            html {
+                font-size: 13px;
+            }
+
+            body {
+                font-size: 13px;
+            }
+
             .container {
-                max-width: 1200px;
+                padding: 0 16px;
             }
         }
 
-        /* High DPI Display Optimizations */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .feature-icon, .google-value-icon {
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
+        /* Performance Optimizations */
+        .shape {
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
-        /* Print Styles */
-        @media print {
-            .animated-bg, .navbar { display: none !important; }
-            body { background: white !important; color: black !important; }
-            .section { page-break-inside: avoid; }
+        .feature-card, .team-card, .advantage-card {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* Reduce motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
     <div class="animated-bg">
         <div class="floating-shapes">
-            <div class="shape"></div>
             <div class="shape"></div>
             <div class="shape"></div>
             <div class="shape"></div>
@@ -974,10 +828,10 @@
             <a href="#home" class="nav-logo">AvestoAI</a>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#home">Home</a></li>
-                <li><a href="#problem">The Problem</a></li>
-                <li><a href="#solution">Our Solution</a></li>
+                <li><a href="#problem">Problem</a></li>
+                <li><a href="#solution">Solution</a></li>
                 <li><a href="#architecture">Architecture</a></li>
-                <li><a href="#advantage">Competitive Edge</a></li>
+                <li><a href="#advantage">Advantage</a></li>
                 <li><a href="#team">Team</a></li>
                 <li><a href="#contact">Select Us</a></li>
             </ul>
@@ -993,21 +847,21 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge">
-                    🏆 Google AI Hackathon Game Changer • 🚀 72 Hours to Financial Revolution
+                    🏆 Google AI Hackathon • 🚀 Financial Intelligence Revolution
                 </div>
                 <h1 class="hero-title display-1">
                     <span class="gradient-text">AvestoAI</span><br>
-                    The World's First Sentient Financial Companion
+                    The Future of Financial Intelligence
                 </h1>
                 <p class="hero-subtitle body-large">
-                    We're not building another chatbot. We're creating the future where AI doesn't just answer your financial questions—it thinks, learns, and evolves with your financial life. Built on Gemini's hybrid intelligence with unprecedented real-time processing and privacy-first design.
+                    The world's first hybrid AI financial companion built on Gemini Nano/Flash/Pro and Fi's MCP Server. Real-time, private, conversational finance that thinks, speaks, and visualizes at the speed of thought.
                 </p>
                 <div class="hero-cta">
                     <a href="#solution" class="cta-button cta-primary">
-                        <span>🎯 See The Magic</span>
+                        <span>🎯 See The Solution</span>
                     </a>
                     <a href="#architecture" class="cta-button cta-secondary">
-                        <span>🏛️ Technical Deep Dive</span>
+                        <span>🏛️ View Architecture</span>
                     </a>
                 </div>
             </div>
@@ -1018,43 +872,43 @@
     <section class="section problem-section" id="problem">
         <div class="container">
             <div class="section-header animate-on-scroll">
-                <h2 class="section-title heading-1">The $127 Billion Problem We're Solving</h2>
+                <h2 class="section-title heading-1">The $127 Billion Problem</h2>
                 <p class="section-subtitle body-large">
-                    Google's AI can answer "What is compound interest?" but it can't answer "Should I refinance my mortgage next month given my spending patterns?" We're bridging this trillion-dollar gap.
+                    Current AI can answer "What is compound interest?" but can't answer "Should I refinance my mortgage next month?" We're solving this trillion-dollar gap.
                 </p>
             </div>
 
             <div class="problem-stats animate-on-scroll">
                 <div class="problem-stat">
                     <span class="problem-number">73%</span>
-                    <p class="body-medium" style="color: var(--text-muted);">of Americans live paycheck to paycheck</p>
+                    <p class="body-medium" style="color: var(--text-muted);">Americans live paycheck to paycheck</p>
                 </div>
                 <div class="problem-stat">
                     <span class="problem-number">$127B</span>
-                    <p class="body-medium" style="color: var(--text-muted);">Global financial advisory market size</p>
+                    <p class="body-medium" style="color: var(--text-muted);">Global financial advisory market</p>
                 </div>
                 <div class="problem-stat">
                     <span class="problem-number">97%</span>
-                    <p class="body-medium" style="color: var(--text-muted);">lack access to personalized financial AI</p>
+                    <p class="body-medium" style="color: var(--text-muted);">Lack personalized financial AI</p>
                 </div>
             </div>
 
-            <div style="background: rgba(234, 67, 53, 0.1); border: 3px solid var(--google-red); border-radius: clamp(24px, 4vw, 32px); padding: var(--card-padding); margin-top: clamp(50px, 10vw, 70px);" class="animate-on-scroll">
-                <h3 class="heading-2" style="color: var(--google-red); margin-bottom: clamp(20px, 4vw, 30px); text-align: center;">
-                    💥 The Current Financial AI Landscape is Broken
+            <div style="background: rgba(234, 67, 53, 0.1); border: 2px solid var(--google-red); border-radius: 20px; padding: var(--card-padding); margin-top: 50px;" class="animate-on-scroll">
+                <h3 class="heading-2" style="color: var(--google-red); margin-bottom: 20px; text-align: center;">
+                    💥 Current Financial AI is Broken
                 </h3>
-                <div class="grid grid-3" style="margin-top: clamp(30px, 6vw, 40px);">
+                <div class="grid grid-3" style="margin-top: 30px;">
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🤖 Generic Responses</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Current AI gives the same answer to everyone. "Invest in index funds" isn't helpful when you're planning for a baby next year.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">🤖 Generic Responses</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Same answer for everyone. "Invest in index funds" isn't helpful when planning for a baby.</p>
                     </div>
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🔒 Privacy Nightmares</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Financial apps store your most sensitive data in the cloud. One breach and your entire financial life is exposed.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">🔒 Privacy Issues</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Financial data stored in cloud. One breach exposes your entire financial life.</p>
                     </div>
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">⏰ Delayed Processing</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Wait 30 seconds for basic calculations. By the time you get an answer, market conditions have changed.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">⏰ Slow Processing</h5>
+                        <p class="body-small" style="color: var(--text-muted);">30-second delays for basic calculations. Market conditions change faster.</p>
                     </div>
                 </div>
             </div>
@@ -1066,20 +920,20 @@
         <div class="container">
             <div class="grid grid-4">
                 <div class="stat-item animate-on-scroll">
-                    <span class="stat-number display-2" data-target="150">&lt;150</span>
-                    <span class="stat-label body-medium">Millisecond Response Time</span>
+                    <span class="stat-number" data-target="150">&lt;150</span>
+                    <span class="stat-label">ms Response Time</span>
                 </div>
                 <div class="stat-item animate-on-scroll">
-                    <span class="stat-number display-2" data-target="100">100</span>
-                    <span class="stat-label body-medium">% On-Device Privacy</span>
+                    <span class="stat-number" data-target="100">100</span>
+                    <span class="stat-label">% Privacy Guaranteed</span>
                 </div>
                 <div class="stat-item animate-on-scroll">
-                    <span class="stat-number display-2" data-target="99.99">99.99</span>
-                    <span class="stat-label body-medium">% Uptime Guarantee</span>
+                    <span class="stat-number" data-target="99.99">99.99</span>
+                    <span class="stat-label">% Uptime SLA</span>
                 </div>
                 <div class="stat-item animate-on-scroll">
-                    <span class="stat-number display-2" data-target="24">24+</span>
-                    <span class="stat-label body-medium">Financial Data Sources</span>
+                    <span class="stat-number" data-target="24">24+</span>
+                    <span class="stat-label">Data Sources</span>
                 </div>
             </div>
         </div>
@@ -1090,210 +944,177 @@
             <div class="section-header animate-on-scroll">
                 <h2 class="section-title heading-1">Our Revolutionary Solution</h2>
                 <p class="section-subtitle body-large">
-                    AvestoAI doesn't just process financial data—it creates a living, breathing financial consciousness that evolves with your life. This is how the future feels.
+                    AvestoAI creates a living, breathing financial consciousness that evolves with your life. Built on Google's cutting-edge AI infrastructure.
                 </p>
             </div>
 
             <div class="grid grid-2">
                 <div class="feature-card animate-on-scroll">
-                    <span class="feature-icon display-2">🧠</span>
-                    <h4 class="heading-3">Hybrid Sentient Intelligence</h4>
+                    <span class="feature-icon">🧠</span>
+                    <h4 class="heading-3">Hybrid Intelligence Architecture</h4>
                     <p class="body-medium">
-                        <span class="highlight-text">Gemini Nano</span> on-device for instant, private reasoning.
-                        <span class="highlight-text">Gemini Flash & Pro</span> in Google's Confidential Space for complex financial modeling.
-                        First AI that thinks locally and scales infinitely.
+                        <span class="highlight-text">Gemini Nano</span> on-device for instant privacy.
+                        <span class="highlight-text">Gemini Flash & Pro</span> in Confidential Space for complex modeling.
+                        First AI that thinks locally, scales globally.
                     </p>
                 </div>
                 <div class="feature-card animate-on-scroll">
-                    <span class="feature-icon display-2">⚡</span>
-                    <h4 class="heading-3">Real-Time Financial Consciousness</h4>
+                    <span class="feature-icon">⚡</span>
+                    <h4 class="heading-3">Real-Time Processing</h4>
                     <p class="body-medium">
-                        Simultaneous voice, text, and visual processing. Watch your financial future evolve as you speak.
-                        Built on <span class="highlight-text">WebSocket streams</span> with sub-150ms response times.
+                        Sub-150ms responses with live streaming architecture.
+                        <span class="highlight-text">WebSocket connections</span> enable real-time conversation flow.
+                        Your financial future updates as you speak.
                     </p>
                 </div>
                 <div class="feature-card animate-on-scroll">
-                    <span class="feature-icon display-2">🌐</span>
-                    <h4 class="heading-3">Complete Financial Universe Access</h4>
+                    <span class="feature-icon">🌐</span>
+                    <h4 class="heading-3">Complete Financial Integration</h4>
                     <p class="body-medium">
-                        Leverage <span class="highlight-text">Fi's MCP Server</span> to access 24+ financial data sources.
-                        From budgeting to portfolio optimization, scenario modeling to anomaly detection.
+                        <span class="highlight-text">Fi's MCP Server</span> accesses 24+ financial data sources.
+                        From budgeting to portfolio optimization, all in one intelligent platform.
                     </p>
                 </div>
                 <div class="feature-card animate-on-scroll">
-                    <span class="feature-icon display-2">🛡️</span>
-                    <h4 class="heading-3">Cryptographic Privacy Architecture</h4>
+                    <span class="feature-icon">🛡️</span>
+                    <h4 class="heading-3">Privacy-First Design</h4>
                     <p class="body-medium">
-                        Built on our <span class="highlight-text">Privacy Manifesto</span>. 
-                        Complete data sovereignty, one-click export, open SDK, and mathematical privacy guarantees.
+                        Built on our <span class="highlight-text">Privacy Manifesto</span>.
+                        Complete data ownership, one-click export, and cryptographic privacy guarantees.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Enhanced Architecture Section with Better Diagram -->
+    <!-- Enhanced Architecture Section -->
     <section class="section architecture-section" id="architecture">
         <div class="container">
             <div class="section-header animate-on-scroll">
-                <h2 class="section-title heading-1">Enterprise-Grade Hybrid Intelligence Architecture</h2>
+                <h2 class="section-title heading-1">Enterprise-Grade Architecture</h2>
                 <p class="section-subtitle body-large">
-                    Built on Google's enterprise infrastructure with consumer-grade elegance. This isn't a prototype—it's a production system designed for global scale.
+                    Built on Google's enterprise infrastructure with consumer-grade simplicity. Production-ready from day one.
                 </p>
             </div>
 
             <div class="architecture-overview animate-on-scroll">
-                <h3 class="heading-2" style="color: var(--google-blue); margin-bottom: clamp(20px, 4vw, 30px); text-align: center;">
-                    🎯 How AvestoAI Revolutionizes Financial Intelligence
+                <h3 class="heading-2" style="color: var(--google-blue); margin-bottom: 20px; text-align: center;">
+                    🎯 How AvestoAI Works
                 </h3>
-                <div class="grid grid-3" style="margin-top: clamp(30px, 6vw, 40px);">
+                <div class="grid grid-3" style="margin-top: 30px;">
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🏃‍♂️ Lightning Fast</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Simple queries processed on-device in under 150ms. Complex scenarios resolved in under 2 seconds through intelligent cloud orchestration.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">🏃‍♂️ Lightning Fast</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Simple queries on-device in 150ms. Complex scenarios in under 2 seconds.</p>
                     </div>
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🔐 Cryptographically Private</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Your data never leaves your device unencrypted. Cloud processing happens in Google's Confidential Computing environment with zero-knowledge architecture.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">🔐 Cryptographically Private</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Data never leaves device unencrypted. Google's Confidential Computing ensures zero-knowledge processing.</p>
                     </div>
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🌍 Infinitely Scalable</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Built on Google Cloud's global infrastructure. Automatic scaling from 1 to 1 billion users without architectural changes.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">🌍 Infinitely Scalable</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Google Cloud infrastructure. Scale from 1 to 1 billion users seamlessly.</p>
                     </div>
                 </div>
             </div>
             
             <div class="mermaid-container animate-on-scroll">
-                <div class="architecture-title heading-3" style="color: var(--google-blue); margin-bottom: clamp(25px, 5vw, 35px); text-align: center;">
-                    🏛️ AvestoAI Sentient Financial Intelligence Architecture
+                <div class="architecture-title heading-3" style="color: var(--google-blue); margin-bottom: 25px; text-align: center;">
+                    🏛️ AvestoAI Hybrid Intelligence Architecture
                 </div>
                 <div class="mermaid">
                     flowchart TB
                         %% Enhanced Styling
-                        classDef device fill:#e3f2fd,stroke:#1976d2,stroke-width:4px,color:#000,font-weight:bold
-                        classDef cloud fill:#f3e5f5,stroke:#7b1fa2,stroke-width:4px,color:#000,font-weight:bold
-                        classDef stream fill:#fff8e1,stroke:#f57c00,stroke-width:3px,color:#000,font-weight:bold
-                        classDef data fill:#e8f5e8,stroke:#388e3c,stroke-width:3px,color:#000,font-weight:bold
-                        classDef security fill:#ffebee,stroke:#d32f2f,stroke-width:3px,color:#000,font-weight:bold
-                        classDef ai fill:#f1f8e9,stroke:#689f38,stroke-width:4px,color:#000,font-weight:bold
+                        classDef device fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000,font-weight:bold
+                        classDef cloud fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#000,font-weight:bold
+                        classDef stream fill:#fff8e1,stroke:#f57c00,stroke-width:2px,color:#000
+                        classDef data fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
+                        classDef security fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000
 
-                        %% User Layer
-                        subgraph UserLayer ["🎯 INTELLIGENT USER INTERFACE"]
-                            direction TB
-                            Voice["🎤 Voice Interface<br/>Real-time Speech<br/>Sub-150ms Response"]
-                            Text["💬 Text Chat<br/>Streaming UI<br/>Live Visualization"]
-                            Visual["📊 Dynamic Charts<br/>AR Financial Data<br/>Gesture Control"]
+                        %% User Interface
+                        subgraph UserLayer ["📱 USER INTERFACE"]
+                            Voice["🎤 Voice Chat<br/>Real-time Speech<br/>Sub-150ms Response"]
+                            Text["💬 Text Interface<br/>Streaming Display<br/>Interactive Cards"]
+                            Visual["📊 Live Charts<br/>Dynamic Visualization<br/>Real-time Updates"]
                         end
 
                         %% Device Intelligence
-                        subgraph DeviceLayer ["📱 ON-DEVICE AI BRAIN"]
-                            direction TB
-                            Nano["🔥 Gemini Nano<br/>Instant Processing<br/>Zero Latency<br/>Complete Privacy"]
-                            LocalOrch["🎭 Smart Orchestrator<br/>Query Classification<br/>Cache Management<br/>Privacy Guardian"]
-                            DeviceDB["💾 Encrypted Storage<br/>Conversation Memory<br/>User Preferences<br/>AES-256 Protected"]
+                        subgraph DeviceLayer ["⚡ ON-DEVICE AI"]
+                            Nano["🔥 Gemini Nano<br/>Instant Processing<br/>Complete Privacy<br/>Local Cache"]
+                            Orchestrator["🎭 Smart Router<br/>Query Classification<br/>Privacy Guardian<br/>Cache Manager"]
                         end
 
-                        %% Secure Transmission
+                        %% Network
                         subgraph NetworkLayer ["🔐 SECURE BRIDGE"]
-                            direction LR
-                            WSS["📡 WebSocket Secure<br/>TLS 1.3 Encrypted<br/>Real-time Bidirectional"]
-                            Gateway["🚪 AI Gateway<br/>Load Balancing<br/>Rate Limiting<br/>Auth Validation"]
+                            WSS["📡 WebSocket Secure<br/>TLS 1.3 Encrypted<br/>Real-time Stream"]
+                            Gateway["🚪 API Gateway<br/>Load Balance<br/>Auth & Rate Limit"]
                         end
 
-                        %% Google Cloud Intelligence
-                        subgraph GoogleCloud ["☁️ GOOGLE CLOUD INTELLIGENCE HUB"]
-                            direction TB
-                            
+                        %% Google Cloud
+                        subgraph GoogleCloud ["☁️ GOOGLE CLOUD AI"]
                             subgraph ConfCompute ["🛡️ CONFIDENTIAL COMPUTING"]
-                                Flash["🧠 Gemini Flash & Pro<br/>Advanced Reasoning<br/>Multimodal Analysis<br/>Financial Synthesis"]
-                                AgentBuilder["🤖 Vertex AI Agent<br/>Tool Orchestration<br/>Workflow Management<br/>Safety Guardrails"]
+                                Flash["🧠 Gemini Flash/Pro<br/>Advanced Reasoning<br/>Complex Analysis<br/>Financial Modeling"]
+                                AgentBuilder["🤖 Vertex AI Agent<br/>Tool Orchestration<br/>Workflow Control<br/>Safety Guardrails"]
                             end
                             
-                            subgraph AITools ["🛠️ INTELLIGENT TOOL ECOSYSTEM"]
-                                FiConnector["💰 Fi MCP Connector<br/>24+ Data Sources<br/>Real-time Sync<br/>JSON Structured"]
-                                FinEngine["📈 Financial Engine<br/>Portfolio Analysis<br/>Risk Assessment<br/>Goal Modeling"]
-                                VizGen["📊 Visualization Generator<br/>Dynamic Charts<br/>Predictive Graphics<br/>Interactive Dashboards"]
+                            subgraph Tools ["🛠️ AI TOOLS"]
+                                FiConnector["💰 Fi MCP<br/>24+ Data Sources<br/>Real-time Sync<br/>Account Integration"]
+                                FinEngine["📈 Financial Engine<br/>Portfolio Analysis<br/>Risk Assessment<br/>Goal Planning"]
+                                VizGen["📊 Chart Generator<br/>Dynamic Graphics<br/>Interactive Dashboards"]
                             end
                             
-                            subgraph DataServices ["💾 ENTERPRISE DATA LAYER"]
-                                AlloyDB["🗄️ AlloyDB PostgreSQL<br/>AI-Enhanced Queries<br/>Vector Embeddings<br/>ACID Compliance"]
-                                VectorDB["🧮 Vector Search<br/>Semantic Memory<br/>Pattern Recognition<br/>Similarity Matching"]
-                                SecretMgr["🔐 Secret Manager<br/>API Credentials<br/>Encryption Keys<br/>Certificate Management"]
+                            subgraph DataLayer ["💾 DATA SERVICES"]
+                                AlloyDB["🗄️ AlloyDB<br/>AI-Enhanced SQL<br/>Vector Search<br/>ACID Compliance"]
+                                SecretMgr["🔐 Secret Manager<br/>API Credentials<br/>Encryption Keys"]
                             end
                         end
 
-                        %% External Ecosystem
-                        subgraph ExternalSys ["🌍 FINANCIAL DATA UNIVERSE"]
-                            direction TB
-                            FiPlatform["💳 Fi MCP Platform<br/>Complete Financial APIs<br/>Real-time Account Data<br/>Transaction Streams"]
-                            BankAPIs["🏦 Banking APIs<br/>Account Balances<br/>Transaction History<br/>Credit Monitoring"]
-                            MarketData["📈 Market Intelligence<br/>Live Stock Prices<br/>Economic Indicators<br/>Crypto Tracking"]
-                            CreditData["📊 Credit & Scoring<br/>Credit Reports<br/>Score Monitoring<br/>Debt Analysis"]
+                        %% External Services
+                        subgraph External ["🌍 FINANCIAL ECOSYSTEM"]
+                            FiPlatform["💳 Fi Platform<br/>Account Data<br/>Transaction Feeds"]
+                            Banking["🏦 Banking APIs<br/>Real-time Balance<br/>Payment Processing"]
+                            Market["📈 Market Data<br/>Live Prices<br/>Economic Indicators"]
                         end
 
-                        %% Human Oversight
-                        subgraph HumanLoop ["👤 RESPONSIBLE AI OVERSIGHT"]
-                            direction TB
-                            Monitor["🔍 AI Monitor<br/>Decision Tracking<br/>Anomaly Detection<br/>Audit Logging"]
-                            Approval["✅ Human Approval<br/>Critical Decisions<br/>Large Transactions<br/>Policy Enforcement"]
-                            Feedback["🔄 Learning Loop<br/>User Feedback<br/>Model Improvement<br/>Continuous Learning"]
-                        end
-
-                        %% Enhanced Connections with Labels
-                        Voice -.->|"Voice Commands"| Nano
-                        Text -.->|"Text Input"| Nano
-                        Visual -.->|"Visual Queries"| LocalOrch
-                        
-                        Nano -->|"Simple Queries<br/>Instant Response"| LocalOrch
-                        LocalOrch -->|"Local Cache<br/>User Preferences"| DeviceDB
-                        
-                        LocalOrch -.->|"Complex Queries<br/>Encrypted Transmission"| WSS
+                        %% Connections
+                        Voice <--> Nano
+                        Text <--> Nano
+                        Visual <--> Orchestrator
+                        Nano --> Orchestrator
+                        Orchestrator -.->|Complex Query| WSS
                         WSS --> Gateway
                         Gateway --> ConfCompute
-                        
                         Flash <--> AgentBuilder
-                        AgentBuilder --> AITools
-                        AITools --> DataServices
-                        
+                        AgentBuilder --> Tools
+                        Tools --> DataLayer
                         FiConnector <--> FiPlatform
-                        FinEngine <--> BankAPIs
-                        VizGen <--> MarketData
-                        AgentBuilder <--> CreditData
-                        
-                        AgentBuilder -.->|"Critical Actions<br/>Risk Assessment"| Monitor
-                        Monitor --> Approval
-                        Approval --> Feedback
-                        Feedback -.->|"Model Updates"| Flash
-                        
-                        Gateway -.->|"Real-time Response<br/>Encrypted Results"| Visual
+                        FinEngine <--> Banking
+                        VizGen <--> Market
 
-                        %% Apply Enhanced Styling
-                        class Voice,Text,Visual device
-                        class Nano,LocalOrch,DeviceDB device
-                        class WSS,Gateway stream
+                        %% Apply Styles
+                        class Voice,Text,Visual,Nano,Orchestrator device
                         class Flash,AgentBuilder cloud
-                        class FiConnector,FinEngine,VizGen ai
-                        class AlloyDB,VectorDB,SecretMgr data
-                        class Monitor,Approval,Feedback security
-                        class FiPlatform,BankAPIs,MarketData,CreditData data
+                        class WSS,Gateway stream
+                        class FiConnector,FinEngine,VizGen data
+                        class AlloyDB,SecretMgr security
                 </div>
             </div>
 
             <div class="architecture-features animate-on-scroll">
                 <div class="arch-feature">
-                    <h5 class="heading-3" style="color: var(--google-blue); margin-bottom: clamp(12px, 2vw, 16px);">⚡ Hybrid Intelligence</h5>
-                    <p class="body-small" style="color: var(--text-muted);">Gemini Nano processes 80% of queries instantly on-device. Complex financial modeling escalates to Gemini Flash/Pro in Google's Confidential Computing environment.</p>
+                    <h5 class="heading-3" style="color: var(--google-blue); margin-bottom: 12px;">⚡ Hybrid Intelligence</h5>
+                    <p class="body-small" style="color: var(--text-muted);">Gemini Nano handles 80% of queries instantly on-device. Complex modeling escalates to Gemini Flash/Pro.</p>
                 </div>
                 <div class="arch-feature">
-                    <h5 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(12px, 2vw, 16px);">🔐 Zero-Trust Privacy</h5>
-                    <p class="body-small" style="color: var(--text-muted);">Data encrypted at rest, in transit, and during processing. Google's Confidential Space ensures even we can't see your decrypted financial data.</p>
+                    <h5 class="heading-3" style="color: var(--google-green); margin-bottom: 12px;">🔐 Zero-Trust Privacy</h5>
+                    <p class="body-small" style="color: var(--text-muted);">Data encrypted at rest, in transit, and during processing in Confidential Space.</p>
                 </div>
                 <div class="arch-feature">
-                    <h5 class="heading-3" style="color: var(--google-yellow); margin-bottom: clamp(12px, 2vw, 16px);">🤖 Autonomous Orchestration</h5>
-                    <p class="body-small" style="color: var(--text-muted);">Vertex AI Agent Builder manages the entire workflow from query understanding to tool selection, with built-in responsible AI guardrails.</p>
+                    <h5 class="heading-3" style="color: var(--google-yellow); margin-bottom: 12px;">🤖 AI Orchestration</h5>
+                    <p class="body-small" style="color: var(--text-muted);">Vertex AI Agent Builder manages workflow with responsible AI guardrails.</p>
                 </div>
                 <div class="arch-feature">
-                    <h5 class="heading-3" style="color: var(--google-red); margin-bottom: clamp(12px, 2vw, 16px);">🌐 Enterprise Scale</h5>
-                    <p class="body-small" style="color: var(--text-muted);">AlloyDB for ACID compliance, Vector Search for semantic memory, Secret Manager for credential security. Built for 99.99% uptime at global scale.</p>
+                    <h5 class="heading-3" style="color: var(--google-red); margin-bottom: 12px;">🌐 Enterprise Scale</h5>
+                    <p class="body-small" style="color: var(--text-muted);">AlloyDB, Vector Search, Secret Manager. Built for 99.99% uptime at global scale.</p>
                 </div>
             </div>
         </div>
@@ -1305,7 +1126,7 @@
             <div class="section-header animate-on-scroll">
                 <h2 class="section-title heading-1">Built on Google's DNA</h2>
                 <p class="section-subtitle body-large">
-                    AvestoAI doesn't just use Google's technology—we embody Google's values and design philosophy. Every decision reflects Google's commitment to user empowerment, speed, openness, and excellence.
+                    AvestoAI embodies Google's core values and design philosophy. Every decision reflects Google's commitment to user empowerment and excellence.
                 </p>
             </div>
 
@@ -1315,7 +1136,7 @@
                     <h4 class="heading-3">Focus on the User</h4>
                     <p class="body-medium">
                         <strong>Google's Philosophy:</strong> "Focus on the user and all else will follow."<br><br>
-                        <strong>Our Implementation:</strong> AvestoAI puts user control at the absolute center. Our Privacy Manifesto guarantees complete data ownership, one-click export, and cryptographic privacy. The user owns their financial intelligence completely.
+                        <strong>Our Implementation:</strong> Complete user control with Privacy Manifesto guaranteeing data ownership, one-click export, and cryptographic privacy.
                     </p>
                 </div>
                 <div class="google-value-card animate-on-scroll">
@@ -1323,7 +1144,7 @@
                     <h4 class="heading-3">Fast is Better than Slow</h4>
                     <p class="body-medium">
                         <strong>Google's Philosophy:</strong> "Fast is better than slow."<br><br>
-                        <strong>Our Implementation:</strong> Sub-150ms on-device responses with Gemini Nano. Real-time streaming architecture. WebSocket connections for live data flow. Your financial AI feels instantaneous and alive.
+                        <strong>Our Implementation:</strong> Sub-150ms responses with real-time streaming architecture. Your financial AI feels instantaneous.
                     </p>
                 </div>
                 <div class="google-value-card animate-on-scroll">
@@ -1331,7 +1152,7 @@
                     <h4 class="heading-3">Democracy on the Web</h4>
                     <p class="body-medium">
                         <strong>Google's Philosophy:</strong> "Democracy on the web works."<br><br>
-                        <strong>Our Implementation:</strong> Open SDK for third-party developers. One-click data portability. Fi's MCP enables platform-agnostic financial data access. We're building a platform, not a monopoly.
+                        <strong>Our Implementation:</strong> Open SDK, data portability, Fi MCP integration. Building a platform, not a monopoly.
                     </p>
                 </div>
                 <div class="google-value-card animate-on-scroll">
@@ -1339,28 +1160,8 @@
                     <h4 class="heading-3">Great Just Isn't Good Enough</h4>
                     <p class="body-medium">
                         <strong>Google's Philosophy:</strong> "Great just isn't good enough."<br><br>
-                        <strong>Our Implementation:</strong> We're not building another financial app—we're creating sentient financial intelligence. Hybrid AI, real-time consciousness, generative scenario synthesis. This is the future.
+                        <strong>Our Implementation:</strong> Creating sentient financial intelligence with hybrid AI and real-time consciousness.
                     </p>
-                </div>
-            </div>
-
-            <div style="background: rgba(66, 133, 244, 0.12); border: 3px solid var(--google-blue); border-radius: clamp(24px, 4vw, 32px); padding: var(--card-padding); margin-top: clamp(50px, 10vw, 70px); text-align: center;" class="animate-on-scroll">
-                <h3 class="heading-2" style="color: var(--google-blue); margin-bottom: clamp(20px, 4vw, 30px);">
-                    🎯 Google's Design Principles in Our DNA
-                </h3>
-                <div class="grid grid-3" style="margin-top: clamp(35px, 7vw, 45px);">
-                    <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🎨 Material Design 3</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Adaptive colors, dynamic typography, and meaningful motion using Google's latest design system for intuitive financial interactions.</p>
-                    </div>
-                    <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🧠 AI-First Architecture</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Built with Vertex AI Agent Builder from the ground up, leveraging Google's entire AI infrastructure for enterprise-grade intelligence.</p>
-                    </div>
-                    <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🔒 Privacy by Design</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Confidential Computing, on-device processing, and zero-trust architecture implemented from day one, not bolted on later.</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1370,56 +1171,36 @@
     <section class="section advantage-section" id="advantage">
         <div class="container">
             <div class="section-header animate-on-scroll">
-                <h2 class="section-title heading-1">Why We'll Dominate This Market</h2>
+                <h2 class="section-title heading-1">Our Competitive Edge</h2>
                 <p class="section-subtitle body-large">
-                    We're not just better than the competition—we're playing a completely different game. Here's why AvestoAI will become the defining financial AI platform of the next decade.
+                    We're not just better than competitors—we're playing a different game entirely. Here's why AvestoAI will dominate.
                 </p>
             </div>
 
             <div class="advantage-grid">
                 <div class="advantage-card animate-on-scroll">
-                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 20px);">🥇 First-Mover Advantage</h4>
-                    <p class="body-medium" style="color: var(--text-muted);">First true hybrid on-device + cloud financial AI. While competitors are still building basic chatbots, we're delivering sentient financial intelligence.</p>
+                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: 16px;">🥇 First-Mover Advantage</h4>
+                    <p class="body-medium" style="color: var(--text-muted);">First true hybrid on-device + cloud financial AI. Competitors are still building basic chatbots.</p>
                 </div>
                 <div class="advantage-card animate-on-scroll">
-                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 20px);">🏗️ Google's AI Stack</h4>
-                    <p class="body-medium" style="color: var(--text-muted);">Built on Gemini Nano/Flash/Pro with Vertex AI Agent Builder. Impossible to replicate without Google's infrastructure.</p>
+                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: 16px;">🏗️ Google's AI Stack</h4>
+                    <p class="body-medium" style="color: var(--text-muted);">Built on Gemini with Vertex AI Agent Builder. Impossible to replicate without Google's infrastructure.</p>
                 </div>
                 <div class="advantage-card animate-on-scroll">
-                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 20px);">🔐 Privacy Leadership</h4>
-                    <p class="body-medium" style="color: var(--text-muted);">Confidential Computing + on-device processing = mathematical privacy guarantees. Competitors can't match this without rebuilding from scratch.</p>
+                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: 16px;">🔐 Privacy Leadership</h4>
+                    <p class="body-medium" style="color: var(--text-muted);">Confidential Computing + on-device processing. Mathematical privacy guarantees competitors can't match.</p>
                 </div>
                 <div class="advantage-card animate-on-scroll">
-                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 20px);">⚡ Performance Moat</h4>
-                    <p class="body-medium" style="color: var(--text-muted);">Sub-150ms responses vs. competitors' 5-30 second delays. Speed at this level creates addictive user experiences.</p>
+                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: 16px;">⚡ Performance Moat</h4>
+                    <p class="body-medium" style="color: var(--text-muted);">Sub-150ms responses vs competitors' 5-30 second delays. Speed creates addictive experiences.</p>
                 </div>
                 <div class="advantage-card animate-on-scroll">
-                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 20px);">🌐 Platform Strategy</h4>
-                    <p class="body-medium" style="color: var(--text-muted);">Open SDK and Fi MCP integration create network effects. As more tools connect, our value grows exponentially.</p>
+                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: 16px;">🌐 Platform Strategy</h4>
+                    <p class="body-medium" style="color: var(--text-muted);">Open SDK and Fi MCP create network effects. More tools = exponential value growth.</p>
                 </div>
                 <div class="advantage-card animate-on-scroll">
-                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 20px);">📈 Market Timing</h4>
-                    <p class="body-medium" style="color: var(--text-muted);">Perfect convergence: Gemini Nano deployment, Fi MCP launch, and mainstream AI adoption. This window won't stay open long.</p>
-                </div>
-            </div>
-
-            <div style="background: rgba(52, 168, 83, 0.1); border: 3px solid var(--google-green); border-radius: clamp(24px, 4vw, 32px); padding: var(--card-padding); margin-top: clamp(50px, 10vw, 70px); text-align: center;" class="animate-on-scroll">
-                <h3 class="heading-2" style="color: var(--google-green); margin-bottom: clamp(20px, 4vw, 30px);">
-                    🚀 Our Path to Market Domination
-                </h3>
-                <div class="grid grid-3" style="margin-top: clamp(35px, 7vw, 45px);">
-                    <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">📊 Year 1: Capture Early Adopters</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Target tech-savvy millennials and Gen Z with superior UX. Build network effects through Fi MCP integration.</p>
-                    </div>
-                    <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🏦 Year 2: Enterprise Partnerships</h5>
-                        <p class="body-small" style="color: var(--text-muted);">White-label solutions for banks and fintech companies. Leverage Google Cloud's enterprise relationships.</p>
-                    </div>
-                    <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🌍 Year 3: Global Financial OS</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Become the financial intelligence layer for the entire internet. Every financial decision flows through AvestoAI.</p>
-                    </div>
+                    <h4 class="heading-3" style="color: var(--google-green); margin-bottom: 16px;">📈 Perfect Timing</h4>
+                    <p class="body-medium" style="color: var(--text-muted);">Convergence of Gemini Nano deployment, Fi MCP launch, and mainstream AI adoption.</p>
                 </div>
             </div>
         </div>
@@ -1429,44 +1210,44 @@
     <section class="section" id="demo">
         <div class="container">
             <div class="section-header animate-on-scroll">
-                <h2 class="section-title heading-1">Experience the Future Live</h2>
+                <h2 class="section-title heading-1">Live Demo</h2>
                 <p class="section-subtitle body-large">
-                    This is how the future of financial intelligence feels. Watch AvestoAI's hybrid brain process, reason, and respond in real-time.
+                    Experience how AvestoAI's hybrid intelligence processes, reasons, and responds in real-time.
                 </p>
             </div>
             
-            <div style="background: rgba(17, 24, 39, 0.9); border: 3px solid var(--google-blue); border-radius: clamp(24px, 4vw, 32px); padding: var(--card-padding); position: relative; overflow: hidden;" class="animate-on-scroll">
-                <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: clamp(25px, 5vw, 35px); text-align: center;">🎯 Live Financial Intelligence Session</h3>
-                <div style="background: #000; border-radius: clamp(16px, 3vw, 20px); padding: clamp(25px, 5vw, 35px); font-family: 'JetBrains Mono', monospace; margin: clamp(25px, 5vw, 35px) 0; border: 2px solid var(--google-blue); box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3);">
-                    <div style="color: var(--google-green); margin-bottom: clamp(12px, 2vw, 16px); font-size: clamp(0.875rem, 2vw, 1.125rem); font-weight: 600;">User: "Oracle, I want to buy a Tesla Model Y but still max out my 401k this year. Is this financially smart?"</div>
-                    <div style="color: var(--text-secondary); line-height: 1.7; margin-left: clamp(20px, 4vw, 28px); font-size: clamp(0.875rem, 2vw, 1.125rem);" id="demo-response">
-                        <span style="color: var(--google-blue); font-weight: 700;">AvestoAI:</span> Analyzing your complete financial profile...<br><br>
-                        ✓ Scanned 7 bank accounts, 3 investment portfolios, credit report<br>
-                        ✓ Processed 18 months of spending patterns and income trends<br>
-                        ✓ Generated 127 financial scenarios in 1.8 seconds<br><br>
-                        📊 <span style="color: var(--google-yellow);">[Chart materializing in real-time]</span><br><br>
-                        <span style="color: var(--google-green); font-weight: 700;">Smart recommendation:</span> Yes, but with a twist:<br>
-                        • Tesla Y financing: $650/month for 60 months<br>
-                        • Redirect subscription cuts: +$312/month to 401k<br>
-                        • Optimize tax loss harvesting: +$1,847 tax savings<br><br>
-                        <span style="color: var(--google-blue); font-weight: 700;">Net result:</span> Tesla + $23,500 401k contribution + $2,400 emergency fund boost<br><br>
-                        Should I execute the subscription optimization plan?
+            <div style="background: rgba(17, 24, 39, 0.9); border: 2px solid var(--google-blue); border-radius: 20px; padding: var(--card-padding);" class="animate-on-scroll">
+                <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: 25px; text-align: center;">🎯 Financial Intelligence Session</h3>
+                <div style="background: #000; border-radius: 12px; padding: 24px; font-family: 'JetBrains Mono', monospace; border: 1px solid var(--google-blue);">
+                    <div style="color: var(--google-green); margin-bottom: 12px; font-size: 0.9rem; font-weight: 600;">User: "Should I buy a Tesla Model Y and still max my 401k this year?"</div>
+                    <div style="color: var(--text-secondary); line-height: 1.6; margin-left: 20px; font-size: 0.9rem;">
+                        <span style="color: var(--google-blue); font-weight: 700;">AvestoAI:</span> Analyzing complete financial profile...<br><br>
+                        ✓ Scanned 7 accounts, 3 portfolios, credit report<br>
+                        ✓ Processed 18 months spending patterns<br>
+                        ✓ Generated 127 scenarios in 1.8 seconds<br><br>
+                        📊 <span style="color: var(--google-yellow);">[Chart rendering live]</span><br><br>
+                        <span style="color: var(--google-green); font-weight: 700;">Smart recommendation:</span> Yes, with optimization:<br>
+                        • Tesla Y: $650/month financing<br>
+                        • Subscription cuts: +$312/month to 401k<br>
+                        • Tax optimization: +$1,847 savings<br><br>
+                        <span style="color: var(--google-blue); font-weight: 700;">Result:</span> Tesla + $23,500 401k + $2,400 emergency boost<br><br>
+                        Execute optimization plan?
                         <span style="color: var(--google-blue); animation: blink 1s infinite;">▌</span>
                     </div>
                 </div>
                 
-                <div class="grid grid-3" style="margin-top: clamp(35px, 7vw, 45px);">
-                    <div style="background: rgba(52, 168, 83, 0.12); border: 2px solid var(--google-green); border-radius: clamp(16px, 3vw, 20px); padding: clamp(20px, 4vw, 28px);">
-                        <h5 class="heading-3" style="color: var(--google-green); margin-bottom: clamp(10px, 2vw, 14px);">🚀 Lightning Processing</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Query processed through Gemini Nano (147ms), escalated to Gemini Pro for scenario modeling (1.8s total), with real-time visualization.</p>
+                <div class="grid grid-3" style="margin-top: 30px;">
+                    <div style="background: rgba(52, 168, 83, 0.1); border: 1px solid var(--google-green); border-radius: 12px; padding: 20px;">
+                        <h5 class="heading-3" style="color: var(--google-green); margin-bottom: 10px;">🚀 Lightning Speed</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Processed through Gemini Nano (147ms), escalated to Pro for scenarios (1.8s total).</p>
                     </div>
-                    <div style="background: rgba(66, 133, 244, 0.12); border: 2px solid var(--google-blue); border-radius: clamp(16px, 3vw, 20px); padding: clamp(20px, 4vw, 28px);">
-                        <h5 class="heading-3" style="color: var(--google-blue); margin-bottom: clamp(10px, 2vw, 14px);">🎯 Deep Synthesis</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Fi MCP accessed 12 financial data sources, generated 127 scenarios, optimized across 23 variables with behavioral pattern analysis.</p>
+                    <div style="background: rgba(66, 133, 244, 0.1); border: 1px solid var(--google-blue); border-radius: 12px; padding: 20px;">
+                        <h5 class="heading-3" style="color: var(--google-blue); margin-bottom: 10px;">🎯 Deep Analysis</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Fi MCP accessed 12 sources, analyzed 127 scenarios, optimized 23 variables.</p>
                     </div>
-                    <div style="background: rgba(251, 188, 4, 0.12); border: 2px solid var(--google-yellow); border-radius: clamp(16px, 3vw, 20px); padding: clamp(20px, 4vw, 28px);">
-                        <h5 class="heading-3" style="color: var(--google-yellow); margin-bottom: clamp(10px, 2vw, 14px);">📊 Live Intelligence</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Charts and projections rendered in real-time using Visualization Engine. Interactive scenarios update as conversation evolves.</p>
+                    <div style="background: rgba(251, 188, 4, 0.1); border: 1px solid var(--google-yellow); border-radius: 12px; padding: 20px;">
+                        <h5 class="heading-3" style="color: var(--google-yellow); margin-bottom: 10px;">📊 Live Visuals</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Charts rendered real-time. Interactive projections update as conversation evolves.</p>
                     </div>
                 </div>
             </div>
@@ -1477,57 +1258,57 @@
     <section class="section team-section" id="team">
         <div class="container">
             <div class="section-header animate-on-scroll">
-                <h2 class="section-title heading-1">The Championship Team</h2>
+                <h2 class="section-title heading-1">The Team</h2>
                 <p class="section-subtitle body-large">
-                    Two passionate innovators with a shared vision: democratize financial intelligence through revolutionary AI. Ready to build the future in 72 hours.
+                    Two passionate innovators ready to build the future of financial intelligence in 72 hours.
                 </p>
             </div>
             
             <div class="grid grid-2">
                 <div class="team-card animate-on-scroll">
                     <div class="team-avatar">
-                        <span class="heading-1">SR</span>
+                        <span>SR</span>
                     </div>
-                    <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">Syed Mohd Haider Rizvi</h3>
-                    <p class="body-medium" style="color: var(--google-blue); margin-bottom: clamp(16px, 3vw, 22px); font-weight: 700;">Technical Architect & Visionary</p>
-                    <p class="body-medium" style="color: var(--text-muted); margin-bottom: clamp(20px, 4vw, 28px); line-height: 1.7;">
-                        Master architect of intelligent systems with deep expertise in Google Cloud, AI infrastructure, and financial technology. Passionate about building products that democratize access to world-class financial intelligence for everyone.
+                    <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: 10px;">Syed Mohd Haider Rizvi</h3>
+                    <p class="body-medium" style="color: var(--google-blue); margin-bottom: 16px; font-weight: 700;">Technical Architect</p>
+                    <p class="body-medium" style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                        Expert in AI architecture, cloud systems, and financial technology. Passionate about democratizing intelligent financial advice.
                     </p>
-                    <a href="mailto:smhrizvi281@gmail.com" style="color: var(--google-blue); text-decoration: none; font-weight: 700; font-size: clamp(0.875rem, 2vw, 1.125rem);" class="body-medium">
+                    <a href="mailto:smhrizvi281@gmail.com" style="color: var(--google-blue); text-decoration: none; font-weight: 700;" class="body-medium">
                         📧 smhrizvi281@gmail.com
                     </a>
                 </div>
                 <div class="team-card animate-on-scroll">
                     <div class="team-avatar">
-                        <span class="heading-1">CV</span>
+                        <span>CV</span>
                     </div>
-                    <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">Chittoor Vamsi</h3>
-                    <p class="body-medium" style="color: var(--google-green); margin-bottom: clamp(16px, 3vw, 22px); font-weight: 700;">AI Innovation & Product Strategy</p>
-                    <p class="body-medium" style="color: var(--text-muted); margin-bottom: clamp(20px, 4vw, 28px); line-height: 1.7;">
-                        AI innovation expert specializing in human-centric intelligent systems. Deep expertise in conversational AI, machine learning, and creating delightful user experiences for complex financial products.
+                    <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: 10px;">Chittoor Vamsi</h3>
+                    <p class="body-medium" style="color: var(--google-green); margin-bottom: 16px; font-weight: 700;">AI Innovation Specialist</p>
+                    <p class="body-medium" style="color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                        Expert in conversational AI, machine learning, and creating delightful user experiences for complex financial products.
                     </p>
-                    <a href="mailto:chittoorvamsi@gmail.com" style="color: var(--google-green); text-decoration: none; font-weight: 700; font-size: clamp(0.875rem, 2vw, 1.125rem);" class="body-medium">
+                    <a href="mailto:chittoorvamsi@gmail.com" style="color: var(--google-green); text-decoration: none; font-weight: 700;" class="body-medium">
                         📧 chittoorvamsi@gmail.com
                     </a>
                 </div>
             </div>
             
-            <div style="background: rgba(66, 133, 244, 0.12); border: 3px solid var(--google-blue); border-radius: clamp(24px, 4vw, 32px); padding: var(--card-padding); margin-top: clamp(50px, 10vw, 70px); text-align: center;" class="animate-on-scroll">
-                <h3 class="heading-2" style="color: var(--google-blue); margin-bottom: clamp(20px, 4vw, 30px);">
-                    🏆 Why We're the Winning Team
+            <div style="background: rgba(66, 133, 244, 0.1); border: 2px solid var(--google-blue); border-radius: 20px; padding: var(--card-padding); margin-top: 50px; text-align: center;" class="animate-on-scroll">
+                <h3 class="heading-2" style="color: var(--google-blue); margin-bottom: 20px;">
+                    🏆 Why We'll Win
                 </h3>
-                <div class="grid grid-3" style="margin-top: clamp(35px, 7vw, 45px);">
+                <div class="grid grid-3" style="margin-top: 30px;">
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">💡 Revolutionary Vision</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Deep understanding of Google's AI ecosystem, financial technology landscape, and user-centric design principles that create magical experiences.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">💡 Vision</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Deep understanding of Google's AI ecosystem and user-centric design principles.</p>
                     </div>
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">⚡ Lightning Execution</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Battle-tested implementation plan with clear 72-hour milestones. We know exactly what to build and how to deliver it flawlessly.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">⚡ Execution</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Clear 72-hour plan with daily milestones and production-quality delivery.</p>
                     </div>
                     <div>
-                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: clamp(10px, 2vw, 14px);">🎯 Market Disruption</h5>
-                        <p class="body-small" style="color: var(--text-muted);">Clear path to disrupting the $127B financial advisory market using Google's AI technology as the foundation for global transformation.</p>
+                        <h5 class="heading-3" style="color: var(--text-primary); margin-bottom: 10px;">🎯 Impact</h5>
+                        <p class="body-small" style="color: var(--text-muted);">Path to disrupting $127B market using Google's AI technology foundation.</p>
                     </div>
                 </div>
             </div>
@@ -1538,38 +1319,32 @@
     <section class="section" id="contact">
         <div class="container">
             <div class="final-cta-box animate-on-scroll">
-                <h2 class="display-2" style="color: var(--text-primary); margin-bottom: clamp(35px, 7vw, 45px); line-height: 1.1;">
+                <h2 class="display-2" style="color: var(--text-primary); margin-bottom: 35px; line-height: 1.1;">
                     Ready to Make History? 🚀
                 </h2>
-                <p class="body-large" style="color: var(--text-muted); margin-bottom: clamp(45px, 9vw, 55px); max-width: min(800px, 90vw); margin-left: auto; margin-right: auto;">
-                    AvestoAI isn't just another hackathon project—it's the future of financial intelligence. We have the vision, the architecture, the team, and the unstoppable drive. <strong>Let's build something legendary together.</strong>
+                <p class="body-large" style="color: var(--text-muted); margin-bottom: 45px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                    AvestoAI represents the future of financial intelligence. We have the vision, architecture, team, and drive to revolutionize how people interact with money.
                 </p>
                 
-                <div style="background: rgba(66, 133, 244, 0.12); border: 2px solid var(--google-blue); border-radius: clamp(20px, 4vw, 24px); padding: clamp(28px, 5vw, 36px); margin: clamp(35px, 7vw, 45px) 0; text-align: left;">
-                    <h4 class="heading-3" style="color: var(--google-blue); margin-bottom: clamp(20px, 4vw, 24px);">🚀 What We Bring to Google's Hackathon:</h4>
-                    <ul style="color: var(--text-muted); padding-left: clamp(20px, 4vw, 28px); line-height: 1.9; font-size: clamp(0.875rem, 2vw, 1.125rem);">
-                        <li><strong>Revolutionary hybrid intelligence</strong> using Google's entire AI stack</li>
-                        <li><strong>Production-ready architecture</strong> designed for global scale</li>
-                        <li><strong>Clear path to $127B market disruption</strong> with sustainable competitive advantages</li>
-                        <li><strong>Commitment to responsible AI</strong> and user privacy leadership</li>
-                        <li><strong>Team ready to execute flawlessly</strong> in 72 hours with detailed planning</li>
-                        <li><strong>Vision aligned with Google's values</strong> and design principles</li>
+                <div style="background: rgba(66, 133, 244, 0.1); border: 2px solid var(--google-blue); border-radius: 16px; padding: 28px; margin: 35px 0; text-align: left;">
+                    <h4 class="heading-3" style="color: var(--google-blue); margin-bottom: 20px;">🚀 What We Bring:</h4>
+                    <ul style="color: var(--text-muted); padding-left: 20px; line-height: 1.8; font-size: 0.9rem;">
+                        <li>Revolutionary hybrid intelligence using Google's AI stack</li>
+                        <li>Production-ready architecture for global scale</li>
+                        <li>Clear path to $127B market disruption</li>
+                        <li>Commitment to responsible AI and privacy</li>
+                        <li>Team ready for flawless 72-hour execution</li>
                     </ul>
                 </div>
                 
-                <div class="hero-cta" style="opacity:1; animation:none; margin-top: clamp(45px, 9vw, 55px);">
-                    <a href="mailto:smhrizvi281@gmail.com?subject=🏆 SELECTED: AvestoAI for Google AI Hackathon&cc=chittoorvamsi@gmail.com&body=Hi Syed and Vamsi,%0D%0A%0D%0ACongratulations! We're thrilled to select AvestoAI and your team for the Google AI Hackathon.%0D%0A%0D%0AYour vision for hybrid financial intelligence is exactly what we're looking for, and your technical architecture demonstrates deep understanding of Google's AI ecosystem.%0D%0A%0D%0APlease confirm your participation and let us know if you need any additional resources for the hackathon.%0D%0A%0D%0ALooking forward to seeing AvestoAI come to life!%0D%0A%0D%0ABest regards,%0D%0AGoogle Hackathon Selection Committee" class="cta-button cta-primary">
+                <div class="hero-cta" style="opacity:1; animation:none; margin-top: 45px;">
+                    <a href="mailto:smhrizvi281@gmail.com?subject=🏆 SELECTED: AvestoAI for Google AI Hackathon&cc=chittoorvamsi@gmail.com&body=Hi Syed and Vamsi,%0D%0A%0D%0ACongratulations! We're selecting AvestoAI for the Google AI Hackathon.%0D%0A%0D%0AYour vision for hybrid financial intelligence aligns perfectly with our goals.%0D%0A%0D%0APlease confirm participation and let us know if you need any resources.%0D%0A%0D%0ABest regards,%0D%0AGoogle Hackathon Team" class="cta-button cta-primary">
                         <span>🏆 SELECT AVESTOAI</span>
                     </a>
                     <a href="#demo" class="cta-button cta-secondary">
-                        <span>🎯 Experience Demo Again</span>
+                        <span>🎯 View Demo</span>
                     </a>
                 </div>
-                
-                <p style="margin-top: clamp(35px, 7vw, 45px); color: var(--text-muted); font-size: clamp(0.875rem, 2vw, 1.125rem);">
-                    Questions about our technical approach? Need a deeper architectural dive? 
-                    <a href="mailto:smhrizvi281@gmail.com" style="color: var(--google-blue); text-decoration: none; font-weight: 700;">Let's discuss how we'll revolutionize finance together.</a>
-                </p>
             </div>
         </div>
     </section>
@@ -1578,44 +1353,41 @@
         <div class="container">
             <div class="grid grid-4">
                 <div class="footer-section">
-                    <h4 class="heading-3">AvestoAI</h4>
-                    <p class="body-medium">The Future of Financial Intelligence</p>
-                    <p class="body-small">Built for Google AI Hackathon 2025</p>
-                    <p class="body-small">Powered by Gemini • Vertex AI • Fi MCP</p>
+                    <h4>AvestoAI</h4>
+                    <p>The Future of Financial Intelligence</p>
+                    <p>Built for Google AI Hackathon 2025</p>
                 </div>
                 <div class="footer-section">
-                    <h4 class="heading-3">Navigation</h4>
-                    <a href="#problem" class="body-medium">The Problem</a>
-                    <a href="#solution" class="body-medium">Our Solution</a>
-                    <a href="#architecture" class="body-medium">Architecture</a>
-                    <a href="#advantage" class="body-medium">Competitive Edge</a>
+                    <h4>Navigation</h4>
+                    <a href="#problem">The Problem</a>
+                    <a href="#solution">Solution</a>
+                    <a href="#architecture">Architecture</a>
                 </div>
                 <div class="footer-section">
-                    <h4 class="heading-3">Team</h4>
-                    <a href="mailto:smhrizvi281@gmail.com" class="body-medium">Syed Mohd Haider Rizvi</a>
-                    <a href="mailto:chittoorvamsi@gmail.com" class="body-medium">Chittoor Vamsi</a>
-                    <p class="body-small">Ready to build the future</p>
+                    <h4>Team</h4>
+                    <a href="mailto:smhrizvi281@gmail.com">Syed Mohd Haider Rizvi</a>
+                    <a href="mailto:chittoorvamsi@gmail.com">Chittoor Vamsi</a>
                 </div>
                 <div class="footer-section">
-                    <h4 class="heading-3">Contact</h4>
-                    <a href="mailto:smhrizvi281@gmail.com" class="body-medium">Primary Contact</a>
-                    <p class="body-small">Let's create something revolutionary</p>
+                    <h4>Contact</h4>
+                    <a href="mailto:smhrizvi281@gmail.com">Get in Touch</a>
+                    <p>Let's revolutionize finance together</p>
                 </div>
             </div>
-            <div style="text-align: center; border-top: 3px solid rgba(66, 133, 244, 0.4); padding-top: clamp(35px, 7vw, 45px); color: var(--text-muted); margin-top: clamp(45px, 9vw, 55px);" class="body-small">
-                <p>&copy; 2025 AvestoAI Team | <strong>Let AI Speak to Your Money</strong> | Built to Win 🏆</p>
+            <div style="text-align: center; border-top: 2px solid rgba(66, 133, 244, 0.3); padding-top: 30px; color: var(--text-muted); margin-top: 40px; font-size: 0.85rem;">
+                <p>&copy; 2025 AvestoAI Team | Built to Win 🏆</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Initialize Mermaid with enhanced configuration
+        // Initialize Mermaid
         mermaid.initialize({
             startOnLoad: true,
             theme: 'dark',
             themeVariables: {
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '13px',
+                fontSize: '12px',
                 darkMode: true,
                 background: 'transparent',
                 primaryColor: '#4285F4',
@@ -1623,23 +1395,17 @@
                 primaryBorderColor: '#1976d2',
                 lineColor: '#4285F4',
                 secondaryColor: '#34A853',
-                tertiaryColor: '#FBBC04',
-                nodeTextColor: '#000',
-                textColor: '#fff',
-                edgeLabelBackground: 'rgba(66, 133, 244, 0.1)',
-                clusterBkg: 'rgba(31, 41, 55, 0.8)',
-                clusterBorder: '#4285F4'
+                tertiaryColor: '#FBBC04'
             },
             flowchart: {
                 useMaxWidth: true,
                 htmlLabels: true,
-                curve: 'basis',
-                padding: 20
+                curve: 'basis'
             }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Mobile menu functionality
+            // Mobile menu
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             const navMenu = document.getElementById('navMenu');
 
@@ -1655,7 +1421,7 @@
                 });
             });
 
-            // Enhanced navbar scroll effect
+            // Navbar scroll effect
             window.addEventListener('scroll', () => {
                 const navbar = document.getElementById('navbar');
                 if (window.scrollY > 50) {
@@ -1665,11 +1431,12 @@
                 }
             });
 
-            // Enhanced counter animation for stats
-            function animateCounter(element, target, duration = 3000, isFloat = false) {
+            // Counter animation
+            function animateCounter(element, target, duration = 2000) {
                 let start = 0;
                 const increment = target / (duration / 16);
                 const isLessThan = element.textContent.includes('<');
+                const isFloat = target.toString().includes('.');
 
                 const timer = setInterval(() => {
                     start += increment;
@@ -1678,81 +1445,51 @@
                         clearInterval(timer);
                     }
                     
-                    let displayValue;
-                    if (isFloat) {
-                        displayValue = start.toFixed(2);
-                    } else {
-                        displayValue = Math.floor(start).toString();
-                    }
-                    
-                    if (isLessThan) {
-                        element.textContent = '<' + displayValue;
-                    } else {
-                        element.textContent = displayValue;
-                    }
+                    let displayValue = isFloat ? start.toFixed(2) : Math.floor(start).toString();
+                    element.textContent = isLessThan ? '<' + displayValue : displayValue;
                 }, 16);
             }
 
-            // Enhanced intersection observer with better performance
-            const observerOptions = {
-                threshold: 0.15,
-                rootMargin: '0px 0px -30px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries, observer) => {
+            // Intersection observer
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('animated');
 
-                        // Enhanced stat animations
                         if (entry.target.classList.contains('stat-item')) {
                             const numberElement = entry.target.querySelector('.stat-number');
                             const target = parseFloat(numberElement.getAttribute('data-target'));
-                            const isFloat = numberElement.getAttribute('data-target').includes('.');
                             
                             setTimeout(() => {
-                                animateCounter(numberElement, target, 2500, isFloat);
-                            }, Math.random() * 800);
+                                animateCounter(numberElement, target);
+                            }, Math.random() * 500);
                             
                             observer.unobserve(entry.target);
                         }
-
-                        // Staggered animation for grid items
-                        if (entry.target.classList.contains('feature-card') || 
-                            entry.target.classList.contains('google-value-card') ||
-                            entry.target.classList.contains('advantage-card')) {
-                            const gridItems = entry.target.parentElement.querySelectorAll('.feature-card, .google-value-card, .advantage-card');
-                            const index = Array.from(gridItems).indexOf(entry.target);
-                            entry.target.style.animationDelay = `${index * 0.15}s`;
-                        }
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1 });
 
-            // Observe all animated elements
+            // Observe elements
             document.querySelectorAll('.animate-on-scroll').forEach(el => {
                 observer.observe(el);
             });
 
-            // Enhanced smooth scrolling
+            // Smooth scrolling
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        const navbarHeight = document.querySelector('.navbar').offsetHeight;
-                        const targetPosition = targetElement.offsetTop - navbarHeight - 20;
-                        
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
                         });
                     }
                 });
             });
 
-            // Add blink animation style
+            // Blink animation
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes blink {
@@ -1761,66 +1498,6 @@
                 }
             `;
             document.head.appendChild(style);
-
-            // Responsive font size adjustment
-            function adjustFontSizes() {
-                const viewportWidth = window.innerWidth;
-                const root = document.documentElement;
-                
-                if (viewportWidth < 480) {
-                    root.style.fontSize = '14px';
-                } else if (viewportWidth < 768) {
-                    root.style.fontSize = '15px';
-                } else {
-                    root.style.fontSize = '16px';
-                }
-            }
-
-            adjustFontSizes();
-            window.addEventListener('resize', adjustFontSizes);
-
-            // Enhanced touch feedback for mobile
-            if ('ontouchstart' in window) {
-                document.querySelectorAll('.cta-button, .feature-card, .team-card, .advantage-card').forEach(element => {
-                    element.addEventListener('touchstart', function() {
-                        this.style.transform = 'scale(0.98)';
-                    });
-
-                    element.addEventListener('touchend', function() {
-                        setTimeout(() => {
-                            this.style.transform = '';
-                        }, 150);
-                    });
-                });
-            }
-
-            // Enhanced demo typing effect
-            const demoElement = document.getElementById('demo-response');
-            if (demoElement) {
-                const text = demoElement.innerHTML;
-                demoElement.innerHTML = '';
-                let index = 0;
-
-                function typeWriter() {
-                    if (index < text.length) {
-                        demoElement.innerHTML = text.slice(0, index + 1);
-                        index++;
-                        setTimeout(typeWriter, 50);
-                    }
-                }
-
-                // Start typing when the demo section comes into view
-                const demoObserver = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting && index === 0) {
-                            setTimeout(typeWriter, 1000);
-                            demoObserver.unobserve(entry.target);
-                        }
-                    });
-                });
-
-                demoObserver.observe(demoElement.closest('.section'));
-            }
         });
     </script>
 </body>
