@@ -61,10 +61,10 @@
         .code { font-family: 'JetBrains Mono', monospace; font-size: clamp(0.8rem, 1.25vw, 0.875rem); }
 
         /* Container System */
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 clamp(16px, 3vw, 24px); 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 3vw, 24px);
         }
 
         .grid { display: grid; gap: clamp(20px, 3vw, 32px); }
@@ -98,20 +98,20 @@
             will-change: transform;
         }
 
-        .shape:nth-child(1) { 
-            width: 400px; height: 400px; 
-            background: radial-gradient(circle, rgba(66, 133, 244, 0.1) 0%, transparent 70%); 
-            top: 10%; left: 5%; 
+        .shape:nth-child(1) {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(66, 133, 244, 0.1) 0%, transparent 70%);
+            top: 10%; left: 5%;
         }
-        .shape:nth-child(2) { 
-            width: 300px; height: 300px; 
-            background: radial-gradient(circle, rgba(52, 168, 83, 0.08) 0%, transparent 70%); 
-            top: 50%; right: 10%; animation-direction: reverse; 
+        .shape:nth-child(2) {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(52, 168, 83, 0.08) 0%, transparent 70%);
+            top: 50%; right: 10%; animation-direction: reverse;
         }
-        .shape:nth-child(3) { 
-            width: 250px; height: 250px; 
-            background: radial-gradient(circle, rgba(251, 188, 4, 0.06) 0%, transparent 70%); 
-            bottom: 20%; left: 40%; 
+        .shape:nth-child(3) {
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(251, 188, 4, 0.06) 0%, transparent 70%);
+            bottom: 20%; left: 40%;
         }
 
         @keyframes float {
@@ -715,7 +715,7 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .mobile-menu-toggle { display: flex; }
-            
+
             .nav-menu {
                 position: fixed;
                 top: var(--navbar-height);
@@ -733,7 +733,7 @@
             }
 
             .nav-menu.active { left: 0; }
-            
+
             .nav-menu a {
                 font-size: 1.1rem;
                 padding: 12px 0;
@@ -1016,86 +1016,129 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mermaid-container animate-on-scroll">
                 <div class="architecture-title heading-3" style="color: var(--google-blue); margin-bottom: 25px; text-align: center;">
                     🏛️ AvestoAI Hybrid Intelligence Architecture
                 </div>
                 <div class="mermaid">
-                    flowchart TB
-                        %% Enhanced Styling
-                        classDef device fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#000,font-weight:bold
-                        classDef cloud fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#000,font-weight:bold
-                        classDef stream fill:#fff8e1,stroke:#f57c00,stroke-width:2px,color:#000
-                        classDef data fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
-                        classDef security fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000
+                    graph TB
+    %% Modern, clean styling
+    classDef userLayer fill:#4285f4,stroke:#1565c0,stroke-width:3px,color:#fff,font-weight:bold,font-size:14px
+    classDef deviceLayer fill:#34a853,stroke:#2e7d32,stroke-width:3px,color:#fff,font-weight:bold,font-size:14px
+    classDef cloudLayer fill:#ea4335,stroke:#c5221f,stroke-width:3px,color:#fff,font-weight:bold,font-size:14px
+    classDef dataLayer fill:#fbbc04,stroke:#f57c00,stroke-width:3px,color:#000,font-weight:bold,font-size:14px
+    classDef securityLayer fill:#9c27b0,stroke:#7b1fa2,stroke-width:3px,color:#fff,font-weight:bold,font-size:14px
+    classDef flowArrow stroke:#1565c0,stroke-width:4px,color:#1565c0
 
-                        %% User Interface
-                        subgraph UserLayer ["📱 USER INTERFACE"]
-                            Voice["🎤 Voice Chat<br/>Real-time Speech<br/>Sub-150ms Response"]
-                            Text["💬 Text Interface<br/>Streaming Display<br/>Interactive Cards"]
-                            Visual["📊 Live Charts<br/>Dynamic Visualization<br/>Real-time Updates"]
-                        end
+    %% LAYER 1: USER EXPERIENCE
+    subgraph UserExp ["👤 USER EXPERIENCE LAYER"]
+        direction LR
+        Voice["🎤<br/>Voice Chat<br/><b>Natural Language</b>"]
+        Mobile["📱<br/>Mobile App<br/><b>Real-time UI</b>"]
+        Charts["📊<br/>Live Charts<br/><b>Dynamic Visuals</b>"]
+    end
 
-                        %% Device Intelligence
-                        subgraph DeviceLayer ["⚡ ON-DEVICE AI"]
-                            Nano["🔥 Gemini Nano<br/>Instant Processing<br/>Complete Privacy<br/>Local Cache"]
-                            Orchestrator["🎭 Smart Router<br/>Query Classification<br/>Privacy Guardian<br/>Cache Manager"]
-                        end
+    %% LAYER 2: DEVICE INTELLIGENCE (The Innovation)
+    subgraph DeviceAI ["🧠 DEVICE INTELLIGENCE - OUR SECRET SAUCE"]
+        direction TB
 
-                        %% Network
-                        subgraph NetworkLayer ["🔐 SECURE BRIDGE"]
-                            WSS["📡 WebSocket Secure<br/>TLS 1.3 Encrypted<br/>Real-time Stream"]
-                            Gateway["🚪 API Gateway<br/>Load Balance<br/>Auth & Rate Limit"]
-                        end
+        subgraph LocalBrain ["⚡ LOCAL AI BRAIN"]
+            Nano["🔥 Gemini Nano<br/><b>80% of Queries</b><br/>⚡ <150ms Response<br/>🔒 100% Private"]
+        end
 
-                        %% Google Cloud
-                        subgraph GoogleCloud ["☁️ GOOGLE CLOUD AI"]
-                            subgraph ConfCompute ["🛡️ CONFIDENTIAL COMPUTING"]
-                                Flash["🧠 Gemini Flash/Pro<br/>Advanced Reasoning<br/>Complex Analysis<br/>Financial Modeling"]
-                                AgentBuilder["🤖 Vertex AI Agent<br/>Tool Orchestration<br/>Workflow Control<br/>Safety Guardrails"]
-                            end
-                            
-                            subgraph Tools ["🛠️ AI TOOLS"]
-                                FiConnector["💰 Fi MCP<br/>24+ Data Sources<br/>Real-time Sync<br/>Account Integration"]
-                                FinEngine["📈 Financial Engine<br/>Portfolio Analysis<br/>Risk Assessment<br/>Goal Planning"]
-                                VizGen["📊 Chart Generator<br/>Dynamic Graphics<br/>Interactive Dashboards"]
-                            end
-                            
-                            subgraph DataLayer ["💾 DATA SERVICES"]
-                                AlloyDB["🗄️ AlloyDB<br/>AI-Enhanced SQL<br/>Vector Search<br/>ACID Compliance"]
-                                SecretMgr["🔐 Secret Manager<br/>API Credentials<br/>Encryption Keys"]
-                            end
-                        end
+        subgraph SmartRouter ["🎯 SMART ROUTER"]
+            Router["🧭 Query Classifier<br/><b>Simple → Stay Local</b><br/><b>Complex → Cloud</b><br/>🛡️ Privacy Guardian"]
+        end
+    end
 
-                        %% External Services
-                        subgraph External ["🌍 FINANCIAL ECOSYSTEM"]
-                            FiPlatform["💳 Fi Platform<br/>Account Data<br/>Transaction Feeds"]
-                            Banking["🏦 Banking APIs<br/>Real-time Balance<br/>Payment Processing"]
-                            Market["📈 Market Data<br/>Live Prices<br/>Economic Indicators"]
-                        end
+    %% LAYER 3: SECURE CLOUD BRIDGE
+    subgraph Bridge ["🌐 SECURE BRIDGE"]
+        Gateway["🔐 Encrypted Gateway<br/><b>TLS 1.3 + WebSocket</b><br/>⚡ Real-time Streaming"]
+    end
 
-                        %% Connections
-                        Voice <--> Nano
-                        Text <--> Nano
-                        Visual <--> Orchestrator
-                        Nano --> Orchestrator
-                        Orchestrator -.->|Complex Query| WSS
-                        WSS --> Gateway
-                        Gateway --> ConfCompute
-                        Flash <--> AgentBuilder
-                        AgentBuilder --> Tools
-                        Tools --> DataLayer
-                        FiConnector <--> FiPlatform
-                        FinEngine <--> Banking
-                        VizGen <--> Market
+    %% LAYER 4: GOOGLE CLOUD INTELLIGENCE
+    subgraph GoogleCloud ["☁️ GOOGLE CLOUD AI POWERHOUSE"]
+        direction TB
 
-                        %% Apply Styles
-                        class Voice,Text,Visual,Nano,Orchestrator device
-                        class Flash,AgentBuilder cloud
-                        class WSS,Gateway stream
-                        class FiConnector,FinEngine,VizGen data
-                        class AlloyDB,SecretMgr security
+        subgraph ConfidentialZone ["🛡️ CONFIDENTIAL COMPUTING ZONE"]
+            GeminiPro["🧠 Gemini Pro<br/><b>Complex Analysis</b><br/>🔐 Zero-Knowledge Processing<br/>⚡ Advanced Reasoning"]
+
+            VertexAgent["🤖 Vertex AI Agent<br/><b>Smart Orchestration</b><br/>🛠️ Tool Management<br/>⚖️ Responsible AI"]
+        end
+
+        subgraph IntelligentTools ["🛠️ INTELLIGENT TOOLS"]
+            FiMCP["💰 Fi MCP<br/><b>18+ Data Sources</b><br/>🏦 Complete Financial View"]
+
+            FinEngine["📈 Financial Engine<br/><b>Scenario Modeling</b><br/>🎯 Goal Planning"]
+
+            VizEngine["📊 Chart Generator<br/><b>Real-time Graphics</b><br/>🎨 Beautiful Visuals"]
+        end
+    end
+
+    %% LAYER 5: DATA FOUNDATION
+    subgraph DataFound ["💾 SECURE DATA FOUNDATION"]
+        direction LR
+        AlloyDB["🗄️ AlloyDB<br/><b>AI-Enhanced Database</b><br/>⚡ Lightning Fast"]
+
+        VectorDB["🧠 Vector Search<br/><b>Smart Memory</b><br/>🔍 Semantic Search"]
+
+        Secrets["🔐 Secret Manager<br/><b>API Keys & Tokens</b><br/>🛡️ Ultra Secure"]
+    end
+
+    %% EXTERNAL CONNECTIONS
+    subgraph External ["🌍 FINANCIAL ECOSYSTEM"]
+        Fi["💳 Fi Platform<br/><b>MCP Server</b>"]
+        Banks["🏦 Banking APIs<br/><b>Live Data</b>"]
+        Market["📈 Market Data<br/><b>Real-time Feeds</b>"]
+    end
+
+    %% CLEAN FLOW CONNECTIONS
+
+    %% User to Device (The Magic Starts Here)
+    Voice -->|"Can I afford a sabbatical?"| Nano
+    Mobile -->|Real-time Input| Router
+
+    %% Device Intelligence Flow (Our Core Innovation)
+    Nano -->|Smart Classification| Router
+    Router -->|80% Stay Local| Nano
+    Router -.->|20% Complex Queries| Gateway
+
+    %% Secure Escalation to Cloud
+    Gateway -->|Encrypted & Secure| GeminiPro
+
+    %% Cloud Intelligence Flow
+    GeminiPro -->|Orchestrate Tools| VertexAgent
+    VertexAgent --> FiMCP
+    VertexAgent --> FinEngine
+    VertexAgent --> VizEngine
+
+    %% Data Layer Integration
+    FiMCP --> AlloyDB
+    FinEngine --> VectorDB
+    VizEngine --> Secrets
+
+    %% External Data Sources
+    FiMCP <-->|Secure APIs| Fi
+    FinEngine <-->|Real-time Data| Banks
+    VizEngine <-->|Market Info| Market
+
+    %% Response Flow Back to User
+    VizEngine -.->|Live Charts| Charts
+    VertexAgent -.->|Streaming Response| Mobile
+    Nano -.->|Instant Answers| Voice
+
+    %% Apply Clean Styles
+    class Voice,Mobile,Charts userLayer
+    class Nano,Router deviceLayer
+    class Gateway securityLayer
+    class GeminiPro,VertexAgent,FiMCP,FinEngine,VizEngine cloudLayer
+    class AlloyDB,VectorDB,Secrets dataLayer
+
+    %% Add key annotations
+    Nano -.->|"🚀 THE BREAKTHROUGH:<br/>First On-Device Financial AI"| Router
+    GeminiPro -.->|"🔐 ZERO-TRUST PROCESSING:<br/>Your Data Stays Encrypted"| VertexAgent
+
                 </div>
             </div>
 
@@ -1215,7 +1258,7 @@
                     Experience how AvestoAI's hybrid intelligence processes, reasons, and responds in real-time.
                 </p>
             </div>
-            
+
             <div style="background: rgba(17, 24, 39, 0.9); border: 2px solid var(--google-blue); border-radius: 20px; padding: var(--card-padding);" class="animate-on-scroll">
                 <h3 class="heading-2" style="color: var(--text-primary); margin-bottom: 25px; text-align: center;">🎯 Financial Intelligence Session</h3>
                 <div style="background: #000; border-radius: 12px; padding: 24px; font-family: 'JetBrains Mono', monospace; border: 1px solid var(--google-blue);">
@@ -1235,7 +1278,7 @@
                         <span style="color: var(--google-blue); animation: blink 1s infinite;">▌</span>
                     </div>
                 </div>
-                
+
                 <div class="grid grid-3" style="margin-top: 30px;">
                     <div style="background: rgba(52, 168, 83, 0.1); border: 1px solid var(--google-green); border-radius: 12px; padding: 20px;">
                         <h5 class="heading-3" style="color: var(--google-green); margin-bottom: 10px;">🚀 Lightning Speed</h5>
@@ -1263,7 +1306,7 @@
                     Two passionate innovators ready to build the future of financial intelligence in 72 hours.
                 </p>
             </div>
-            
+
             <div class="grid grid-2">
                 <div class="team-card animate-on-scroll">
                     <div class="team-avatar">
@@ -1292,7 +1335,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <div style="background: rgba(66, 133, 244, 0.1); border: 2px solid var(--google-blue); border-radius: 20px; padding: var(--card-padding); margin-top: 50px; text-align: center;" class="animate-on-scroll">
                 <h3 class="heading-2" style="color: var(--google-blue); margin-bottom: 20px;">
                     🏆 Why We'll Win
@@ -1325,7 +1368,7 @@
                 <p class="body-large" style="color: var(--text-muted); margin-bottom: 45px; max-width: 700px; margin-left: auto; margin-right: auto;">
                     AvestoAI represents the future of financial intelligence. We have the vision, architecture, team, and drive to revolutionize how people interact with money.
                 </p>
-                
+
                 <div style="background: rgba(66, 133, 244, 0.1); border: 2px solid var(--google-blue); border-radius: 16px; padding: 28px; margin: 35px 0; text-align: left;">
                     <h4 class="heading-3" style="color: var(--google-blue); margin-bottom: 20px;">🚀 What We Bring:</h4>
                     <ul style="color: var(--text-muted); padding-left: 20px; line-height: 1.8; font-size: 0.9rem;">
@@ -1336,7 +1379,7 @@
                         <li>Team ready for flawless 72-hour execution</li>
                     </ul>
                 </div>
-                
+
                 <div class="hero-cta" style="opacity:1; animation:none; margin-top: 45px;">
                     <a href="mailto:smhrizvi281@gmail.com?subject=🏆 SELECTED: AvestoAI for Google AI Hackathon&cc=chittoorvamsi@gmail.com&body=Hi Syed and Vamsi,%0D%0A%0D%0ACongratulations! We're selecting AvestoAI for the Google AI Hackathon.%0D%0A%0D%0AYour vision for hybrid financial intelligence aligns perfectly with our goals.%0D%0A%0D%0APlease confirm participation and let us know if you need any resources.%0D%0A%0D%0ABest regards,%0D%0AGoogle Hackathon Team" class="cta-button cta-primary">
                         <span>🏆 SELECT AVESTOAI</span>
@@ -1444,7 +1487,7 @@
                         start = target;
                         clearInterval(timer);
                     }
-                    
+
                     let displayValue = isFloat ? start.toFixed(2) : Math.floor(start).toString();
                     element.textContent = isLessThan ? '<' + displayValue : displayValue;
                 }, 16);
@@ -1459,11 +1502,11 @@
                         if (entry.target.classList.contains('stat-item')) {
                             const numberElement = entry.target.querySelector('.stat-number');
                             const target = parseFloat(numberElement.getAttribute('data-target'));
-                            
+
                             setTimeout(() => {
                                 animateCounter(numberElement, target);
                             }, Math.random() * 500);
-                            
+
                             observer.unobserve(entry.target);
                         }
                     }
