@@ -1,4 +1,4 @@
-# 🔮 AvestoAI: Your Financial Prophet  
+# 🔮 AvestoAI: Your Financial Consultant  
 **Google Agentic AI Hackathon 2025 - Revolutionary Financial Intelligence**
 
 <p align="center">
