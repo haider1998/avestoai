@@ -1,7 +1,3 @@
-Certainly! Here's the properly formatted and polished version of your README.md file with consistent Markdown styling, clean sections, and correct code block formatting, preserving all your original content:
-
----
-
 # 🔮 AvestoAI: Your Financial Prophet  
 **Google Agentic AI Hackathon 2025 - Revolutionary Financial Intelligence**
 
@@ -681,6 +677,4 @@ cd avestoai-mvp && ./deployment/quick-start.sh
 **💡 Remember: This isn't just another financial app. It's financial consciousness - AI that thinks about your money so you don't have to.**
 
 ---
-
-If you want me to help you generate any specific section in a different style or format or need a summary, just let me know!
 
