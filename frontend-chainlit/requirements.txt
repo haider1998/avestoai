@@ -1,0 +1,8 @@
+# frontend-chainlit/requirements.txt
+chainlit==1.0.200
+httpx==0.25.2
+plotly==5.17.0
+python-dotenv==1.0.0
+pandas==2.1.4
+numpy==1.24.3
+asyncio==3.4.3

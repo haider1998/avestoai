@@ -9,7 +9,7 @@ import sys
 # Add backend to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from backend.main import app
+from backend.app.main import app
 from backend.models.configs import Settings
 
 # Override settings for testing
