@@ -1,6 +1,6 @@
 # backend/utils/middleware.py
 from fastapi import Request, Response
-from fastapi.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import structlog
 from prometheus_client import Counter, Histogram

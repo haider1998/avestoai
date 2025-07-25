@@ -15,7 +15,7 @@ from datetime import datetime
 import json
 from typing import List, Optional, Dict, Any
 import structlog
-from prometheus_client import Counter, Histogram, generate_latest
+from prometheus_client import Counter, Histogram, generate_latest, REGISTRY, CollectorRegistry
 import time
 
 # Import our services
@@ -34,9 +34,12 @@ from backend.utils.middleware import MetricsMiddleware, RateLimitMiddleware
 setup_logging()
 logger = structlog.get_logger()
 
-# Metrics
-REQUEST_COUNT = Counter('avestoai_requests_total', 'Total requests', ['method', 'endpoint'])
-REQUEST_DURATION = Histogram('avestoai_request_duration_seconds', 'Request duration')
+# Create a custom registry to avoid conflicts
+custom_registry = CollectorRegistry()
+
+# Register metrics with the custom registry
+REQUEST_COUNT = Counter('avestoai_requests_total', 'Total requests', ['method', 'endpoint'], registry=custom_registry)
+REQUEST_DURATION = Histogram('avestoai_request_duration_seconds', 'Request duration', registry=custom_registry)
 
 # Load configuration
 settings = get_settings()
@@ -182,8 +185,7 @@ async def health_check():
 @app.get("/metrics", tags=["Monitoring"])
 async def metrics():
     """Prometheus metrics endpoint"""
-    return Response(generate_latest(), media_type="text/plain")
-
+    return Response(generate_latest(custom_registry), media_type="text/plain")
 
 # Authentication endpoints
 @app.post("/api/v1/auth/register", response_model=AuthResponse, tags=["Authentication"])
