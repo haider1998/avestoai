@@ -24,11 +24,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 # Create non-root user
-RUN useradd --create-home --shell /bin/bash chainlit && \
-    chown -R chainlit:chainlit /app
-USER chainlit
+RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
+USER app
 
-# Expose port
+# Expose port for Chainlit
 EXPOSE 8001
 
 # Environment variables

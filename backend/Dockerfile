@@ -23,8 +23,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 # Create non-root user
-RUN useradd --create-home --shell /bin/bash app && \
-    chown -R app:app /app
+RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
 USER app
 
 # Expose port
