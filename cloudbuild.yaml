@@ -72,7 +72,6 @@ steps:
           --max-instances=${_BACKEND_MAX_INSTANCES} \
           --concurrency=${_BACKEND_CONCURRENCY} \
           --timeout=${_BACKEND_TIMEOUT} \
-          --port=8080 \
           --set-env-vars="ENVIRONMENT=${_ENV}" \
           --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \
           --set-env-vars="VERTEX_AI_LOCATION=${_REGION}" \
@@ -194,7 +193,7 @@ steps:
           echo "Attempt $i: Checking backend health..."
           if curl -f -s "$BACKEND_URL/health" > /dev/null; then
             echo "✅ Backend health check passed"
-            curl -s "$BACKEND_URL/health" | jq '.' || echo "Health check response received"
+            curl -s "$BACKEND_URL/health" | jq '.'
             break
           fi
           echo "Backend not ready, waiting 10 seconds..."
@@ -203,7 +202,7 @@ steps:
         
         # Test root endpoint
         echo "Testing root endpoint..."
-        curl -s "$BACKEND_URL/" | jq '.' || echo "Root endpoint response received"
+        curl -s "$BACKEND_URL/" | jq '.'
     waitFor: ['deploy-backend']
 
   # Verify frontend deployment
@@ -279,6 +278,11 @@ steps:
     waitFor: ['verify-backend', 'verify-frontend']
 
 # ================================================================
+# SERVICE ACCOUNT (Top-level configuration)
+# ================================================================
+serviceAccount: 'projects/avestoai-466417/serviceAccounts/my-ci-cd-sa@avestoai-466417.iam.gserviceaccount.com'
+
+# ================================================================
 # SUBSTITUTIONS (Default Values)
 # ================================================================
 substitutions:
@@ -311,21 +315,20 @@ options:
   machineType: 'E2_HIGHCPU_32'
 
   # Disk size for large Docker builds
-  diskSizeGb: '100'
+  diskSizeGb: 100
 
   # Logging configuration
   logging: 'CLOUD_LOGGING_ONLY'
-
-  # Timeout for entire build
-  timeout: '1800s' # 30 minutes
-
-  # Service account for CI/CD operations
-  serviceAccount: 'projects/avestoai-466417/serviceAccounts/my-ci-cd-sa@avestoai-466417.iam.gserviceaccount.com'
 
   # Environment variables for build
   env:
     - 'CLOUDSDK_COMPUTE_REGION=us-central1'
     - 'CLOUDSDK_RUN_REGION=us-central1'
+
+# ================================================================
+# TIMEOUT (Top-level configuration)
+# ================================================================
+timeout: '1800s' # 30 minutes
 
 # ================================================================
 # ARTIFACTS (Build Outputs)
