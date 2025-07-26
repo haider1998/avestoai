@@ -37,20 +37,21 @@ def auth_callback(username: str, password: str):
 
 @cl.on_chat_start
 async def start():
-    """Initialize chat session"""
+    """Initialize chat session with scenario selection"""
     global user_token, user_profile
 
-    # Welcome message
+    # Welcome message with scenario selection
     await cl.Message(
-        content="🔮 **Welcome to AvestoAI - Your Financial Prophet!**\n\n"
-                "I'm your AI financial advisor powered by Google's Gemini AI and real-time data from Fi Money.\n\n"
-                "**What I can help you with:**\n"
-                "💡 **Discover hidden opportunities** in your finances\n"
-                "🎯 **Score financial decisions** before you make them\n"
-                "📈 **Track your financial health** in real-time\n"
-                "⚠️ **Predict potential problems** 7-30 days ahead\n"
-                "🏆 **Optimize your wealth building** strategy\n\n"
-                "Let me start by getting your financial dashboard...",
+        content="🔮 **Welcome to AvestoAI with Real Fi Money Data!**\n\n"
+                "I'm connected to Fi Money's MCP server with real financial data patterns.\n\n"
+                "**Choose your financial scenario:**\n"
+                "1. 📊 **Balanced Portfolio** - Well-diversified with good growth\n"
+                "2. 🚀 **High Growth** - Large portfolio with multiple assets\n"
+                "3. 💰 **SIP Investor** - Consistent monthly investments\n"
+                "4. 🏦 **Conservative** - Fixed income focused\n"
+                "5. 😰 **Debt Heavy** - High liabilities, needs help\n"
+                "6. 🌱 **Starter** - Just beginning investment journey\n\n"
+                "Type the number (1-6) or say 'balanced' to use default scenario.",
         author="AvestoAI"
     ).send()
 
@@ -73,6 +74,65 @@ async def start():
             author="AvestoAI"
         ).send()
 
+
+# Add scenario switching function
+async def switch_scenario(scenario_name: str):
+    """Switch Fi MCP scenario"""
+
+    scenario_map = {
+        "1": "balanced",
+        "2": "all_assets_large",
+        "3": "sip_investor",
+        "4": "fixed_income",
+        "5": "debt_heavy",
+        "6": "starter",
+        "balanced": "balanced",
+        "high growth": "all_assets_large",
+        "sip": "sip_investor",
+        "conservative": "fixed_income",
+        "debt": "debt_heavy",
+        "starter": "starter"
+    }
+
+    scenario = scenario_map.get(scenario_name.lower(), "balanced")
+
+    try:
+        headers = {"Authorization": f"Bearer {user_token}"} if user_token else {}
+
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.post(
+                f"{API_BASE_URL}/api/v1/switch-scenario",
+                headers=headers,
+                params={"scenario": scenario}
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+
+                await cl.Message(
+                    content=f"✅ **Scenario Switched Successfully!**\n\n"
+                            f"🎯 **New Scenario**: {scenario.replace('_', ' ').title()}\n"
+                            f"💰 **Net Worth**: ₹{data.get('net_worth', 0):,.0f}\n"
+                            f"🏦 **Accounts**: {data.get('accounts_count', 0)}\n"
+                            f"📈 **Investments**: {data.get('investments_count', 0)}\n\n"
+                            f"Let me analyze your financial situation with this new data...",
+                    author="AvestoAI"
+                ).send()
+
+                # Automatically show new dashboard
+                await show_financial_dashboard()
+
+            else:
+                await cl.Message(
+                    content="⚠️ Failed to switch scenario. Using current data.",
+                    author="AvestoAI"
+                ).send()
+
+    except Exception as e:
+        await cl.Message(
+            content=f"⚠️ Error switching scenario: {str(e)}. Using current data.",
+            author="AvestoAI"
+        ).send()
 
 async def authenticate_demo_user():
     """Authenticate demo user and get token"""
@@ -118,11 +178,22 @@ async def authenticate_demo_user():
         # Continue in demo mode without real authentication
 
 
+# Update message handler to include scenario switching
 @cl.on_message
 async def main(message: cl.Message):
-    """Handle user messages"""
+    """Handle user messages with scenario switching"""
 
     user_input = message.content.lower()
+
+    # Check for scenario switching
+    if any(word in user_input for word in ["scenario", "switch", "change data"]) or user_input in ["1", "2", "3", "4",
+                                                                                                   "5", "6"]:
+        await switch_scenario(user_input)
+        return
+
+    # Rest of the existing message handling...
+    if any(word in user_input for word in ["opportunity", "opportunities", "optimize", "save money", "improve"]):
+        await handle_opportunity_request(message.content)
 
     # Route different types of queries
     if any(word in user_input for word in ["opportunity", "opportunities", "optimize", "save money", "improve"]):

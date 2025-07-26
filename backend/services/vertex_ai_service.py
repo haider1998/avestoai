@@ -10,6 +10,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
+import os
+from google.oauth2 import service_account
 from backend.models.configs import Settings
 
 logger = structlog.get_logger()
@@ -23,8 +25,29 @@ class VertexAIService:
         self.project_id = settings.GOOGLE_CLOUD_PROJECT
         self.location = settings.VERTEX_AI_LOCATION
 
-        # Initialize Vertex AI
-        vertexai.init(project=self.project_id, location=self.location)
+        # Initialize Vertex AI with proper authentication
+        try:
+            # Check if service account file exists
+            service_account_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+            if service_account_path and os.path.exists(service_account_path):
+                # Use service account file
+                credentials = service_account.Credentials.from_service_account_file(
+                    service_account_path
+                )
+                vertexai.init(
+                    project=self.project_id,
+                    location=self.location,
+                    credentials=credentials
+                )
+                logger.info("✅ Using service account credentials for Vertex AI")
+            else:
+                # Use default application credentials (from gcloud auth application-default login)
+                vertexai.init(project=self.project_id, location=self.location)
+                logger.info("✅ Using default application credentials for Vertex AI")
+        except Exception as e:
+            logger.error("❌ Failed to initialize Vertex AI with credentials", error=str(e))
+            # Fallback to default initialization
+            vertexai.init(project=self.project_id, location=self.location)
 
         # Initialize models
         self.gemini_pro = GenerativeModel("gemini-1.5-pro")

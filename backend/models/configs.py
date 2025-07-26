@@ -1,9 +1,8 @@
-# backend/models/config.py
+# backend/models/config.py - Add Fi MCP settings
 from pydantic_settings import BaseSettings
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import os
 from functools import lru_cache
-from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -12,21 +11,41 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Google Cloud
-    GOOGLE_CLOUD_PROJECT: Optional[str] = None
+    GOOGLE_CLOUD_PROJECT: str = "avestoai-466417"
     VERTEX_AI_LOCATION: str = "us-central1"
     FIRESTORE_DATABASE: str = "(default)"
 
     # Authentication
-    JWT_SECRET_KEY: Optional[str] = None
+    JWT_SECRET_KEY: str = "8CKne^4*k~2T,uF3.LQI~oy9fA2Zm9oJR.bF2kVF5nCNPi%Pq8hI%$%BndEYZTW%gcloud auth application-default login"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
     # Fi Money MCP Configuration
-    FI_MCP_BASE_URL: Optional[str] = None
-    FI_MCP_API_KEY: Optional[str] = None
+    FI_MCP_BASE_URL: str = "https://fi-mcp-dev-172306289913.asia-south1.run.app"
     FI_MCP_TIMEOUT: int = 30
     FI_MCP_MAX_RETRIES: int = 3
+    FI_MCP_DEFAULT_SCENARIO: str = "balanced"  # Default test scenario
+
+    # Fi MCP Test Scenarios
+    FI_MCP_SCENARIOS: Dict[str, str] = {
+        "no_assets": "1111111111",
+        "all_assets_large": "2222222222",
+        "all_assets_small": "3333333333",
+        "multiple_accounts": "4444444444",
+        "no_credit": "5555555555",
+        "no_bank": "6666666666",
+        "debt_heavy": "7777777777",
+        "sip_investor": "8888888888",
+        "fixed_income": "9999999999",
+        "gold_investor": "1010101010",
+        "epf_dormant": "1212121212",
+        "salary_sink": "1414141414",
+        "balanced": "1313131313",
+        "starter": "2020202020",
+        "dual_income": "2121212121",
+        "high_spender": "2525252525"
+    }
 
     # External APIs
     EXTERNAL_API_TIMEOUT: int = 30
@@ -61,42 +80,7 @@ class Settings(BaseSettings):
     ENABLE_PREDICTIVE_ANALYSIS: bool = True
     ENABLE_REAL_TIME_STREAMING: bool = True
     ENABLE_ADVANCED_CHARTS: bool = True
-
-    @field_validator('FI_MCP_BASE_URL')
-    @classmethod
-    def validate_fi_mcp_base_url(cls, v):
-        if v and v.startswith('https://your-fi-mcp-server.com'):
-            return None  # Treat placeholder as None
-        return v
-
-    @field_validator('FI_MCP_API_KEY')
-    @classmethod
-    def validate_fi_mcp_api_key(cls, v):
-        if v and v == 'your-fi-mcp-api-key-here':
-            return None  # Treat placeholder as None
-        return v
-
-    @field_validator('GOOGLE_CLOUD_PROJECT')
-    @classmethod
-    def validate_google_cloud_project(cls, v):
-        if not v and os.getenv('ENVIRONMENT') == 'production':
-            raise ValueError('GOOGLE_CLOUD_PROJECT is required in production')
-        return v
-
-    @field_validator('JWT_SECRET_KEY')
-    @classmethod
-    def validate_jwt_secret_key(cls, v):
-        if not v and os.getenv('ENVIRONMENT') == 'production':
-            raise ValueError('JWT_SECRET_KEY is required in production')
-        return v
-
-    def is_fi_mcp_configured(self) -> bool:
-        """Check if Fi Money MCP is properly configured"""
-        return bool(self.FI_MCP_BASE_URL and self.FI_MCP_API_KEY)
-
-    def is_google_cloud_configured(self) -> bool:
-        """Check if Google Cloud is properly configured"""
-        return bool(self.GOOGLE_CLOUD_PROJECT)
+    ENABLE_FI_MCP_INTEGRATION: bool = True
 
     class Config:
         env_file = ".env"
@@ -106,15 +90,4 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     """Get cached settings instance"""
-    try:
-        return Settings()
-    except Exception as e:
-        print(f"Warning: Failed to load some configuration values: {e}")
-        print("The application will continue with available configuration.")
-        # Create a minimal settings instance for development
-        return Settings(
-            GOOGLE_CLOUD_PROJECT="development-placeholder",
-            JWT_SECRET_KEY="development-secret-key-not-for-production",
-            FI_MCP_BASE_URL=None,
-            FI_MCP_API_KEY=None
-        )
+    return Settings()

@@ -12,6 +12,25 @@ class UserRole(str, Enum):
     ADMIN = "admin"
     ANALYST = "analyst"
 
+# Add Fi MCP scenario enum
+class FiMCPScenario(str, Enum):
+    NO_ASSETS = "no_assets"
+    ALL_ASSETS_LARGE = "all_assets_large"
+    ALL_ASSETS_SMALL = "all_assets_small"
+    MULTIPLE_ACCOUNTS = "multiple_accounts"
+    NO_CREDIT = "no_credit"
+    NO_BANK = "no_bank"
+    DEBT_HEAVY = "debt_heavy"
+    SIP_INVESTOR = "sip_investor"
+    FIXED_INCOME = "fixed_income"
+    GOLD_INVESTOR = "gold_investor"
+    EPF_DORMANT = "epf_dormant"
+    SALARY_SINK = "salary_sink"
+    BALANCED = "balanced"
+    STARTER = "starter"
+    DUAL_INCOME = "dual_income"
+    HIGH_SPENDER = "high_spender"
+
 
 class OpportunityType(str, Enum):
     SAVINGS_OPTIMIZATION = "savings_optimization"
@@ -55,6 +74,7 @@ class RegisterRequest(BaseModel):
     city: Optional[str] = Field(None, description="City")
     annual_income: Optional[float] = Field(None, ge=0, description="Annual income in INR")
     risk_tolerance: str = Field(default="moderate", description="Risk tolerance")
+    fi_scenario: FiMCPScenario = Field(default=FiMCPScenario.BALANCED, description="Fi MCP test scenario")
 
     @validator('password')
     def validate_password(cls, v):
@@ -77,6 +97,7 @@ class UserProfile(BaseModel):
     city: Optional[str] = Field(None, description="City")
     annual_income: Optional[float] = Field(None, description="Annual income")
     risk_tolerance: str = Field(..., description="Risk tolerance level")
+    fi_scenario: FiMCPScenario = Field(default=FiMCPScenario.BALANCED, description="Fi MCP scenario")
     role: UserRole = Field(default=UserRole.USER, description="User role")
     is_active: bool = Field(default=True, description="Account status")
     created_at: datetime = Field(..., description="Account creation date")

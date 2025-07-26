@@ -266,8 +266,14 @@ async def analyze_opportunities(
     try:
         logger.info("🔍 Starting opportunity analysis", user_id=current_user["user_id"])
 
+        # Get user's Fi MCP scenario
+        user_scenario = current_user.get("fi_scenario", "balanced")
+
         # Get comprehensive financial data from Fi MCP
-        fi_data = await services['fi_mcp'].get_user_financial_data(current_user["user_id"])
+        fi_data = await services['fi_mcp'].get_user_financial_data(
+            current_user["user_id"],
+            scenario=user_scenario
+        )
 
         # Get user profile and preferences
         user_profile = await services['user'].get_user_profile(current_user["user_id"])
@@ -297,13 +303,15 @@ async def analyze_opportunities(
 
         logger.info("✅ Opportunity analysis completed",
                     user_id=current_user["user_id"],
-                    opportunities_found=len(opportunities.opportunities),
+                    opportunities_found=len(opportunities.get("opportunities", [])),
+                    scenario=user_scenario,
                     processing_time=f"{processing_time:.1f}ms")
 
         return OpportunityResponse(
             **opportunities,
             processing_time=processing_time,
-            data_sources=["fi_mcp", "vertex_ai", "firestore"]
+            data_sources=["fi_mcp", "vertex_ai", "firestore"],
+            fi_scenario=user_scenario
         )
 
     except Exception as e:
@@ -486,6 +494,7 @@ async def chat_with_ai(
                     user_id=current_user["user_id"],
                     message_length=len(request.message))
 
+
         # Get user's financial context from Fi MCP
         financial_context = await services['fi_mcp'].get_user_context_for_chat(current_user["user_id"])
 
@@ -529,6 +538,74 @@ async def chat_with_ai(
                      user_id=current_user["user_id"],
                      error=str(e))
         raise HTTPException(status_code=500, detail="Chat processing failed")
+
+
+# Add new endpoint to switch Fi MCP scenarios
+@app.post("/api/v1/switch-scenario", tags=["Fi MCP"])
+async def switch_fi_scenario(
+        scenario: FiMCPScenario,
+        current_user: dict = Depends(get_current_user)
+):
+    """Switch Fi MCP test scenario for user"""
+    try:
+        logger.info("🔄 Switching Fi MCP scenario",
+                    user_id=current_user["user_id"],
+                    new_scenario=scenario)
+
+        # Update user profile with new scenario
+        success = await services['user'].update_user_profile(
+            current_user["user_id"],
+            {"fi_scenario": scenario}
+        )
+
+        if success:
+            # Get fresh data with new scenario
+            fresh_data = await services['fi_mcp'].get_user_financial_data(
+                current_user["user_id"],
+                scenario=scenario
+            )
+
+            return {
+                "success": True,
+                "new_scenario": scenario,
+                "net_worth": fresh_data.get("net_worth", {}).get("total_value", 0),
+                "accounts_count": len(fresh_data.get("accounts", [])),
+                "investments_count": len(fresh_data.get("investments", [])),
+                "message": f"Switched to {scenario} scenario successfully"
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update scenario")
+
+    except Exception as e:
+        logger.error("❌ Failed to switch scenario",
+                     user_id=current_user["user_id"],
+                     error=str(e))
+        raise HTTPException(status_code=500, detail="Scenario switch failed")
+
+
+# Add endpoint to get Fi MCP data directly
+@app.get("/api/v1/fi-mcp-data", tags=["Fi MCP"])
+async def get_fi_mcp_data(
+        current_user: dict = Depends(get_current_user)
+):
+    """Get raw Fi MCP data for debugging"""
+    try:
+        user_scenario = current_user.get("fi_scenario", "balanced")
+
+        fi_data = await services['fi_mcp'].get_user_financial_data(
+            current_user["user_id"],
+            scenario=user_scenario
+        )
+
+        return {
+            "scenario": user_scenario,
+            "data": fi_data,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error("❌ Failed to get Fi MCP data", error=str(e))
+        raise HTTPException(status_code=500, detail="Failed to get Fi MCP data")
 
 
 if __name__ == "__main__":
