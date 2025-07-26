@@ -1,0 +1,349 @@
+# cloudbuild.yaml
+steps:
+  # ================================================================
+  # SETUP & VALIDATION
+  # ================================================================
+
+  # Validate environment and setup
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'setup-environment'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🚀 Starting AvestoAI deployment pipeline..."
+        echo "Project: ${PROJECT_ID}"
+        echo "Build ID: ${BUILD_ID}"
+        echo "Branch: ${BRANCH_NAME}"
+        echo "Environment: ${_ENV}"
+        
+        # Verify Artifact Registry repository exists
+        gcloud artifacts repositories describe avestoai-repo \
+          --location=${_ARTIFACT_REGISTRY_LOCATION} || \
+        gcloud artifacts repositories create avestoai-repo \
+          --repository-format=docker \
+          --location=${_ARTIFACT_REGISTRY_LOCATION} \
+          --description="AvestoAI container images"
+
+  # ================================================================
+  # BACKEND BUILD & DEPLOYMENT
+  # ================================================================
+
+  # Build backend Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-backend'
+    args:
+      - 'build'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:${SHORT_SHA}'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:latest'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:${_ENV}-latest'
+      - '--cache-from'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:latest'
+      - './backend'
+    waitFor: ['setup-environment']
+
+  # Push backend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-backend'
+    args: ['push', '--all-tags', '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend']
+    waitFor: ['build-backend']
+
+  # Deploy backend to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-backend'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🔧 Deploying backend to Cloud Run..."
+        
+        gcloud run deploy avestoai-backend-${_ENV} \
+          --image=${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:${SHORT_SHA} \
+          --region=${_REGION} \
+          --platform=managed \
+          --allow-unauthenticated \
+          --service-account=avestoai-backend@${PROJECT_ID}.iam.gserviceaccount.com \
+          --memory=${_BACKEND_MEMORY} \
+          --cpu=${_BACKEND_CPU} \
+          --min-instances=${_BACKEND_MIN_INSTANCES} \
+          --max-instances=${_BACKEND_MAX_INSTANCES} \
+          --concurrency=${_BACKEND_CONCURRENCY} \
+          --timeout=${_BACKEND_TIMEOUT} \
+          --set-env-vars="ENVIRONMENT=${_ENV}" \
+          --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \
+          --set-env-vars="VERTEX_AI_LOCATION=${_REGION}" \
+          --set-env-vars="FIRESTORE_DATABASE=(default)" \
+          --set-env-vars="FI_MCP_BASE_URL=https://fi-mcp-dev-172306289913.asia-south1.run.app" \
+          --set-env-vars="FI_MCP_TIMEOUT=30" \
+          --set-env-vars="FI_MCP_MAX_RETRIES=3" \
+          --set-env-vars="FI_MCP_DEFAULT_SCENARIO=balanced" \
+          --set-env-vars="MAX_CONCURRENT_REQUESTS=100" \
+          --set-env-vars="REQUEST_TIMEOUT_SECONDS=30" \
+          --set-env-vars="ENABLE_PREDICTIVE_ANALYSIS=true" \
+          --set-env-vars="ENABLE_REAL_TIME_STREAMING=true" \
+          --set-env-vars="ENABLE_ADVANCED_CHARTS=true" \
+          --set-env-vars="ENABLE_FI_MCP_INTEGRATION=true" \
+          --set-env-vars="ENABLE_METRICS=true" \
+          --set-env-vars="LOG_LEVEL=INFO" \
+          --set-secrets="JWT_SECRET_KEY=jwt-secret-key:latest" \
+          --set-secrets="FI_MCP_API_KEY=fi-mcp-api-key:latest" \
+          --labels="app=avestoai,component=backend,environment=${_ENV}" \
+          --tag=${_ENV}
+        
+        echo "✅ Backend deployed successfully"
+        
+        # Get backend URL for frontend
+        BACKEND_URL=$(gcloud run services describe avestoai-backend-${_ENV} \
+          --region=${_REGION} \
+          --format='value(status.url)')
+        echo "Backend URL: $BACKEND_URL"
+        echo "$BACKEND_URL" > /workspace/backend_url.txt
+    waitFor: ['push-backend']
+
+  # ================================================================
+  # FRONTEND BUILD & DEPLOYMENT
+  # ================================================================
+
+  # Build frontend Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    args:
+      - 'build'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:${SHORT_SHA}'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:latest'
+      - '-t'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:${_ENV}-latest'
+      - '--cache-from'
+      - '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:latest'
+      - '--build-arg'
+      - 'ENVIRONMENT=${_ENV}'
+      - './frontend-chainlit'
+    waitFor: ['setup-environment']
+
+  # Push frontend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args: ['push', '--all-tags', '${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend']
+    waitFor: ['build-frontend']
+
+  # Deploy frontend to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-frontend'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "💬 Deploying frontend to Cloud Run..."
+        
+        # Get backend URL
+        BACKEND_URL=$(cat /workspace/backend_url.txt)
+        echo "Using backend URL: $BACKEND_URL"
+        
+        gcloud run deploy avestoai-frontend-${_ENV} \
+          --image=${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:${SHORT_SHA} \
+          --region=${_REGION} \
+          --platform=managed \
+          --allow-unauthenticated \
+          --service-account=avestoai-backend@${PROJECT_ID}.iam.gserviceaccount.com \
+          --memory=${_FRONTEND_MEMORY} \
+          --cpu=${_FRONTEND_CPU} \
+          --min-instances=${_FRONTEND_MIN_INSTANCES} \
+          --max-instances=${_FRONTEND_MAX_INSTANCES} \
+          --concurrency=${_FRONTEND_CONCURRENCY} \
+          --timeout=${_FRONTEND_TIMEOUT} \
+          --port=8001 \
+          --set-env-vars="ENVIRONMENT=${_ENV}" \
+          --set-env-vars="API_BASE_URL=$BACKEND_URL" \
+          --set-env-vars="CHAINLIT_HOST=0.0.0.0" \
+          --set-env-vars="CHAINLIT_PORT=8001" \
+          --labels="app=avestoai,component=frontend,environment=${_ENV}" \
+          --tag=${_ENV}
+        
+        echo "✅ Frontend deployed successfully"
+        
+        # Get frontend URL
+        FRONTEND_URL=$(gcloud run services describe avestoai-frontend-${_ENV} \
+          --region=${_REGION} \
+          --format='value(status.url)')
+        echo "Frontend URL: $FRONTEND_URL"
+        echo "$FRONTEND_URL" > /workspace/frontend_url.txt
+    waitFor: ['push-frontend', 'deploy-backend']
+
+  # ================================================================
+  # POST-DEPLOYMENT VERIFICATION
+  # ================================================================
+
+  # Verify backend deployment
+  - name: 'gcr.io/cloud-builders/curl'
+    id: 'verify-backend'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🔍 Verifying backend deployment..."
+        BACKEND_URL=$(cat /workspace/backend_url.txt)
+        
+        # Wait for service to be ready
+        for i in {1..30}; do
+          echo "Attempt $i: Checking backend health..."
+          if curl -f -s "$BACKEND_URL/health" > /dev/null; then
+            echo "✅ Backend health check passed"
+            curl -s "$BACKEND_URL/health" | jq '.'
+            break
+          fi
+          echo "Backend not ready, waiting 10 seconds..."
+          sleep 10
+        done
+        
+        # Test root endpoint
+        echo "Testing root endpoint..."
+        curl -s "$BACKEND_URL/" | jq '.'
+    waitFor: ['deploy-backend']
+
+  # Verify frontend deployment
+  - name: 'gcr.io/cloud-builders/curl'
+    id: 'verify-frontend'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🔍 Verifying frontend deployment..."
+        FRONTEND_URL=$(cat /workspace/frontend_url.txt)
+        
+        # Wait for service to be ready
+        for i in {1..20}; do
+          echo "Attempt $i: Checking frontend..."
+          if curl -f -s -I "$FRONTEND_URL" | grep -q "200\|302"; then
+            echo "✅ Frontend is responding"
+            break
+          fi
+          echo "Frontend not ready, waiting 10 seconds..."
+          sleep 10
+        done
+    waitFor: ['deploy-frontend']
+
+  # ================================================================
+  # DEPLOYMENT SUMMARY & CLEANUP
+  # ================================================================
+
+  # Generate deployment summary
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deployment-summary'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "📋 Deployment Summary"
+        echo "===================="
+        echo "Environment: ${_ENV}"
+        echo "Build ID: ${BUILD_ID}"
+        echo "Commit SHA: ${SHORT_SHA}"
+        echo ""
+        
+        BACKEND_URL=$(cat /workspace/backend_url.txt)
+        FRONTEND_URL=$(cat /workspace/frontend_url.txt)
+        
+        echo "🔧 Backend Service:"
+        echo "  URL: $BACKEND_URL"
+        echo "  Health: $BACKEND_URL/health"
+        echo "  API Docs: $BACKEND_URL/docs"
+        echo ""
+        
+        echo "💬 Frontend Service:"
+        echo "  URL: $FRONTEND_URL"
+        echo "  AI Chat Interface"
+        echo ""
+        
+        echo "🔗 Quick Links:"
+        echo "  Dashboard: $FRONTEND_URL"
+        echo "  API Health: $BACKEND_URL/health"
+        echo "  API Documentation: $BACKEND_URL/docs"
+        echo "  Metrics: $BACKEND_URL/metrics"
+        echo ""
+        
+        echo "🏷️ Image Tags:"
+        echo "  Backend: ${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:${SHORT_SHA}"
+        echo "  Frontend: ${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:${SHORT_SHA}"
+        echo ""
+        
+        echo "🎉 Deployment completed successfully!"
+        
+        # Save URLs to build metadata
+        echo "{\"backend_url\":\"$BACKEND_URL\",\"frontend_url\":\"$FRONTEND_URL\",\"environment\":\"${_ENV}\",\"build_id\":\"${BUILD_ID}\"}" > /workspace/deployment_urls.json
+    waitFor: ['verify-backend', 'verify-frontend']
+
+# ================================================================
+# SUBSTITUTIONS (Default Values)
+# ================================================================
+substitutions:
+  # Environment Configuration
+  _ENV: 'development'
+  _REGION: 'us-central1'
+  _ARTIFACT_REGISTRY_LOCATION: 'us-central1'
+
+  # Backend Configuration
+  _BACKEND_MEMORY: '2Gi'
+  _BACKEND_CPU: '2'
+  _BACKEND_MIN_INSTANCES: '0'
+  _BACKEND_MAX_INSTANCES: '10'
+  _BACKEND_CONCURRENCY: '80'
+  _BACKEND_TIMEOUT: '300'
+
+  # Frontend Configuration
+  _FRONTEND_MEMORY: '1Gi'
+  _FRONTEND_CPU: '1'
+  _FRONTEND_MIN_INSTANCES: '0'
+  _FRONTEND_MAX_INSTANCES: '5'
+  _FRONTEND_CONCURRENCY: '50'
+  _FRONTEND_TIMEOUT: '300'
+
+# ================================================================
+# BUILD OPTIONS
+# ================================================================
+options:
+  # Use high-CPU machine for faster builds
+  machineType: 'E2_HIGHCPU_32'
+
+  # Disk size for large Docker builds
+  diskSizeGb: '100'
+
+  # Logging configuration
+  logging: 'CLOUD_LOGGING_ONLY'
+
+  # Timeout for entire build
+  timeout: '1800s' # 30 minutes
+
+  # Service account for CI/CD operations
+  serviceAccount: 'projects/avestoai-466417/serviceAccounts/my-ci-cd-sa@avestoai-466417.iam.gserviceaccount.com'
+
+  # Environment variables for build
+  env:
+    - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+    - 'CLOUDSDK_RUN_REGION=us-central1'
+
+# ================================================================
+# ARTIFACTS (Build Outputs)
+# ================================================================
+artifacts:
+  objects:
+    location: 'gs://avestoai-466417-build-artifacts'
+    paths:
+      - '/workspace/deployment_urls.json'
+      - '/workspace/backend_url.txt'
+      - '/workspace/frontend_url.txt'
+
+# ================================================================
+# AVAILABLE TAGS (For Image Tagging)
+# ================================================================
+tags:
+  - 'avestoai'
+  - 'backend'
+  - 'frontend'
+  - 'fi-mcp'
+  - '${_ENV}'
+  - 'build-${BUILD_ID}'
