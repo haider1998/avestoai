@@ -17,22 +17,35 @@ from prometheus_client import Counter, Histogram, generate_latest
 import time
 
 # Import our services (removed auth and user services)
-from services.vertex_ai_service import VertexAIService
-from services.firestore_service import FirestoreService
-from services.opportunity_engine import OpportunityEngine
-from services.fi_mcp_service import FiMCPService
-from models.schemas import *
-from models.config import get_settings
-from utils.logging_config import setup_logging
-from utils.middleware import MetricsMiddleware, RateLimitMiddleware
+from backend.services.vertex_ai_service import VertexAIService
+from backend.services.firestore_service import FirestoreService
+from backend.services.opportunity_engine import OpportunityEngine
+from backend.services.fi_mcp_service import FiMCPService
+from backend.models.schemas import *
+from backend.models.configs import get_settings
+from backend.utils.logging_config import setup_logging
+from backend.utils.middleware import MetricsMiddleware, RateLimitMiddleware
 
 # Setup logging
 setup_logging()
 logger = structlog.get_logger()
 
-# Metrics
-REQUEST_COUNT = Counter('avestoai_requests_total', 'Total requests', ['method', 'endpoint'])
-REQUEST_DURATION = Histogram('avestoai_request_duration_seconds', 'Request duration')
+# Metrics - Check if they already exist to avoid duplication
+try:
+    REQUEST_COUNT = Counter('avestoai_requests_total', 'Total requests', ['method', 'endpoint'])
+    REQUEST_DURATION = Histogram('avestoai_request_duration_seconds', 'Request duration')
+except ValueError as e:
+    if "Duplicated timeseries" in str(e):
+        # Metrics already exist, get them from the registry
+        from prometheus_client import REGISTRY
+        for collector in list(REGISTRY._collector_to_names.keys()):
+            if hasattr(collector, '_name'):
+                if collector._name == 'avestoai_requests_total':
+                    REQUEST_COUNT = collector
+                elif collector._name == 'avestoai_request_duration_seconds':
+                    REQUEST_DURATION = collector
+    else:
+        raise e
 
 # Load configuration
 settings = get_settings()

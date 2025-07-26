@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 from typing import List, Optional, Dict, Any
 import os
 from functools import lru_cache
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -11,7 +12,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Google Cloud
-    GOOGLE_CLOUD_PROJECT: str
+    GOOGLE_CLOUD_PROJECT: str = "avestoai-466417"  # Default value as fallback
     VERTEX_AI_LOCATION: str = "us-central1"
     FIRESTORE_DATABASE: str = "(default)"
 
@@ -73,7 +74,8 @@ class Settings(BaseSettings):
     ENABLE_FI_MCP_INTEGRATION: bool = True
 
     class Config:
-        env_file = ".env"
+        # Look for .env file in the project root (two levels up from this file)
+        env_file = Path(__file__).parent.parent.parent / ".env"
         case_sensitive = True
 
 

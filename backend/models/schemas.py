@@ -60,7 +60,7 @@ class BaseResponse(BaseModel):
 
 # Fi MCP Authentication Models
 class FiAuthInitiateRequest(BaseModel):
-    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    mobile_number: str = Field(..., pattern=r"^\d{10}$", description="10-digit mobile number")
     scenario: FiMCPScenario = Field(default=FiMCPScenario.BALANCED, description="Fi MCP test scenario")
 
 
@@ -75,7 +75,7 @@ class FiAuthInitiateResponse(BaseResponse):
 
 class FiAuthVerifyRequest(BaseModel):
     session_id: str = Field(..., description="Fi MCP session ID")
-    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    mobile_number: str = Field(..., pattern=r"^\d{10}$", description="10-digit mobile number")
     otp: str = Field(..., description="OTP (any value works in dev)")
 
 
@@ -99,7 +99,7 @@ class FiAuthStatusResponse(BaseResponse):
 
 # Core Request Models (updated to use mobile number)
 class OpportunityRequest(BaseModel):
-    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    mobile_number: str = Field(..., pattern=r"^\d{10}$", description="10-digit mobile number")
     analysis_type: str = Field(default="comprehensive", description="Type of analysis to perform")
     include_predictions: bool = Field(default=True, description="Include predictive insights")
     focus_areas: List[str] = Field(default_factory=list, description="Focus areas")
@@ -107,7 +107,7 @@ class OpportunityRequest(BaseModel):
 
 
 class DecisionRequest(BaseModel):
-    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    mobile_number: str = Field(..., pattern=r"^\d{10}$", description="10-digit mobile number")
     amount: float = Field(..., gt=0, description="Amount in INR")
     category: str = Field(..., description="Category of expense/investment")
     description: str = Field(..., description="Description of the decision")
@@ -125,7 +125,7 @@ class DecisionRequest(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    mobile_number: str = Field(..., pattern=r"^\d{10}$", description="10-digit mobile number")
     message: str = Field(..., min_length=1, max_length=2000, description="User message")
     conversation_id: Optional[str] = Field(None, description="Conversation ID")
     include_charts: bool = Field(default=True, description="Include charts")
@@ -133,7 +133,7 @@ class ChatRequest(BaseModel):
 
 
 class SwitchScenarioRequest(BaseModel):
-    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    mobile_number: str = Field(..., pattern=r"^\d{10}$", description="10-digit mobile number")
     scenario: FiMCPScenario = Field(..., description="New scenario to switch to")
 
 
