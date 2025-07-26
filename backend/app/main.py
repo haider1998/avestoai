@@ -3,43 +3,36 @@ import os
 import asyncio
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Request
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.openapi.models import Response
 from fastapi.responses import StreamingResponse, JSONResponse
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import uvicorn
 from datetime import datetime
 import json
 from typing import List, Optional, Dict, Any
 import structlog
-from prometheus_client import Counter, Histogram, generate_latest, REGISTRY, CollectorRegistry
+from prometheus_client import Counter, Histogram, generate_latest
 import time
 
-# Import our services
-from backend.services.vertex_ai_service import VertexAIService
-from backend.services.firestore_service import FirestoreService
-from backend.services.opportunity_engine import OpportunityEngine
-from backend.services.auth_service import AuthService
-from backend.services.fi_mcp_service import FiMCPService
-from backend.services.user_service import UserService
-from backend.models.schemas import *
-from backend.models.configs import get_settings
-from backend.utils.logging_config import setup_logging
-from backend.utils.middleware import MetricsMiddleware, RateLimitMiddleware
+# Import our services (removed auth and user services)
+from services.vertex_ai_service import VertexAIService
+from services.firestore_service import FirestoreService
+from services.opportunity_engine import OpportunityEngine
+from services.fi_mcp_service import FiMCPService
+from models.schemas import *
+from models.config import get_settings
+from utils.logging_config import setup_logging
+from utils.middleware import MetricsMiddleware, RateLimitMiddleware
 
 # Setup logging
 setup_logging()
 logger = structlog.get_logger()
 
-# Create a custom registry to avoid conflicts
-custom_registry = CollectorRegistry()
-
-# Register metrics with the custom registry
-REQUEST_COUNT = Counter('avestoai_requests_total', 'Total requests', ['method', 'endpoint'], registry=custom_registry)
-REQUEST_DURATION = Histogram('avestoai_request_duration_seconds', 'Request duration', registry=custom_registry)
+# Metrics
+REQUEST_COUNT = Counter('avestoai_requests_total', 'Total requests', ['method', 'endpoint'])
+REQUEST_DURATION = Histogram('avestoai_request_duration_seconds', 'Request duration')
 
 # Load configuration
 settings = get_settings()
@@ -54,12 +47,10 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Starting AvestoAI backend services...")
 
     try:
-        # Initialize core services
+        # Initialize core services (removed auth and user services)
         services['firestore'] = FirestoreService(settings)
         services['vertex_ai'] = VertexAIService(settings)
-        services['auth'] = AuthService(settings)
         services['fi_mcp'] = FiMCPService(settings)
-        services['user'] = UserService(services['firestore'], services['auth'])
 
         # Initialize opportunity engine
         services['opportunity_engine'] = OpportunityEngine(
@@ -68,7 +59,7 @@ async def lifespan(app: FastAPI):
             services['fi_mcp']
         )
 
-        # Test all connections
+        # Test connections
         await services['firestore'].health_check()
         await services['vertex_ai'].health_check()
         await services['fi_mcp'].health_check()
@@ -90,7 +81,7 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app
 app = FastAPI(
     title="🔮 AvestoAI API",
-    description="Revolutionary Financial Intelligence Platform - Google Agentic AI Hackathon 2025",
+    description="Revolutionary Financial Intelligence Platform with Fi MCP Integration",
     version="1.0.0",
     docs_url="/docs" if settings.ENVIRONMENT != "production" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT != "production" else None,
@@ -108,24 +99,7 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS)
 app.add_middleware(MetricsMiddleware)
-app.add_middleware(RateLimitMiddleware, calls=100, period=60)  # 100 calls per minute
-
-# Security
-security = HTTPBearer()
-
-
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Validate JWT token and get current user"""
-    try:
-        payload = services['auth'].verify_token(credentials.credentials)
-        user_id = payload.get("user_id")
-        user = await services['user'].get_user(user_id)
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        return user
-    except Exception as e:
-        logger.error("Authentication failed", error=str(e))
-        raise HTTPException(status_code=401, detail="Invalid authentication")
+app.add_middleware(RateLimitMiddleware, calls=100, period=60)
 
 
 # Health and monitoring endpoints
@@ -138,6 +112,7 @@ async def root():
         "version": "1.0.0",
         "timestamp": datetime.now().isoformat(),
         "environment": settings.ENVIRONMENT,
+        "authentication": "Fi MCP Mobile + OTP",
         "services": {
             "vertex_ai": "connected" if services.get('vertex_ai') else "disconnected",
             "firestore": "connected" if services.get('firestore') else "disconnected",
@@ -185,169 +160,192 @@ async def health_check():
 @app.get("/metrics", tags=["Monitoring"])
 async def metrics():
     """Prometheus metrics endpoint"""
-    return Response(generate_latest(custom_registry), media_type="text/plain")
+    from fastapi.responses import Response
+    return Response(generate_latest(), media_type="text/plain")
 
-# Authentication endpoints
-@app.post("/api/v1/auth/register", response_model=AuthResponse, tags=["Authentication"])
-async def register_user(request: RegisterRequest):
-    """Register a new user"""
+
+# Fi MCP Authentication endpoints
+@app.post("/api/v1/fi-auth/initiate", response_model=FiAuthInitiateResponse, tags=["Fi MCP Auth"])
+async def initiate_fi_auth(request: FiAuthInitiateRequest):
+    """Initiate Fi MCP authentication process"""
     try:
-        logger.info("👤 Registering new user", email=request.email)
+        logger.info("🔐 Initiating Fi MCP authentication", mobile_number=request.mobile_number)
 
-        # Check if user already exists
-        existing_user = await services['user'].get_user_by_email(request.email)
-        if existing_user:
-            raise HTTPException(status_code=400, detail="User already exists")
+        # Initialize or get existing session for this mobile number
+        session_result = await services['fi_mcp'].initiate_session(request.mobile_number, request.scenario)
 
-        # Create user
-        user = await services['user'].create_user(request.dict())
-
-        # Generate tokens
-        access_token = services['auth'].create_access_token({"user_id": user["user_id"]})
-        refresh_token = services['auth'].create_refresh_token({"user_id": user["user_id"]})
-
-        logger.info("✅ User registered successfully", user_id=user["user_id"])
-
-        return AuthResponse(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            user=UserProfile(**user),
-            token_type="bearer"
+        return FiAuthInitiateResponse(
+            session_id=session_result["session_id"],
+            login_url=session_result.get("login_url"),
+            mobile_number=request.mobile_number,
+            scenario=request.scenario,
+            requires_authentication=session_result["requires_authentication"],
+            message="Please complete authentication if login_url is provided"
         )
 
-    except HTTPException:
-        raise
     except Exception as e:
-        logger.error("❌ User registration failed", error=str(e))
-        raise HTTPException(status_code=500, detail="Registration failed")
+        logger.error("❌ Fi MCP authentication initiation failed", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Authentication initiation failed: {str(e)}")
 
 
-@app.post("/api/v1/auth/login", response_model=AuthResponse, tags=["Authentication"])
-async def login_user(request: LoginRequest):
-    """Login user"""
+@app.post("/api/v1/fi-auth/verify", response_model=FiAuthVerifyResponse, tags=["Fi MCP Auth"])
+async def verify_fi_auth(request: FiAuthVerifyRequest):
+    """Verify Fi MCP authentication with OTP"""
     try:
-        logger.info("🔐 User login attempt", email=request.email)
+        logger.info("🔐 Verifying Fi MCP authentication",
+                    mobile_number=request.mobile_number,
+                    session_id=request.session_id)
 
-        # Authenticate user
-        user = await services['user'].authenticate_user(request.email, request.password)
-        if not user:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-
-        # Generate tokens
-        access_token = services['auth'].create_access_token({"user_id": user["user_id"]})
-        refresh_token = services['auth'].create_refresh_token({"user_id": user["user_id"]})
-
-        logger.info("✅ User logged in successfully", user_id=user["user_id"])
-
-        return AuthResponse(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            user=UserProfile(**user),
-            token_type="bearer"
+        # Verify authentication with Fi MCP
+        verification_result = await services['fi_mcp'].verify_authentication(
+            request.session_id,
+            request.mobile_number,
+            request.otp
         )
 
-    except HTTPException:
-        raise
+        if verification_result["success"]:
+            # Get initial financial data
+            financial_data = await services['fi_mcp'].get_user_financial_data(
+                request.mobile_number,
+                scenario=verification_result.get("scenario", "balanced")
+            )
+
+            return FiAuthVerifyResponse(
+                success=True,
+                session_id=request.session_id,
+                mobile_number=request.mobile_number,
+                scenario=verification_result.get("scenario", "balanced"),
+                net_worth=financial_data.get("net_worth", {}).get("total_value", 0),
+                accounts_count=len(financial_data.get("accounts", [])),
+                message="Authentication successful"
+            )
+        else:
+            return FiAuthVerifyResponse(
+                success=False,
+                session_id=request.session_id,
+                mobile_number=request.mobile_number,
+                message=verification_result.get("message", "Authentication failed")
+            )
+
     except Exception as e:
-        logger.error("❌ User login failed", error=str(e))
-        raise HTTPException(status_code=500, detail="Login failed")
+        logger.error("❌ Fi MCP authentication verification failed", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Authentication verification failed: {str(e)}")
 
 
-# Core AI endpoints
+@app.get("/api/v1/fi-auth/status/{mobile_number}", response_model=FiAuthStatusResponse, tags=["Fi MCP Auth"])
+async def get_fi_auth_status(mobile_number: str):
+    """Get Fi MCP authentication status"""
+    try:
+        status = await services['fi_mcp'].get_authentication_status(mobile_number)
+
+        return FiAuthStatusResponse(
+            mobile_number=mobile_number,
+            is_authenticated=status["is_authenticated"],
+            session_id=status.get("session_id"),
+            scenario=status.get("scenario"),
+            last_activity=status.get("last_activity")
+        )
+
+    except Exception as e:
+        logger.error("❌ Failed to get Fi auth status", error=str(e))
+        raise HTTPException(status_code=500, detail="Failed to get authentication status")
+
+
+# Core AI endpoints (updated to use mobile number)
 @app.post("/api/v1/analyze-opportunities", response_model=OpportunityResponse, tags=["Intelligence"])
 async def analyze_opportunities(
         request: OpportunityRequest,
-        current_user: dict = Depends(get_current_user),
         background_tasks: BackgroundTasks = BackgroundTasks()
 ):
-    """Analyze financial opportunities using hybrid AI and Fi MCP data"""
+    """Analyze financial opportunities using Fi MCP data"""
     start_time = time.time()
 
     try:
-        logger.info("🔍 Starting opportunity analysis", user_id=current_user["user_id"])
+        logger.info("🔍 Starting opportunity analysis", mobile_number=request.mobile_number)
 
-        # Get user's Fi MCP scenario
-        user_scenario = current_user.get("fi_scenario", "balanced")
+        # Check Fi MCP authentication
+        auth_status = await services['fi_mcp'].get_authentication_status(request.mobile_number)
+        if not auth_status["is_authenticated"]:
+            raise HTTPException(
+                status_code=401,
+                detail={
+                    "error": "Fi MCP authentication required",
+                    "mobile_number": request.mobile_number,
+                    "action": "Please authenticate with Fi MCP first"
+                }
+            )
 
         # Get comprehensive financial data from Fi MCP
         fi_data = await services['fi_mcp'].get_user_financial_data(
-            current_user["user_id"],
-            scenario=user_scenario
+            request.mobile_number,
+            scenario=auth_status.get("scenario", "balanced")
         )
-
-        # Get user profile and preferences
-        user_profile = await services['user'].get_user_profile(current_user["user_id"])
-
-        # Combine Fi data with user profile
-        comprehensive_data = {
-            **fi_data,
-            "user_profile": user_profile,
-            "preferences": user_profile.get("preferences", {}),
-            "goals": user_profile.get("goals", {})
-        }
 
         # Generate opportunities using AI
         opportunities = await services['opportunity_engine'].generate_opportunities(
-            user_data=comprehensive_data,
-            analysis_type=request.analysis_type
+            user_data=fi_data,
+            analysis_type=request.analysis_type,
+            mobile_number=request.mobile_number
         )
 
         # Store analysis results
         background_tasks.add_task(
             services['firestore'].store_analysis,
-            current_user["user_id"],
+            request.mobile_number,
             opportunities
         )
 
         processing_time = (time.time() - start_time) * 1000
 
         logger.info("✅ Opportunity analysis completed",
-                    user_id=current_user["user_id"],
+                    mobile_number=request.mobile_number,
                     opportunities_found=len(opportunities.get("opportunities", [])),
-                    scenario=user_scenario,
                     processing_time=f"{processing_time:.1f}ms")
 
         return OpportunityResponse(
             **opportunities,
             processing_time=processing_time,
             data_sources=["fi_mcp", "vertex_ai", "firestore"],
-            fi_scenario=user_scenario
+            mobile_number=request.mobile_number
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("❌ Opportunity analysis failed",
-                     user_id=current_user["user_id"],
+                     mobile_number=request.mobile_number,
                      error=str(e))
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 
 @app.post("/api/v1/predict-decision", response_model=DecisionResponse, tags=["Intelligence"])
-async def predict_decision(
-        request: DecisionRequest,
-        current_user: dict = Depends(get_current_user)
-):
+async def predict_decision(request: DecisionRequest):
     """Score financial decisions with AI prediction"""
     start_time = time.time()
 
     try:
         logger.info("🎯 Starting decision analysis",
-                    user_id=current_user["user_id"],
+                    mobile_number=request.mobile_number,
                     amount=request.amount,
                     category=request.category)
 
-        # Get current financial state from Fi MCP
-        financial_state = await services['fi_mcp'].get_current_financial_state(current_user["user_id"])
+        # Check Fi MCP authentication
+        auth_status = await services['fi_mcp'].get_authentication_status(request.mobile_number)
+        if not auth_status["is_authenticated"]:
+            raise HTTPException(
+                status_code=401,
+                detail="Fi MCP authentication required"
+            )
 
-        # Get user context
-        user_context = await services['user'].get_user_context(current_user["user_id"])
+        # Get current financial state from Fi MCP
+        financial_state = await services['fi_mcp'].get_current_financial_state(request.mobile_number)
 
         # Enhanced decision request with real data
         enhanced_request = DecisionRequest(
             **request.dict(),
             user_context={
                 **request.user_context,
-                **financial_state,
-                **user_context
+                **financial_state
             }
         )
 
@@ -359,41 +357,42 @@ async def predict_decision(
         response = DecisionResponse(
             **decision_analysis,
             processing_time=processing_time,
-            data_sources=["fi_mcp", "vertex_ai"]
+            data_sources=["fi_mcp", "vertex_ai"],
+            mobile_number=request.mobile_number
         )
 
         logger.info("✅ Decision analysis completed",
-                    user_id=current_user["user_id"],
+                    mobile_number=request.mobile_number,
                     score=response.score,
                     processing_time=f"{processing_time:.1f}ms")
 
         return response
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("❌ Decision analysis failed",
-                     user_id=current_user["user_id"],
+                     mobile_number=request.mobile_number,
                      error=str(e))
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
 
-@app.get("/api/v1/financial-dashboard/{user_id}", response_model=DashboardResponse, tags=["Dashboard"])
-async def get_financial_dashboard(
-        user_id: str,
-        current_user: dict = Depends(get_current_user)
-):
+@app.get("/api/v1/financial-dashboard/{mobile_number}", response_model=DashboardResponse, tags=["Dashboard"])
+async def get_financial_dashboard(mobile_number: str):
     """Get comprehensive financial dashboard"""
     try:
-        # Verify user access
-        if current_user["user_id"] != user_id and current_user.get("role") != "admin":
-            raise HTTPException(status_code=403, detail="Access denied")
+        logger.info("📊 Generating financial dashboard", mobile_number=mobile_number)
 
-        logger.info("📊 Generating financial dashboard", user_id=user_id)
+        # Check Fi MCP authentication
+        auth_status = await services['fi_mcp'].get_authentication_status(mobile_number)
+        if not auth_status["is_authenticated"]:
+            raise HTTPException(status_code=401, detail="Fi MCP authentication required")
 
         # Get comprehensive data from Fi MCP
-        financial_data = await services['fi_mcp'].get_comprehensive_financial_data(user_id)
+        financial_data = await services['fi_mcp'].get_comprehensive_financial_data(mobile_number)
 
         # Get recent opportunities and predictions
-        recent_analysis = await services['firestore'].get_recent_analysis(user_id, limit=5)
+        recent_analysis = await services['firestore'].get_recent_analysis(mobile_number, limit=5)
 
         # Calculate financial health score
         health_score = await services['vertex_ai'].calculate_financial_health_score(financial_data)
@@ -402,43 +401,42 @@ async def get_financial_dashboard(
         insights = await services['vertex_ai'].generate_dashboard_insights(financial_data)
 
         dashboard = DashboardResponse(
-            user_id=user_id,
+            mobile_number=mobile_number,
             financial_summary=financial_data.get("summary", {}),
             health_score=health_score,
             recent_opportunities=recent_analysis.get("opportunities", []),
             insights=insights,
             charts_data=financial_data.get("charts", []),
             last_updated=datetime.now(),
-            data_sources=["fi_mcp", "vertex_ai", "firestore"]
+            data_sources=["fi_mcp", "vertex_ai", "firestore"],
+            scenario=auth_status.get("scenario", "balanced")
         )
 
-        logger.info("✅ Dashboard generated successfully", user_id=user_id)
+        logger.info("✅ Dashboard generated successfully", mobile_number=mobile_number)
         return dashboard
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("❌ Dashboard generation failed", user_id=user_id, error=str(e))
+        logger.error("❌ Dashboard generation failed", mobile_number=mobile_number, error=str(e))
         raise HTTPException(status_code=500, detail="Dashboard generation failed")
 
 
-@app.get("/api/v1/financial-health-stream/{user_id}", tags=["Streaming"])
-async def stream_financial_health(
-        user_id: str,
-        current_user: dict = Depends(get_current_user)
-):
+@app.get("/api/v1/financial-health-stream/{mobile_number}", tags=["Streaming"])
+async def stream_financial_health(mobile_number: str):
     """Real-time financial health monitoring"""
 
-    # Verify access
-    if current_user["user_id"] != user_id and current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Access denied")
+    # Check Fi MCP authentication
+    auth_status = await services['fi_mcp'].get_authentication_status(mobile_number)
+    if not auth_status["is_authenticated"]:
+        raise HTTPException(status_code=401, detail="Fi MCP authentication required")
 
     async def generate_health_updates():
         """Generate real-time health updates"""
         try:
             while True:
                 # Get real-time data from Fi MCP
-                current_data = await services['fi_mcp'].get_real_time_data(user_id)
+                current_data = await services['fi_mcp'].get_real_time_data(mobile_number)
 
                 # Calculate health metrics
                 health_metrics = await services['vertex_ai'].calculate_real_time_health(current_data)
@@ -448,7 +446,7 @@ async def stream_financial_health(
 
                 # Create update
                 update = {
-                    "user_id": user_id,
+                    "mobile_number": mobile_number,
                     "timestamp": datetime.now().isoformat(),
                     "health_score": health_metrics.get("score", 0),
                     "metrics": health_metrics.get("metrics", {}),
@@ -466,7 +464,7 @@ async def stream_financial_health(
             error_data = {
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
-                "user_id": user_id
+                "mobile_number": mobile_number
             }
             yield f"data: {json.dumps(error_data)}\n\n"
 
@@ -482,25 +480,26 @@ async def stream_financial_health(
 
 
 @app.post("/api/v1/chat", response_model=ChatResponse, tags=["AI Chat"])
-async def chat_with_ai(
-        request: ChatRequest,
-        current_user: dict = Depends(get_current_user)
-):
+async def chat_with_ai(request: ChatRequest):
     """Conversational AI interface for financial questions"""
     start_time = time.time()
 
     try:
         logger.info("💬 Processing chat message",
-                    user_id=current_user["user_id"],
+                    mobile_number=request.mobile_number,
                     message_length=len(request.message))
 
+        # Check Fi MCP authentication
+        auth_status = await services['fi_mcp'].get_authentication_status(request.mobile_number)
+        if not auth_status["is_authenticated"]:
+            raise HTTPException(status_code=401, detail="Fi MCP authentication required")
 
         # Get user's financial context from Fi MCP
-        financial_context = await services['fi_mcp'].get_user_context_for_chat(current_user["user_id"])
+        financial_context = await services['fi_mcp'].get_user_context_for_chat(request.mobile_number)
 
         # Get conversation history
         conversation_history = await services['firestore'].get_conversation_history(
-            current_user["user_id"],
+            request.mobile_number,
             limit=10
         )
 
@@ -509,12 +508,12 @@ async def chat_with_ai(
             message=request.message,
             financial_context=financial_context,
             conversation_history=conversation_history,
-            user_preferences=current_user.get("preferences", {})
+            user_preferences={}
         )
 
         # Store conversation
         await services['firestore'].store_conversation_turn(
-            current_user["user_id"],
+            request.mobile_number,
             request.message,
             ai_response.get("response", "")
         )
@@ -524,88 +523,71 @@ async def chat_with_ai(
         chat_response = ChatResponse(
             **ai_response,
             processing_time=processing_time,
-            data_sources=["fi_mcp", "vertex_ai", "firestore"]
+            data_sources=["fi_mcp", "vertex_ai", "firestore"],
+            mobile_number=request.mobile_number
         )
 
         logger.info("✅ Chat response generated",
-                    user_id=current_user["user_id"],
+                    mobile_number=request.mobile_number,
                     processing_time=f"{processing_time:.1f}ms")
 
         return chat_response
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("❌ Chat processing failed",
-                     user_id=current_user["user_id"],
+                     mobile_number=request.mobile_number,
                      error=str(e))
         raise HTTPException(status_code=500, detail="Chat processing failed")
 
 
-# Add new endpoint to switch Fi MCP scenarios
+# Fi MCP specific endpoints
 @app.post("/api/v1/switch-scenario", tags=["Fi MCP"])
-async def switch_fi_scenario(
-        scenario: FiMCPScenario,
-        current_user: dict = Depends(get_current_user)
-):
-    """Switch Fi MCP test scenario for user"""
+async def switch_fi_scenario(request: SwitchScenarioRequest):
+    """Switch Fi MCP test scenario"""
     try:
         logger.info("🔄 Switching Fi MCP scenario",
-                    user_id=current_user["user_id"],
-                    new_scenario=scenario)
+                    mobile_number=request.mobile_number,
+                    new_scenario=request.scenario)
 
-        # Update user profile with new scenario
-        success = await services['user'].update_user_profile(
-            current_user["user_id"],
-            {"fi_scenario": scenario}
+        # Check authentication
+        auth_status = await services['fi_mcp'].get_authentication_status(request.mobile_number)
+        if not auth_status["is_authenticated"]:
+            raise HTTPException(status_code=401, detail="Fi MCP authentication required")
+
+        # Switch scenario
+        switch_result = await services['fi_mcp'].switch_scenario(
+            request.mobile_number,
+            request.scenario
         )
 
-        if success:
+        if switch_result["success"]:
             # Get fresh data with new scenario
             fresh_data = await services['fi_mcp'].get_user_financial_data(
-                current_user["user_id"],
-                scenario=scenario
+                request.mobile_number,
+                scenario=request.scenario
             )
 
             return {
                 "success": True,
-                "new_scenario": scenario,
+                "mobile_number": request.mobile_number,
+                "new_scenario": request.scenario,
                 "net_worth": fresh_data.get("net_worth", {}).get("total_value", 0),
                 "accounts_count": len(fresh_data.get("accounts", [])),
                 "investments_count": len(fresh_data.get("investments", [])),
-                "message": f"Switched to {scenario} scenario successfully"
+                "message": f"Switched to {request.scenario} scenario successfully"
             }
         else:
-            raise HTTPException(status_code=500, detail="Failed to update scenario")
+            raise HTTPException(status_code=500, detail="Failed to switch scenario")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("❌ Failed to switch scenario",
-                     user_id=current_user["user_id"],
+                     mobile_number=request.mobile_number,
                      error=str(e))
         raise HTTPException(status_code=500, detail="Scenario switch failed")
-
-
-# Add endpoint to get Fi MCP data directly
-@app.get("/api/v1/fi-mcp-data", tags=["Fi MCP"])
-async def get_fi_mcp_data(
-        current_user: dict = Depends(get_current_user)
-):
-    """Get raw Fi MCP data for debugging"""
-    try:
-        user_scenario = current_user.get("fi_scenario", "balanced")
-
-        fi_data = await services['fi_mcp'].get_user_financial_data(
-            current_user["user_id"],
-            scenario=user_scenario
-        )
-
-        return {
-            "scenario": user_scenario,
-            "data": fi_data,
-            "timestamp": datetime.now().isoformat()
-        }
-
-    except Exception as e:
-        logger.error("❌ Failed to get Fi MCP data", error=str(e))
-        raise HTTPException(status_code=500, detail="Failed to get Fi MCP data")
 
 
 if __name__ == "__main__":

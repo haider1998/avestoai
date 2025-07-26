@@ -1,5 +1,5 @@
 # backend/models/schemas.py
-from pydantic import BaseModel, Field, validator, EmailStr
+from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Dict, Any, Union
 from datetime import datetime
 from enum import Enum
@@ -7,12 +7,6 @@ import uuid
 
 
 # Enums
-class UserRole(str, Enum):
-    USER = "user"
-    ADMIN = "admin"
-    ANALYST = "analyst"
-
-# Add Fi MCP scenario enum
 class FiMCPScenario(str, Enum):
     NO_ASSETS = "no_assets"
     ALL_ASSETS_LARGE = "all_assets_large"
@@ -64,53 +58,83 @@ class BaseResponse(BaseModel):
     data_sources: List[str] = Field(default_factory=list)
 
 
-# Authentication Models
-class RegisterRequest(BaseModel):
-    email: EmailStr = Field(..., description="User email address")
-    password: str = Field(..., min_length=8, description="User password")
-    name: str = Field(..., min_length=1, max_length=100, description="Full name")
-    age: Optional[int] = Field(None, ge=18, le=100, description="Age")
-    phone: Optional[str] = Field(None, description="Phone number")
-    city: Optional[str] = Field(None, description="City")
-    annual_income: Optional[float] = Field(None, ge=0, description="Annual income in INR")
-    risk_tolerance: str = Field(default="moderate", description="Risk tolerance")
-    fi_scenario: FiMCPScenario = Field(default=FiMCPScenario.BALANCED, description="Fi MCP test scenario")
+# Fi MCP Authentication Models
+class FiAuthInitiateRequest(BaseModel):
+    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    scenario: FiMCPScenario = Field(default=FiMCPScenario.BALANCED, description="Fi MCP test scenario")
 
-    @validator('password')
-    def validate_password(cls, v):
-        if len(v) < 8:
-            raise ValueError('Password must be at least 8 characters')
+
+class FiAuthInitiateResponse(BaseResponse):
+    session_id: str = Field(..., description="Fi MCP session ID")
+    login_url: Optional[str] = Field(None, description="Login URL if authentication required")
+    mobile_number: str = Field(..., description="Mobile number")
+    scenario: FiMCPScenario = Field(..., description="Selected scenario")
+    requires_authentication: bool = Field(..., description="Whether authentication is required")
+    message: str = Field(..., description="Status message")
+
+
+class FiAuthVerifyRequest(BaseModel):
+    session_id: str = Field(..., description="Fi MCP session ID")
+    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    otp: str = Field(..., description="OTP (any value works in dev)")
+
+
+class FiAuthVerifyResponse(BaseResponse):
+    success: bool = Field(..., description="Authentication success status")
+    session_id: str = Field(..., description="Fi MCP session ID")
+    mobile_number: str = Field(..., description="Mobile number")
+    scenario: Optional[FiMCPScenario] = Field(None, description="User scenario")
+    net_worth: Optional[float] = Field(None, description="User net worth")
+    accounts_count: Optional[int] = Field(None, description="Number of accounts")
+    message: str = Field(..., description="Status message")
+
+
+class FiAuthStatusResponse(BaseResponse):
+    mobile_number: str = Field(..., description="Mobile number")
+    is_authenticated: bool = Field(..., description="Authentication status")
+    session_id: Optional[str] = Field(None, description="Session ID if authenticated")
+    scenario: Optional[FiMCPScenario] = Field(None, description="Current scenario")
+    last_activity: Optional[datetime] = Field(None, description="Last activity timestamp")
+
+
+# Core Request Models (updated to use mobile number)
+class OpportunityRequest(BaseModel):
+    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    analysis_type: str = Field(default="comprehensive", description="Type of analysis to perform")
+    include_predictions: bool = Field(default=True, description="Include predictive insights")
+    focus_areas: List[str] = Field(default_factory=list, description="Focus areas")
+    time_horizon: str = Field(default="1_year", description="Time horizon")
+
+
+class DecisionRequest(BaseModel):
+    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    amount: float = Field(..., gt=0, description="Amount in INR")
+    category: str = Field(..., description="Category of expense/investment")
+    description: str = Field(..., description="Description of the decision")
+    purchase_date: Optional[datetime] = Field(None, description="Planned purchase date")
+    financing_method: str = Field(default="cash", description="How it will be financed")
+    user_context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
+
+    @validator('amount')
+    def validate_amount(cls, v):
+        if v <= 0:
+            raise ValueError('Amount must be positive')
+        if v > 100_000_000:  # 10 Crore limit
+            raise ValueError('Amount too large for analysis')
         return v
 
 
-class LoginRequest(BaseModel):
-    email: EmailStr = Field(..., description="User email")
-    password: str = Field(..., description="User password")
+class ChatRequest(BaseModel):
+    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    message: str = Field(..., min_length=1, max_length=2000, description="User message")
+    conversation_id: Optional[str] = Field(None, description="Conversation ID")
+    include_charts: bool = Field(default=True, description="Include charts")
+    context_type: str = Field(default="general", description="Context type")
 
 
-class UserProfile(BaseModel):
-    user_id: str = Field(..., description="Unique user identifier")
-    email: EmailStr = Field(..., description="User email")
-    name: str = Field(..., description="Full name")
-    age: Optional[int] = Field(None, description="Age")
-    phone: Optional[str] = Field(None, description="Phone number")
-    city: Optional[str] = Field(None, description="City")
-    annual_income: Optional[float] = Field(None, description="Annual income")
-    risk_tolerance: str = Field(..., description="Risk tolerance level")
-    fi_scenario: FiMCPScenario = Field(default=FiMCPScenario.BALANCED, description="Fi MCP scenario")
-    role: UserRole = Field(default=UserRole.USER, description="User role")
-    is_active: bool = Field(default=True, description="Account status")
-    created_at: datetime = Field(..., description="Account creation date")
-    last_login: Optional[datetime] = Field(None, description="Last login date")
-    preferences: Dict[str, Any] = Field(default_factory=dict, description="User preferences")
-    goals: Dict[str, Any] = Field(default_factory=dict, description="Financial goals")
-
-
-class AuthResponse(BaseResponse):
-    access_token: str = Field(..., description="JWT access token")
-    refresh_token: str = Field(..., description="JWT refresh token")
-    token_type: str = Field(default="bearer", description="Token type")
-    user: UserProfile = Field(..., description="User profile")
+class SwitchScenarioRequest(BaseModel):
+    mobile_number: str = Field(..., regex=r"^\d{10}$", description="10-digit mobile number")
+    scenario: FiMCPScenario = Field(..., description="New scenario to switch to")
 
 
 # Opportunity Models
@@ -133,14 +157,6 @@ class Opportunity(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now, description="Creation timestamp")
 
 
-class OpportunityRequest(BaseModel):
-    user_id: Optional[str] = Field(None, description="User ID (auto-filled from auth)")
-    analysis_type: str = Field(default="comprehensive", description="Analysis type")
-    include_predictions: bool = Field(default=True, description="Include predictions")
-    focus_areas: List[str] = Field(default_factory=list, description="Focus areas")
-    time_horizon: str = Field(default="1_year", description="Time horizon")
-
-
 class OpportunityResponse(BaseResponse):
     opportunities: List[Opportunity] = Field(..., description="List of opportunities")
     total_annual_value: float = Field(..., description="Total potential value")
@@ -148,27 +164,10 @@ class OpportunityResponse(BaseResponse):
     confidence_score: float = Field(..., description="Overall confidence")
     recommendations: List[str] = Field(default_factory=list, description="Key recommendations")
     market_context: Dict[str, Any] = Field(default_factory=dict, description="Market context")
+    mobile_number: str = Field(..., description="Mobile number")
 
 
 # Decision Analysis Models
-class DecisionRequest(BaseModel):
-    user_id: Optional[str] = Field(None, description="User ID (auto-filled)")
-    amount: float = Field(..., gt=0, description="Amount in INR")
-    category: str = Field(..., description="Purchase/investment category")
-    description: str = Field(..., description="Detailed description")
-    purchase_date: Optional[datetime] = Field(None, description="Planned purchase date")
-    financing_method: str = Field(default="cash", description="How it will be financed")
-    user_context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
-
-    @validator('amount')
-    def validate_amount(cls, v):
-        if v <= 0:
-            raise ValueError('Amount must be positive')
-        if v > 100_000_000:  # 10 Crore limit
-            raise ValueError('Amount too large for analysis')
-        return v
-
-
 class DecisionAlternative(BaseModel):
     option: str = Field(..., description="Alternative description")
     score: int = Field(..., ge=0, le=100, description="Score for alternative")
@@ -188,17 +187,10 @@ class DecisionResponse(BaseResponse):
     recommendations: List[str] = Field(default_factory=list, description="Recommendations")
     optimal_timing: Dict[str, Any] = Field(default_factory=dict, description="Timing analysis")
     processing_time: float = Field(..., description="Processing time in ms")
+    mobile_number: str = Field(..., description="Mobile number")
 
 
 # Chat Models
-class ChatRequest(BaseModel):
-    user_id: Optional[str] = Field(None, description="User ID (auto-filled)")
-    message: str = Field(..., min_length=1, max_length=2000, description="User message")
-    conversation_id: Optional[str] = Field(None, description="Conversation ID")
-    include_charts: bool = Field(default=True, description="Include charts")
-    context_type: str = Field(default="general", description="Context type")
-
-
 class ChatResponse(BaseResponse):
     response: str = Field(..., description="AI response")
     suggestions: List[str] = Field(default_factory=list, description="Follow-up suggestions")
@@ -208,6 +200,7 @@ class ChatResponse(BaseResponse):
     conversation_id: str = Field(..., description="Conversation ID")
     requires_action: bool = Field(default=False, description="Requires user action")
     actions: List[Dict[str, Any]] = Field(default_factory=list, description="Suggested actions")
+    mobile_number: str = Field(..., description="Mobile number")
 
 
 # Dashboard Models
@@ -223,7 +216,7 @@ class FinancialSummary(BaseModel):
 
 
 class DashboardResponse(BaseResponse):
-    user_id: str = Field(..., description="User ID")
+    mobile_number: str = Field(..., description="Mobile number")
     financial_summary: FinancialSummary = Field(..., description="Financial summary")
     health_score: int = Field(..., ge=0, le=100, description="Financial health score")
     recent_opportunities: List[Opportunity] = Field(default_factory=list, description="Recent opportunities")
@@ -233,6 +226,7 @@ class DashboardResponse(BaseResponse):
     trends: Dict[str, Any] = Field(default_factory=dict, description="Trend analysis")
     goals_progress: Dict[str, Any] = Field(default_factory=dict, description="Goals progress")
     last_updated: datetime = Field(..., description="Last update time")
+    scenario: FiMCPScenario = Field(..., description="Current Fi MCP scenario")
 
 
 # Error Models

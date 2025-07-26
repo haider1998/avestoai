@@ -1,4 +1,4 @@
-# backend/models/config.py - Add Fi MCP settings
+# backend/models/config.py
 from pydantic_settings import BaseSettings
 from typing import List, Optional, Dict, Any
 import os
@@ -11,21 +11,15 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Google Cloud
-    GOOGLE_CLOUD_PROJECT: str = "avestoai-466417"
+    GOOGLE_CLOUD_PROJECT: str
     VERTEX_AI_LOCATION: str = "us-central1"
     FIRESTORE_DATABASE: str = "(default)"
-
-    # Authentication
-    JWT_SECRET_KEY: str = "8CKne^4*k~2T,uF3.LQI~oy9fA2Zm9oJR.bF2kVF5nCNPi%Pq8hI%$%BndEYZTW%gcloud auth application-default login"
-    JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
     # Fi Money MCP Configuration
     FI_MCP_BASE_URL: str = "https://fi-mcp-dev-172306289913.asia-south1.run.app"
     FI_MCP_TIMEOUT: int = 30
     FI_MCP_MAX_RETRIES: int = 3
-    FI_MCP_DEFAULT_SCENARIO: str = "balanced"  # Default test scenario
+    FI_MCP_DEFAULT_SCENARIO: str = "balanced"
 
     # Fi MCP Test Scenarios
     FI_MCP_SCENARIOS: Dict[str, str] = {
@@ -62,15 +56,11 @@ class Settings(BaseSettings):
 
     # Rate Limiting
     RATE_LIMIT_CALLS: int = 100
-    RATE_LIMIT_PERIOD: int = 60  # seconds
+    RATE_LIMIT_PERIOD: int = 60
 
     # Caching
-    CACHE_TTL: int = 300  # 5 minutes
+    CACHE_TTL: int = 300
     REDIS_URL: Optional[str] = None
-
-    # Database
-    DATABASE_URL: Optional[str] = None
-    DATABASE_POOL_SIZE: int = 20
 
     # Monitoring
     ENABLE_METRICS: bool = True
