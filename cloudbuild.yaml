@@ -12,17 +12,17 @@ steps:
       - '-c'
       - |
         echo "🚀 Starting AvestoAI deployment pipeline..."
-        echo "Project: $${PROJECT_ID}"
-        echo "Build ID: $${BUILD_ID}"
-        echo "Branch: $${BRANCH_NAME}"
-        echo "Environment: $${_ENV}"
+        echo "Project: ${PROJECT_ID}"
+        echo "Build ID: ${BUILD_ID}"
+        echo "Branch: ${BRANCH_NAME:-main}"
+        echo "Environment: ${_ENV}"
         
         # Verify Artifact Registry repository exists
         gcloud artifacts repositories describe avestoai-repo \
-          --location=$${_ARTIFACT_REGISTRY_LOCATION} || \
+          --location=${_ARTIFACT_REGISTRY_LOCATION} || \
         gcloud artifacts repositories create avestoai-repo \
           --repository-format=docker \
-          --location=$${_ARTIFACT_REGISTRY_LOCATION} \
+          --location=${_ARTIFACT_REGISTRY_LOCATION} \
           --description="AvestoAI container images"
 
   # ================================================================
@@ -60,21 +60,21 @@ steps:
       - |
         echo "🔧 Deploying backend to Cloud Run..."
         
-        gcloud run deploy avestoai-backend-$${_ENV} \
-          --image=$${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/$${PROJECT_ID}/avestoai-repo/backend:$${SHORT_SHA} \
-          --region=$${_REGION} \
+        gcloud run deploy avestoai-backend-${_ENV} \
+          --image=${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:${SHORT_SHA} \
+          --region=${_REGION} \
           --platform=managed \
           --allow-unauthenticated \
-          --service-account=avestoai-backend@$${PROJECT_ID}.iam.gserviceaccount.com \
-          --memory=$${_BACKEND_MEMORY} \
-          --cpu=$${_BACKEND_CPU} \
-          --min-instances=$${_BACKEND_MIN_INSTANCES} \
-          --max-instances=$${_BACKEND_MAX_INSTANCES} \
-          --concurrency=$${_BACKEND_CONCURRENCY} \
-          --timeout=$${_BACKEND_TIMEOUT} \
-          --set-env-vars="ENVIRONMENT=$${_ENV}" \
-          --set-env-vars="GOOGLE_CLOUD_PROJECT=$${PROJECT_ID}" \
-          --set-env-vars="VERTEX_AI_LOCATION=$${_REGION}" \
+          --service-account=avestoai-backend@${PROJECT_ID}.iam.gserviceaccount.com \
+          --memory=${_BACKEND_MEMORY} \
+          --cpu=${_BACKEND_CPU} \
+          --min-instances=${_BACKEND_MIN_INSTANCES} \
+          --max-instances=${_BACKEND_MAX_INSTANCES} \
+          --concurrency=${_BACKEND_CONCURRENCY} \
+          --timeout=${_BACKEND_TIMEOUT} \
+          --set-env-vars="ENVIRONMENT=${_ENV}" \
+          --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID}" \
+          --set-env-vars="VERTEX_AI_LOCATION=${_REGION}" \
           --set-env-vars="FIRESTORE_DATABASE=(default)" \
           --set-env-vars="FI_MCP_BASE_URL=https://fi-mcp-dev-172306289913.asia-south1.run.app" \
           --set-env-vars="FI_MCP_TIMEOUT=30" \
@@ -90,14 +90,14 @@ steps:
           --set-env-vars="LOG_LEVEL=INFO" \
           --set-secrets="JWT_SECRET_KEY=jwt-secret-key:latest" \
           --set-secrets="FI_MCP_API_KEY=fi-mcp-api-key:latest" \
-          --labels="app=avestoai,component=backend,environment=$${_ENV}" \
-          --tag=$${_ENV}
+          --labels="app=avestoai,component=backend,environment=${_ENV}" \
+          --tag=${_ENV}
         
         echo "✅ Backend deployed successfully"
         
         # Get backend URL for frontend
-        BACKEND_URL=$$(gcloud run services describe avestoai-backend-$${_ENV} \
-          --region=$${_REGION} \
+        BACKEND_URL=$$(gcloud run services describe avestoai-backend-${_ENV} \
+          --region=${_REGION} \
           --format='value(status.url)')
         echo "Backend URL: $$BACKEND_URL"
         echo "$$BACKEND_URL" > /workspace/backend_url.txt
@@ -144,31 +144,31 @@ steps:
         BACKEND_URL=$$(cat /workspace/backend_url.txt)
         echo "Using backend URL: $$BACKEND_URL"
         
-        gcloud run deploy avestoai-frontend-$${_ENV} \
-          --image=$${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/$${PROJECT_ID}/avestoai-repo/frontend:$${SHORT_SHA} \
-          --region=$${_REGION} \
+        gcloud run deploy avestoai-frontend-${_ENV} \
+          --image=${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:${SHORT_SHA} \
+          --region=${_REGION} \
           --platform=managed \
           --allow-unauthenticated \
-          --service-account=avestoai-backend@$${PROJECT_ID}.iam.gserviceaccount.com \
-          --memory=$${_FRONTEND_MEMORY} \
-          --cpu=$${_FRONTEND_CPU} \
-          --min-instances=$${_FRONTEND_MIN_INSTANCES} \
-          --max-instances=$${_FRONTEND_MAX_INSTANCES} \
-          --concurrency=$${_FRONTEND_CONCURRENCY} \
-          --timeout=$${_FRONTEND_TIMEOUT} \
+          --service-account=avestoai-backend@${PROJECT_ID}.iam.gserviceaccount.com \
+          --memory=${_FRONTEND_MEMORY} \
+          --cpu=${_FRONTEND_CPU} \
+          --min-instances=${_FRONTEND_MIN_INSTANCES} \
+          --max-instances=${_FRONTEND_MAX_INSTANCES} \
+          --concurrency=${_FRONTEND_CONCURRENCY} \
+          --timeout=${_FRONTEND_TIMEOUT} \
           --port=8001 \
-          --set-env-vars="ENVIRONMENT=$${_ENV}" \
+          --set-env-vars="ENVIRONMENT=${_ENV}" \
           --set-env-vars="API_BASE_URL=$$BACKEND_URL" \
           --set-env-vars="CHAINLIT_HOST=0.0.0.0" \
           --set-env-vars="CHAINLIT_PORT=8001" \
-          --labels="app=avestoai,component=frontend,environment=$${_ENV}" \
-          --tag=$${_ENV}
+          --labels="app=avestoai,component=frontend,environment=${_ENV}" \
+          --tag=${_ENV}
         
         echo "✅ Frontend deployed successfully"
         
         # Get frontend URL
-        FRONTEND_URL=$$(gcloud run services describe avestoai-frontend-$${_ENV} \
-          --region=$${_REGION} \
+        FRONTEND_URL=$$(gcloud run services describe avestoai-frontend-${_ENV} \
+          --region=${_REGION} \
           --format='value(status.url)')
         echo "Frontend URL: $$FRONTEND_URL"
         echo "$$FRONTEND_URL" > /workspace/frontend_url.txt
@@ -240,9 +240,9 @@ steps:
       - |
         echo "📋 Deployment Summary"
         echo "===================="
-        echo "Environment: $${_ENV}"
-        echo "Build ID: $${BUILD_ID}"
-        echo "Commit SHA: $${SHORT_SHA}"
+        echo "Environment: ${_ENV}"
+        echo "Build ID: ${BUILD_ID}"
+        echo "Commit SHA: ${SHORT_SHA}"
         echo ""
         
         BACKEND_URL=$$(cat /workspace/backend_url.txt)
@@ -267,14 +267,14 @@ steps:
         echo ""
         
         echo "🏷️ Image Tags:"
-        echo "  Backend: $${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/$${PROJECT_ID}/avestoai-repo/backend:$${SHORT_SHA}"
-        echo "  Frontend: $${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/$${PROJECT_ID}/avestoai-repo/frontend:$${SHORT_SHA}"
+        echo "  Backend: ${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/backend:${SHORT_SHA}"
+        echo "  Frontend: ${_ARTIFACT_REGISTRY_LOCATION}-docker.pkg.dev/${PROJECT_ID}/avestoai-repo/frontend:${SHORT_SHA}"
         echo ""
         
         echo "🎉 Deployment completed successfully!"
         
         # Save URLs to build metadata
-        echo "{\"backend_url\":\"$$BACKEND_URL\",\"frontend_url\":\"$$FRONTEND_URL\",\"environment\":\"$${_ENV}\",\"build_id\":\"$${BUILD_ID}\"}" > /workspace/deployment_urls.json
+        echo "{\"backend_url\":\"$$BACKEND_URL\",\"frontend_url\":\"$$FRONTEND_URL\",\"environment\":\"${_ENV}\",\"build_id\":\"${BUILD_ID}\"}" > /workspace/deployment_urls.json
     waitFor: ['verify-backend', 'verify-frontend']
 
 # ================================================================
@@ -319,6 +319,9 @@ options:
 
   # Logging configuration
   logging: 'CLOUD_LOGGING_ONLY'
+
+  # Substitution option to allow all defined substitutions
+  substitution_option: 'ALLOW_LOOSE'
 
 # ================================================================
 # TIMEOUT (Top-level configuration)
