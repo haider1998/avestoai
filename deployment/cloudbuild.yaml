@@ -1,4 +1,4 @@
-# deployment/cloudbuild.yaml
+# deployment/cloudbuild.yaml - Optimized for faster builds
 steps:
   # ============================================================================
   # PREPARATION STEPS
@@ -32,14 +32,20 @@ steps:
         gcloud auth configure-docker ${_REGION}-docker.pkg.dev
 
   # ============================================================================
-  # BACKEND BUILD AND DEPLOY
+  # PARALLEL BUILD STAGES - BUILD BOTH FRONTEND AND BACKEND SIMULTANEOUSLY
   # ============================================================================
 
-  # Step 3: Build backend Docker image
+  # Step 3: Build backend Docker image with BuildKit and caching
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-backend'
+    env:
+      - 'DOCKER_BUILDKIT=1'
     args:
       - 'build'
+      - '--cache-from'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/backend:latest'
+      - '--build-arg'
+      - 'BUILDKIT_INLINE_CACHE=1'
       - '-t'
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/backend:${BUILD_ID}'
       - '-t'
@@ -49,7 +55,33 @@ steps:
       - './backend'
     waitFor: ['configure-docker-auth']
 
-  # Step 4: Push backend image to Artifact Registry
+  # Step 4: Build frontend Docker image with BuildKit and caching
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    env:
+      - 'DOCKER_BUILDKIT=1'
+    args:
+      - 'build'
+      - '--cache-from'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:latest'
+      - '--build-arg'
+      - 'BUILDKIT_INLINE_CACHE=1'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:${BUILD_ID}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:latest'
+      - '--build-arg'
+      - 'API_BASE_URL=${_API_BASE_URL}'
+      - '--build-arg'
+      - 'ENVIRONMENT=${_ENVIRONMENT}'
+      - './frontend-chainlit'
+    waitFor: ['configure-docker-auth']
+
+  # ============================================================================
+  # PARALLEL PUSH STAGES
+  # ============================================================================
+
+  # Step 5: Push backend image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     id: 'push-backend'
     args:
@@ -58,7 +90,20 @@ steps:
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/backend'
     waitFor: ['build-backend']
 
-  # Step 5: Deploy backend to Cloud Run
+  # Step 6: Push frontend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend'
+    waitFor: ['build-frontend']
+
+  # ============================================================================
+  # PARALLEL DEPLOYMENT STAGES
+  # ============================================================================
+
+  # Step 7: Deploy backend to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-backend'
     args:
@@ -94,36 +139,10 @@ steps:
       - '8080'
       - '--tag'
       - '${_ENVIRONMENT}'
+      - '--cpu-boost'  # Enable CPU boost for faster startup
+      - '--execution-environment'
+      - 'gen2'  # Use second generation execution environment
     waitFor: ['push-backend']
-
-  # ============================================================================
-  # FRONTEND BUILD AND DEPLOY
-  # ============================================================================
-
-  # Step 6: Build frontend Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-frontend'
-    args:
-      - 'build'
-      - '-t'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:${BUILD_ID}'
-      - '-t'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:latest'
-      - '--build-arg'
-      - 'API_BASE_URL=${_API_BASE_URL}'
-      - '--build-arg'
-      - 'ENVIRONMENT=${_ENVIRONMENT}'
-      - './frontend-chainlit'
-    waitFor: ['configure-docker-auth']
-
-  # Step 7: Push frontend image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-frontend'
-    args:
-      - 'push'
-      - '--all-tags'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend'
-    waitFor: ['build-frontend']
 
   # Step 8: Deploy frontend to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -159,63 +178,73 @@ steps:
       - '8001'
       - '--tag'
       - '${_ENVIRONMENT}'
-    waitFor: ['push-frontend', 'deploy-backend']
+      - '--cpu-boost'  # Enable CPU boost for faster startup
+      - '--execution-environment'
+      - 'gen2'  # Use second generation execution environment
+    waitFor: ['push-frontend']
 
   # ============================================================================
-  # POST-DEPLOYMENT STEPS
+  # OPTIMIZED HEALTH CHECKS
   # ============================================================================
 
-  # Step 9: Health check backend
+  # Step 9: Concurrent health checks
   - name: 'gcr.io/cloud-builders/curl'
     id: 'health-check-backend'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        echo "Waiting for backend to be ready..."
-        sleep 30
+        echo "Checking backend health..."
+        sleep 15  # Reduced wait time
         
         BACKEND_URL=$(gcloud run services describe avestoai-backend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
         echo "Backend URL: $BACKEND_URL"
         
-        # Health check with retries
-        for i in {1..10}; do
-          if curl -f "$BACKEND_URL/health"; then
+        # Health check with shorter intervals
+        for i in {1..6}; do
+          if curl -f --max-time 10 "$BACKEND_URL/health"; then
             echo "✅ Backend health check passed"
-            break
+            exit 0
           else
-            echo "⏳ Backend not ready, retrying in 10 seconds... ($i/10)"
-            sleep 10
+            echo "⏳ Backend not ready, retrying in 5 seconds... ($i/6)"
+            sleep 5
           fi
         done
+        echo "❌ Backend health check failed"
+        exit 1
     waitFor: ['deploy-backend']
 
-  # Step 10: Health check frontend
   - name: 'gcr.io/cloud-builders/curl'
     id: 'health-check-frontend'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        echo "Waiting for frontend to be ready..."
-        sleep 15
+        echo "Checking frontend health..."
+        sleep 10  # Reduced wait time
         
         FRONTEND_URL=$(gcloud run services describe avestoai-frontend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
         echo "Frontend URL: $FRONTEND_URL"
         
-        # Health check with retries
-        for i in {1..5}; do
-          if curl -f "$FRONTEND_URL" >/dev/null 2>&1; then
+        # Health check with shorter intervals
+        for i in {1..4}; do
+          if curl -f --max-time 10 "$FRONTEND_URL" >/dev/null 2>&1; then
             echo "✅ Frontend health check passed"
-            break
+            exit 0
           else
-            echo "⏳ Frontend not ready, retrying in 10 seconds... ($i/5)"
-            sleep 10
+            echo "⏳ Frontend not ready, retrying in 5 seconds... ($i/4)"
+            sleep 5
           fi
         done
+        echo "❌ Frontend health check failed"
+        exit 1
     waitFor: ['deploy-frontend']
 
-  # Step 11: Update traffic allocation (for production)
+  # ============================================================================
+  # FINAL STEPS
+  # ============================================================================
+
+  # Step 10: Update traffic allocation (for production)
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'update-traffic'
     entrypoint: 'bash'
@@ -239,7 +268,7 @@ steps:
         fi
     waitFor: ['health-check-backend', 'health-check-frontend']
 
-  # Step 12: Display deployment information
+  # Step 11: Display deployment information
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deployment-info'
     entrypoint: 'bash'
@@ -293,29 +322,20 @@ substitutions:
   _API_BASE_URL: 'https://avestoai-backend-${_ENVIRONMENT}-PROJECT_ID.a.run.app'
 
 # ============================================================================
-# BUILD OPTIONS
+# BUILD OPTIONS - OPTIMIZED FOR SPEED
 # ============================================================================
 options:
   # Use high-CPU machine for faster builds
-  machineType: 'E2_HIGHCPU_8'
+  machineType: 'E2_HIGHCPU_32'  # Upgraded to 32 vCPU for faster builds
 
-  # Enable Cloud Logging
+  # Increase disk size for better caching
+  diskSizeGb: 100
+
+  # Enable parallel builds
+  substitutionOption: 'ALLOW_LOOSE'
+
+  # Increase timeout to handle pip installation issues
+  timeout: '3600s'  # 1 hour timeout
+
+  # Enable logging for debugging
   logging: 'CLOUD_LOGGING_ONLY'
-
-  # Set build timeout
-  timeout: '1800s'  # 30 minutes
-
-  # Substitute environment variables in build
-  substitution_option: 'ALLOW_LOOSE'
-
-  # Enable dynamic substitutions
-  dynamic_substitutions: true
-
-# ============================================================================
-# IMAGES TO STORE
-# ============================================================================
-images:
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/backend:${BUILD_ID}'
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/backend:latest'
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:${BUILD_ID}'
-  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/avestoai-repo/frontend:latest'
