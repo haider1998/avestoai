@@ -197,16 +197,16 @@ steps:
         echo "Checking backend health..."
         sleep 15  # Reduced wait time
         
-        BACKEND_URL=$(gcloud run services describe avestoai-backend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
-        echo "Backend URL: $BACKEND_URL"
+        BACKEND_URL=$$(gcloud run services describe avestoai-backend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
+        echo "Backend URL: $$BACKEND_URL"
         
         # Health check with shorter intervals
         for i in {1..6}; do
-          if curl -f --max-time 10 "$BACKEND_URL/health"; then
+          if curl -f --max-time 10 "$$BACKEND_URL/health"; then
             echo "✅ Backend health check passed"
             exit 0
           else
-            echo "⏳ Backend not ready, retrying in 5 seconds... ($i/6)"
+            echo "⏳ Backend not ready, retrying in 5 seconds... ($$i/6)"
             sleep 5
           fi
         done
@@ -223,16 +223,16 @@ steps:
         echo "Checking frontend health..."
         sleep 10  # Reduced wait time
         
-        FRONTEND_URL=$(gcloud run services describe avestoai-frontend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
-        echo "Frontend URL: $FRONTEND_URL"
+        FRONTEND_URL=$$(gcloud run services describe avestoai-frontend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
+        echo "Frontend URL: $$FRONTEND_URL"
         
         # Health check with shorter intervals
         for i in {1..4}; do
-          if curl -f --max-time 10 "$FRONTEND_URL" >/dev/null 2>&1; then
+          if curl -f --max-time 10 "$$FRONTEND_URL" >/dev/null 2>&1; then
             echo "✅ Frontend health check passed"
             exit 0
           else
-            echo "⏳ Frontend not ready, retrying in 5 seconds... ($i/4)"
+            echo "⏳ Frontend not ready, retrying in 5 seconds... ($$i/4)"
             sleep 5
           fi
         done
@@ -279,14 +279,14 @@ steps:
         echo "=========================================="
         
         # Get service URLs
-        BACKEND_URL=$(gcloud run services describe avestoai-backend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
-        FRONTEND_URL=$(gcloud run services describe avestoai-frontend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
+        BACKEND_URL=$$(gcloud run services describe avestoai-backend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
+        FRONTEND_URL=$$(gcloud run services describe avestoai-frontend-${_ENVIRONMENT} --region=${_REGION} --format="value(status.url)")
         
-        echo "🔧 Backend API: $BACKEND_URL"
-        echo "💬 Frontend UI: $FRONTEND_URL"
-        echo "📚 API Docs: $BACKEND_URL/docs"
-        echo "🏥 Health Check: $BACKEND_URL/health"
-        echo "📊 Metrics: $BACKEND_URL/metrics"
+        echo "🔧 Backend API: $$BACKEND_URL"
+        echo "💬 Frontend UI: $$FRONTEND_URL"
+        echo "📚 API Docs: $$BACKEND_URL/docs"
+        echo "🏥 Health Check: $$BACKEND_URL/health"
+        echo "📊 Metrics: $$BACKEND_URL/metrics"
         echo ""
         echo "Environment: ${_ENVIRONMENT}"
         echo "Region: ${_REGION}"
