@@ -65,7 +65,7 @@ def check_service_account_file():
     """Check for service account key file"""
     print("\n🔍 Checking service account key file...")
 
-    service_account_path = "deployment/service-account-key.json"
+    service_account_path = "backend/credentials/avestoai-466417-1e5f06659c0e.json"
     if os.path.exists(service_account_path):
         print(f"✅ Service account file found: {service_account_path}")
         try:
@@ -145,8 +145,8 @@ def fix_authentication():
 
         print("\nOption 2 - Use Service Account (For production):")
         print("   1. Download service account key from Google Cloud Console")
-        print("   2. Save it as 'deployment/service-account-key.json'")
-        print("   3. Set environment variable: GOOGLE_APPLICATION_CREDENTIALS=deployment/service-account-key.json")
+        print("   2. Save it as 'backend/credentials/avestoai-466417-1e5f06659c0e.json'")
+        print("   3. Set environment variable: GOOGLE_APPLICATION_CREDENTIALS=backend/credentials/avestoai-466417-1e5f06659c0e.json")
 
     elif adc_path and not service_account_path:
         print("\n✅ Using Application Default Credentials")

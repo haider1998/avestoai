@@ -140,8 +140,8 @@ setup_service_accounts() {
 
     # Create service account key
     mkdir -p credentials
-    if [ ! -f "./credentials/service-account-key.json" ]; then
-        gcloud iam service-accounts keys create ./credentials/service-account-key.json \
+    if [ ! -f "./backend/credentials/avestoai-466417-1e5f06659c0e.json" ]; then
+        gcloud iam service-accounts keys create ./backend/credentials/avestoai-466417-1e5f06659c0e.json \
             --iam-account=avestoai-backend@$PROJECT_ID.iam.gserviceaccount.com
     fi
 
@@ -303,7 +303,7 @@ create_startup_script() {
 echo "🚀 Starting AvestoAI Development Environment"
 
 # Set environment variables
-export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/credentials/service-account-key.json"
+export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/backend/credentials/avestoai-466417-1e5f06659c0e.json"
 
 # Function to start backend
 start_backend() {

@@ -46,15 +46,23 @@ class UserService:
     async def authenticate_user(self, email: str, password: str) -> Optional[Dict[str, Any]]:
         """Authenticate user with email and password"""
         try:
+            logger.info("🔍 Authenticating user", email=email)
+
             # Get user by email
             user = await self.firestore.get_user_by_email(email)
 
             if not user:
+                logger.warning("⚠️ User not found", email=email)
                 return None
+
+            logger.info("✅ User found", user_id=user["user_id"])
 
             # Verify password
             if not self.auth.verify_password(password, user["password_hash"]):
+                logger.warning("⚠️ Password verification failed", email=email)
                 return None
+
+            logger.info("✅ Password verified successfully", user_id=user["user_id"])
 
             # Update last login
             await self.firestore.update_user(user["user_id"], {

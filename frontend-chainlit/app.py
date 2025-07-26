@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://0.0.0.0:8000")
 API_TIMEOUT = 30
 
 # Global variables

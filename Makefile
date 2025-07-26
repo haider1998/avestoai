@@ -58,7 +58,7 @@ dev-local:
 dev-backend:
 	@echo "🔧 Starting backend only..."
 	cd backend && \
-	export GOOGLE_APPLICATION_CREDENTIALS="$(PWD)/credentials/service-account-key.json" && \
+	export GOOGLE_APPLICATION_CREDENTIALS="$(PWD)/backend/credentials/avestoai-466417-1e5f06659c0e.json" && \
 	python app/main.py
 
 dev-frontend:

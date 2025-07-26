@@ -23,26 +23,24 @@ class FirestoreService:
 
         # Initialize Firestore client with proper authentication
         try:
-            # Check if service account file exists
-            service_account_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-            if service_account_path and os.path.exists(service_account_path):
-                # Use service account file
-                credentials = service_account.Credentials.from_service_account_file(
-                    service_account_path
-                )
-                self.db = firestore.Client(
-                    project=settings.GOOGLE_CLOUD_PROJECT,
-                    credentials=credentials
-                )
-                logger.info("✅ Using service account credentials for Firestore")
-            else:
-                # Use default application credentials (from gcloud auth application-default login)
-                self.db = firestore.Client(project=settings.GOOGLE_CLOUD_PROJECT)
-                logger.info("✅ Using default application credentials for Firestore")
+            # Get service account path from settings
+            service_account_path = settings.GOOGLE_APPLICATION_CREDENTIALS
+            
+            if not os.path.exists(service_account_path):
+                raise FileNotFoundError(f"Service account file not found at: {service_account_path}")
+            
+            # Use service account file
+            credentials = service_account.Credentials.from_service_account_file(
+                service_account_path
+            )
+            self.db = firestore.Client(
+                project=settings.GOOGLE_CLOUD_PROJECT,
+                credentials=credentials
+            )
+            logger.info("✅ Using service account credentials for Firestore")
         except Exception as e:
             logger.error("❌ Failed to initialize Firestore client", error=str(e))
-            # Fallback to default client
-            self.db = firestore.Client(project=settings.GOOGLE_CLOUD_PROJECT)
+            raise
 
         # Collection references
         self.users_collection = "users"

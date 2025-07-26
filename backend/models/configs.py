@@ -14,6 +14,15 @@ class Settings(BaseSettings):
     GOOGLE_CLOUD_PROJECT: str = "avestoai-466417"
     VERTEX_AI_LOCATION: str = "us-central1"
     FIRESTORE_DATABASE: str = "(default)"
+    GOOGLE_APPLICATION_CREDENTIALS: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "credentials", "avestoai-466417-1e5f06659c0e.json"))
+
+    # Development Settings
+    DEV_AUTO_RELOAD: bool = True
+    DEV_CORS_ALL_ORIGINS: bool = True
+    REQUEST_TIMEOUT_SECONDS: int = 30
+    
+    # Chainlit
+    CHAINLIT_AUTH_SECRET: str = "8CKne^4*k~2T,uF3.LQI~oy9fA2Zm9oJR.bF2kVF5nCNPi%Pq8hI%$%BndEYZTW%"
 
     # Authentication
     JWT_SECRET_KEY: str = "8CKne^4*k~2T,uF3.LQI~oy9fA2Zm9oJR.bF2kVF5nCNPi%Pq8hI%$%BndEYZTW%gcloud auth application-default login"
