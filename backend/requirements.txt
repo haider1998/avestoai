@@ -127,7 +127,6 @@ posthog==3.25.0
 prometheus_client==0.22.1
 propcache==0.3.2
 proto-plus==1.26.1
-protobuf==5.29.5
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
@@ -142,7 +141,6 @@ python-dotenv==1.1.1
 python-engineio==4.12.2
 python-multipart==0.0.18
 python-socketio==5.13.0
-# pywin32==311  # Removed - Windows-specific package
 PyYAML==6.0.2
 referencing==0.36.2
 regex==2024.11.6
