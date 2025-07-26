@@ -319,7 +319,7 @@ substitutions:
   _FRONTEND_MAX_INSTANCES: '50'
 
   # API URL (will be set after backend deployment)
-  _API_BASE_URL: 'https://avesto-ai-api-${_ENVIRONMENT}-PROJECT_ID.a.run.app'
+  _API_BASE_URL: 'https://avestoai-backend-${_ENVIRONMENT}-${PROJECT_ID}.a.run.app'
 
 # ============================================================================
 # BUILD OPTIONS - OPTIMIZED FOR SPEED
