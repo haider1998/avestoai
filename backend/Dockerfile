@@ -71,4 +71,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
 
 # Start application with proper signal handling for Cloud Run
-CMD exec python app/main.py
+# CMD exec python app/main.py
+CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8080"]

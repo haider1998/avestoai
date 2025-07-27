@@ -9,12 +9,13 @@ import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
 from models.configs import Settings
 import urllib.parse
+from flask import request
 
 logger = structlog.get_logger()
 
 
 class FiMCPService:
-    """Service to interact with Fi Money MCP server without authentication"""
+    """Service to interact with Fi Money MCP server with proper authentication"""
 
     def __init__(self, settings: Settings):
         self.settings = settings
@@ -89,7 +90,7 @@ class FiMCPService:
             }
 
     async def initiate_session(self, mobile_number: str, scenario: str = "balanced") -> Dict[str, Any]:
-        """Initiate Fi MCP session for a mobile number without authentication"""
+        """Initiate Fi MCP session for a mobile number"""
         try:
             logger.info("🔐 Initiating Fi MCP session", mobile_number=mobile_number, scenario=scenario)
 
@@ -99,41 +100,77 @@ class FiMCPService:
             # Map scenario to test phone number
             test_phone = self.test_scenarios.get(scenario, "1313131313")
 
-            # Store session data without authentication requirements
+            # Store session data
             session_data = {
                 "session_id": session_id,
                 "mobile_number": mobile_number,
                 "test_phone": test_phone,
                 "scenario": scenario,
+                "is_authenticated": False,
                 "created_at": datetime.now(),
-                "last_activity": datetime.now()
+                "last_activity": datetime.now(),
+                "login_url": None
             }
+
+            # Try making a test call to get login URL if needed
+            try:
+                test_response = await self._make_mcp_call(session_id, "fetch_net_worth", {})
+
+                if test_response.get("error") and "login_url" in str(test_response.get("error", {})):
+                    # Extract login URL from error
+                    error_data = test_response.get("error", {})
+                    login_url = error_data.get("data", {}).get("login_url")
+                    if login_url:
+                        session_data["login_url"] = login_url
+                        session_data["requires_authentication"] = True
+                    else:
+                        session_data["requires_authentication"] = True
+                else:
+                    # Already authenticated or no auth required
+                    session_data["is_authenticated"] = True
+                    session_data["requires_authentication"] = False
+
+            except Exception as e:
+                # Assume authentication required
+                session_data["requires_authentication"] = True
+                logger.info("Test call failed, assuming auth required", error=str(e))
 
             # Store session
             self.active_sessions[mobile_number] = session_data
 
             return {
                 "session_id": session_id,
-                "scenario": scenario
+                "login_url": session_data.get("login_url"),
+                "requires_authentication": session_data["requires_authentication"]
             }
 
         except Exception as e:
             logger.error("❌ Failed to initiate Fi MCP session", error=str(e))
             raise
 
+
     async def switch_scenario(self, mobile_number: str, new_scenario: str) -> Dict[str, Any]:
         """Switch Fi MCP scenario for a user"""
         try:
             session_data = self.active_sessions.get(mobile_number)
             if not session_data:
-                # Create new session if none exists
-                return await self.initiate_session(mobile_number, new_scenario)
+                return {"success": False, "message": "No active session"}
 
             # Update scenario and test phone
             old_scenario = session_data.get("scenario", "balanced")
             session_data["scenario"] = new_scenario
             session_data["test_phone"] = self.test_scenarios.get(new_scenario, "1313131313")
             session_data["last_activity"] = datetime.now()
+
+            # May need to re-authenticate with new phone number
+            session_data["is_authenticated"] = False
+
+            # Try to authenticate automatically
+            await self.verify_authentication(
+                session_data["session_id"],
+                mobile_number,
+                "123456"  # Default OTP
+            )
 
             logger.info("✅ Scenario switched successfully",
                         mobile_number=mobile_number,

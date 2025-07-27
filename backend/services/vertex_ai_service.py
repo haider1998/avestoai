@@ -50,8 +50,8 @@ class VertexAIService:
             vertexai.init(project=self.project_id, location=self.location)
 
         # Initialize models
-        self.gemini_pro = GenerativeModel("gemini-1.5-pro")
-        self.gemini_flash = GenerativeModel("gemini-1.5-flash")
+        self.gemini_pro = GenerativeModel("gemini-2.5-pro")
+        self.gemini_flash = GenerativeModel("gemini-2.5-flash")
 
         # Safety settings for financial advice
         self.safety_settings = {
