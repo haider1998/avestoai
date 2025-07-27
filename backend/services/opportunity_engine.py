@@ -4,9 +4,9 @@ import json
 import numpy as np
 from typing import List, Dict, Optional, Any
 import structlog
-from backend.services.vertex_ai_service import VertexAIService
-from backend.services.firestore_service import FirestoreService
-from backend.services.fi_mcp_service import FiMCPService
+from services.vertex_ai_service import VertexAIService
+from services.firestore_service import FirestoreService
+from services.fi_mcp_service import FiMCPService
 
 logger = structlog.get_logger()
 

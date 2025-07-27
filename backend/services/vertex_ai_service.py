@@ -12,7 +12,7 @@ import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
 import os
 from google.oauth2 import service_account
-from backend.models.configs import Settings
+from models.configs import Settings
 
 logger = structlog.get_logger()
 

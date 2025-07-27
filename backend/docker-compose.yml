@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  avestoai-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - GOOGLE_CLOUD_PROJECT=avestoai-466417
+      - VERTEX_AI_LOCATION=us-central1
+      - FIRESTORE_DATABASE=(default)
+      - FI_MCP_BASE_URL=https://fi-mcp-dev-172306289913.asia-south1.run.app
+      - FI_MCP_TIMEOUT=30
+      - FI_MCP_MAX_RETRIES=3
+      - FI_MCP_DEFAULT_SCENARIO=balanced
+      - ALLOWED_ORIGINS=["http://localhost:3000","http://localhost:8001","http://localhost:8002","https://avestoai.com"]
+      - ALLOWED_HOSTS=["*"]
+      - RATE_LIMIT_CALLS=100
+      - RATE_LIMIT_PERIOD=60
+      - EXTERNAL_API_TIMEOUT=30
+      - MAX_CONCURRENT_REQUESTS=100
+      - CACHE_TTL=300
+      - ENABLE_METRICS=true
+      - LOG_LEVEL=INFO
+      - ENABLE_PREDICTIVE_ANALYSIS=true
+      - ENABLE_REAL_TIME_STREAMING=true
+      - ENABLE_ADVANCED_CHARTS=true
+      - ENABLE_FI_MCP_INTEGRATION=true
+      - ENABLE_VOICE_CONVERSATIONS=true
+    volumes:
+      - ./credentials:/app/credentials:ro
+      - ./.env:/app/.env:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - avestoai-network
+
+networks:
+  avestoai-network:
+    driver: bridge

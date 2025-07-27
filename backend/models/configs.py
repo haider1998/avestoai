@@ -1,4 +1,4 @@
-# backend/models/config.py
+# backend/models/configs.py
 from pydantic_settings import BaseSettings
 from typing import List, Optional, Dict, Any
 import os
@@ -67,15 +67,21 @@ class Settings(BaseSettings):
     ENABLE_METRICS: bool = True
     LOG_LEVEL: str = "INFO"
 
+    # ElevenLabs Configuration
+    ELEVENLABS_API_KEY: str = "sk_696265e68daa7c9e67c4fc09c476d236376e72bb46246219"
+    ELEVENLABS_DEFAULT_VOICE: str = "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
+    OPENAI_API_KEY: str = "sk-dummy-openai-api-key-for-whisper-stt"  # For Whisper STT
+
     # Feature Flags
     ENABLE_PREDICTIVE_ANALYSIS: bool = True
     ENABLE_REAL_TIME_STREAMING: bool = True
     ENABLE_ADVANCED_CHARTS: bool = True
     ENABLE_FI_MCP_INTEGRATION: bool = True
+    ENABLE_VOICE_CONVERSATIONS: bool = True
 
     class Config:
-        # Look for .env file in the project root (two levels up from this file)
-        env_file = Path(__file__).parent.parent.parent / ".env"
+        # Look for .env file in the project root (one level up from this file)
+        env_file = Path(__file__).parent.parent / ".env"
         case_sensitive = True
 
 

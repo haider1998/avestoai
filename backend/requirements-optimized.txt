@@ -1,156 +1,102 @@
-# Core dependencies - optimized for faster installation
-aiofiles
-aiohappyeyeballs
-aiohttp
-aiosignal
-annotated-types
-anthropic
-anyio
-asyncer
-asyncpg
-attrs
-backoff
-bcrypt
-bidict
-cachetools
-certifi
-cffi
-chainlit
-charset-normalizer
-chevron
-click
-colorama
-cryptography
-dataclasses-json
-Deprecated
-distro
-dnspython
-docstring_parser
-email_validator
-fastapi
-fastapi-middleware
-filelock
-filetype
-frozenlist
-fsspec
+# Optimized requirements for faster Docker builds and reduced conflicts
+# Core FastAPI and web framework dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0.post1
+starlette==0.27.0
+pydantic==2.5.2
+pydantic-settings==2.1.0
+pydantic-core==2.14.5
 
-# Google Cloud dependencies
-google-api-core
-google-auth
-google-cloud-aiplatform
-google-cloud-bigquery
-google-cloud-core
-google-cloud-firestore
-google-cloud-monitoring
-google-cloud-resource-manager
-google-cloud-secret-manager
-google-cloud-storage
-google-crc32c
-google-genai
-google-resumable-media
-googleapis-common-protos
-grpc-google-iam-v1
-grpcio
-grpcio-status
+# HTTP and networking - essential only
+httpx==0.25.2
+httpcore==1.0.2
+h11==0.14.0
+requests==2.31.0
+urllib3==2.1.0
+aiohttp==3.9.1
+aiosignal==1.3.1
 
-# HTTP and networking
-h11
-httpcore
-httpx
-httpx-sse
-huggingface-hub
-idna
+# Async utilities
+anyio==4.2.0
+asyncer==0.0.2
+nest-asyncio==1.5.8
 
-# Core utilities
-importlib_metadata
-inflection
-iniconfig
-Jinja2
-jiter
-jsonschema
-jsonschema-specifications
-jwt
-Lazify
-literalai
-MarkupSafe
-marshmallow
-mcp
-monotonic
-multidict
-mypy_extensions
-narwhals
-nest-asyncio
-numpy
-ollama
+# Google Cloud dependencies - core only
+google-cloud-aiplatform==1.38.1
+google-cloud-firestore==2.13.1
+google-cloud-storage==2.10.0
+google-cloud-secret-manager==2.16.4
+google-cloud-core==2.4.1
+google-auth==2.25.2
+google-api-core==2.15.0
+googleapis-common-protos==1.62.0
+grpcio==1.60.0
+grpcio-status==1.60.0
+protobuf==4.25.1
 
-# OpenTelemetry - CORE ONLY (reduced set to avoid timeouts)
-opentelemetry-api
-opentelemetry-sdk
-opentelemetry-semantic-conventions
-opentelemetry-proto
-opentelemetry-exporter-otlp
-opentelemetry-instrumentation
-opentelemetry-instrumentation-logging
-opentelemetry-instrumentation-requests
-opentelemetry-instrumentation-sqlalchemy
-opentelemetry-instrumentation-urllib3
-# Only include essential AI instrumentation packages
-traceloop-sdk
-opentelemetry-instrumentation-openai
-opentelemetry-instrumentation-anthropic
-opentelemetry-instrumentation-vertexai
+# AI and ML dependencies - essential only
+google-generativeai==0.3.2
+anthropic==0.7.8
+tiktoken==0.5.2
+tokenizers==0.15.0
 
-# Core application dependencies
-packaging
-plotly
-pluggy
-posthog
-prometheus_client
-propcache
-proto-plus
-protobuf
-pyasn1
-pyasn1_modules
-pycparser
-pydantic
-pydantic-settings
-pydantic_core
-Pygments
-PyJWT
-pytest
-python-dateutil
-python-dotenv
-python-engineio
-python-multipart
-python-socketio
-PyYAML
-referencing
-regex
-requests
-rpds-py
-rsa
-shapely
-simple-websocket
-six
-sniffio
-sse-starlette
-starlette
-structlog
-syncer
-tenacity
-tiktoken
-tokenizers
-tomli
-tqdm
-typing-inspect
-typing-inspection
-typing_extensions
-unicorn
-urllib3
-uvicorn
-watchfiles
-websockets
-wrapt
-wsproto
-yarl
-zipp
+# Data processing - minimal set
+numpy==1.26.2
+structlog==23.2.0
+tenacity==8.2.3
+cachetools==5.3.2
+
+# Authentication and security
+PyJWT==2.8.0
+bcrypt==4.1.2
+cryptography==42.0.8
+
+# Database
+asyncpg==0.29.0
+
+# File handling
+aiofiles==23.2.1
+python-multipart==0.0.6
+
+# Configuration
+python-dotenv==1.0.0
+click==8.1.7
+
+# Monitoring - minimal set
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+
+# WebSocket support
+websockets==12.0
+sse-starlette==1.8.2
+
+# Templating
+Jinja2==3.1.2
+MarkupSafe==2.1.3
+
+# JSON validation
+jsonschema==4.20.0
+marshmallow==3.20.1
+
+# Essential utilities
+attrs==23.1.0
+certifi==2023.11.17
+charset-normalizer==3.3.2
+idna==3.6
+typing-extensions==4.9.0
+packaging==23.2
+python-dateutil==2.8.2
+PyYAML==6.0.1
+
+# MCP integration
+mcp==0.4.0
+
+# Email validation
+email-validator==2.1.0.post1
+
+# Additional required utilities
+sniffio==1.3.0
+frozenlist==1.4.0
+multidict==6.0.4
+yarl==1.9.4

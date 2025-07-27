@@ -7,7 +7,7 @@ import asyncio
 from typing import Dict, List, Optional, Any
 import structlog
 import uuid
-from backend.models.configs import Settings
+from models.configs import Settings
 
 logger = structlog.get_logger()
 

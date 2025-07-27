@@ -17,14 +17,15 @@ from prometheus_client import Counter, Histogram, generate_latest
 import time
 
 # Import our services (removed auth and user services)
-from backend.services.vertex_ai_service import VertexAIService
-from backend.services.firestore_service import FirestoreService
-from backend.services.opportunity_engine import OpportunityEngine
-from backend.services.fi_mcp_service import FiMCPService
-from backend.models.schemas import *
-from backend.models.configs import get_settings
-from backend.utils.logging_config import setup_logging
-from backend.utils.middleware import MetricsMiddleware, RateLimitMiddleware
+from services.vertex_ai_service import VertexAIService
+from services.firestore_service import FirestoreService
+from services.opportunity_engine import OpportunityEngine
+from services.fi_mcp_service import FiMCPService
+from services.agentic_service import AgenticService
+from models.schemas import *
+from models.configs import get_settings
+from utils.logging_config import setup_logging
+from utils.middleware import MetricsMiddleware, RateLimitMiddleware
 
 # Setup logging
 setup_logging()
@@ -70,6 +71,14 @@ async def lifespan(app: FastAPI):
             services['vertex_ai'],
             services['firestore'],
             services['fi_mcp']
+        )
+        
+        # Initialize agentic service
+        services['agentic'] = AgenticService(
+            services['vertex_ai'],
+            services['firestore'],
+            services['fi_mcp'],
+            settings
         )
 
         # Test connections
@@ -553,6 +562,73 @@ async def chat_with_ai(request: ChatRequest):
                      mobile_number=request.mobile_number,
                      error=str(e))
         raise HTTPException(status_code=500, detail="Chat processing failed")
+
+
+@app.post("/api/v1/agentic-chat", response_model=ChatResponse, tags=["Agentic AI"])
+async def agentic_chat(request: ChatRequest):
+    """Agentic AI interface that plans, executes, and responds intelligently"""
+    start_time = time.time()
+
+    try:
+        logger.info("🤖 Processing agentic chat message",
+                    mobile_number=request.mobile_number,
+                    message_length=len(request.message))
+
+        # Check Fi MCP authentication
+        auth_status = await services['fi_mcp'].get_authentication_status(request.mobile_number)
+        if not auth_status["is_authenticated"]:
+            raise HTTPException(status_code=401, detail="Fi MCP authentication required")
+
+        # Get conversation history
+        conversation_history = await services['firestore'].get_conversation_history(
+            request.mobile_number,
+            limit=10
+        )
+
+        # Use agentic service for intelligent response
+        agentic_response = await services['agentic'].respond_intelligently(
+            query=request.message,
+            mobile_number=request.mobile_number,
+            conversation_history=conversation_history
+        )
+
+        # Store conversation
+        await services['firestore'].store_conversation_turn(
+            request.mobile_number,
+            request.message,
+            agentic_response.get("response", "")
+        )
+
+        processing_time = (time.time() - start_time) * 1000
+
+        # Convert agentic response to ChatResponse format
+        chat_response = ChatResponse(
+            response=agentic_response.get("response", ""),
+            suggestions=agentic_response.get("recommendations", []),
+            charts=[],  # Can be enhanced later
+            confidence=agentic_response.get("confidence", 0.8),
+            conversation_id=agentic_response.get("plan_id", ""),
+            requires_action=len(agentic_response.get("action_plan", {})) > 0,
+            actions=[agentic_response.get("action_plan", {})],
+            processing_time=processing_time,
+            data_sources=["fi_mcp", "vertex_ai", "firestore", "agentic"],
+            mobile_number=request.mobile_number
+        )
+
+        logger.info("✅ Agentic chat response generated",
+                    mobile_number=request.mobile_number,
+                    processing_time=f"{processing_time:.1f}ms",
+                    plan_id=agentic_response.get("plan_id"))
+
+        return chat_response
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("❌ Agentic chat processing failed",
+                     mobile_number=request.mobile_number,
+                     error=str(e))
+        raise HTTPException(status_code=500, detail="Agentic chat processing failed")
 
 
 # Fi MCP specific endpoints
