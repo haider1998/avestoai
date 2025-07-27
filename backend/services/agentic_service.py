@@ -331,7 +331,7 @@ class AgenticService:
             from services.opportunity_engine import OpportunityEngine
             engine = OpportunityEngine(self.vertex_ai, self.firestore, self.fi_mcp)
             financial_data = await self.fi_mcp.get_user_financial_data(mobile_number)
-            return await engine.generate_opportunities(financial_data, mobile_number=mobile_number)
+            return await engine.generate_opportunities(financial_data)
         
         elif task.action == AgentAction.ASSESS_RISK:
             financial_data = await self.fi_mcp.get_user_financial_data(mobile_number)

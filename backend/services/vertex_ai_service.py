@@ -65,16 +65,16 @@ class VertexAIService:
                 generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
         }
 
-        # Generation configs
+        # Generation configs - reduced to prevent token limits
         self.pro_config = {
-            "max_output_tokens": 4096,
+            "max_output_tokens": 2048,  # Reduced from 4096
             "temperature": 0.3,
             "top_p": 0.8,
             "top_k": 40,
         }
 
         self.flash_config = {
-            "max_output_tokens": 2048,
+            "max_output_tokens": 1024,  # Reduced from 2048
             "temperature": 0.2,
             "top_p": 0.9,
             "top_k": 40,
@@ -294,6 +294,135 @@ class VertexAIService:
         except Exception as e:
             logger.error("❌ Anomaly detection failed", error=str(e))
             return []
+
+    async def analyze_market_opportunities(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze market opportunities for financial optimization"""
+        logger.info("📈 Analyzing market opportunities for financial optimization")
+
+        try:
+            prompt = f"""
+            Analyze current market conditions and identify financial opportunities for this user:
+
+            USER FINANCIAL PROFILE:
+            {json.dumps(user_data, indent=2)}
+
+            MARKET CONTEXT:
+            - Current Date: {datetime.now().strftime('%Y-%m-%d')}
+            - Interest Rates: Repo rate 6.5%, FD rates 6.5-7.5%
+            - Inflation: ~4.2%
+            - Market Volatility: Moderate
+
+            Identify opportunities in these categories:
+            1. Investment opportunities (stocks, mutual funds, bonds)
+            2. Savings optimization (high-yield accounts, FDs)
+            3. Debt optimization (refinancing, consolidation)
+            4. Tax optimization strategies
+            5. Insurance optimization
+            6. Real estate opportunities
+
+            Return JSON:
+            {{
+                "market_opportunities": [
+                    {{
+                        "type": "investment|savings|debt|tax|insurance|real_estate",
+                        "title": "Clear opportunity title",
+                        "description": "Detailed explanation of the opportunity",
+                        "potential_annual_value": 25000,
+                        "confidence": 0.8,
+                        "risk_level": "low|medium|high",
+                        "time_horizon": "immediate|short_term|medium_term|long_term",
+                        "action_steps": [
+                            "Specific step 1",
+                            "Specific step 2"
+                        ],
+                        "prerequisites": ["What you need before starting"],
+                        "market_context": "Current market conditions supporting this opportunity"
+                    }}
+                ],
+                "market_summary": {{
+                    "overall_opportunity_score": 75,
+                    "best_categories": ["investment", "savings"],
+                    "market_sentiment": "cautiously_optimistic",
+                    "key_trends": ["Rising interest rates", "Sector rotation", "Value opportunities"]
+                }}
+            }}
+
+            Focus on opportunities relevant to the user's financial situation and risk tolerance.
+            Provide specific amounts and realistic timelines.
+            """
+
+            response = await asyncio.to_thread(
+                self.gemini_pro.generate_content,
+                prompt,
+                generation_config=self.pro_config,
+                safety_settings=self.safety_settings
+            )
+
+            parsed_response = self._parse_json_response(response.text)
+            
+            # Ensure required structure
+            if "market_opportunities" not in parsed_response:
+                parsed_response["market_opportunities"] = []
+            if "market_summary" not in parsed_response:
+                parsed_response["market_summary"] = {
+                    "overall_opportunity_score": 65,
+                    "best_categories": [],
+                    "market_sentiment": "neutral",
+                    "key_trends": []
+                }
+
+            logger.info("✅ Market opportunities analyzed",
+                        count=len(parsed_response.get("market_opportunities", [])))
+            return parsed_response
+
+        except Exception as e:
+            logger.error("❌ Market opportunities analysis failed", error=str(e))
+            return self._generate_fallback_market_opportunities(user_data)
+
+    def _generate_fallback_market_opportunities(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate fallback market opportunities when AI fails"""
+        return {
+            "market_opportunities": [
+                {
+                    "type": "savings",
+                    "title": "High-Yield Savings Account",
+                    "description": "Move excess cash to high-yield savings earning 7-8% instead of 3-4%",
+                    "potential_annual_value": 15000,
+                    "confidence": 0.9,
+                    "risk_level": "low",
+                    "time_horizon": "immediate",
+                    "action_steps": [
+                        "Research FDIC-insured high-yield savings accounts",
+                        "Compare rates from digital banks",
+                        "Open account and transfer funds"
+                    ],
+                    "prerequisites": ["Excess cash above emergency fund"],
+                    "market_context": "Rising interest rates make high-yield savings attractive"
+                },
+                {
+                    "type": "investment",
+                    "title": "Index Fund SIP",
+                    "description": "Start systematic investment in diversified index funds",
+                    "potential_annual_value": 25000,
+                    "confidence": 0.75,
+                    "risk_level": "medium",
+                    "time_horizon": "long_term",
+                    "action_steps": [
+                        "Research low-cost index funds",
+                        "Start with ₹5,000 monthly SIP",
+                        "Increase amount gradually"
+                    ],
+                    "prerequisites": ["Emergency fund established", "Stable income"],
+                    "market_context": "Market volatility creates good entry points for long-term investors"
+                }
+            ],
+            "market_summary": {
+                "overall_opportunity_score": 70,
+                "best_categories": ["savings", "investment"],
+                "market_sentiment": "cautiously_optimistic",
+                "key_trends": ["Rising interest rates", "Market volatility", "Value opportunities"]
+            }
+        }
 
     async def generate_chat_response(self, message: str, financial_context: Dict[str, Any],
                                      conversation_history: List[Dict[str, str]] = None,

@@ -54,24 +54,44 @@ class AvestoAITester:
             await self.session.close()
 
     async def test_endpoint(self, name: str, method: str, url: str, 
-                          data: Dict = None, expected_status: int = 200) -> bool:
-        """Test a single endpoint"""
+                          data: Dict = None, expected_status: int = 200, 
+                          expect_json: bool = True) -> bool:
+        """Test a single endpoint with proper content type handling"""
         try:
             log_info(f"Testing {name}...")
             start_time = time.time()
             
             if method.upper() == "GET":
                 async with self.session.get(f"{BASE_URL}{url}") as response:
-                    response_data = await response.json()
                     status = response.status
+                    content_type = response.headers.get('content-type', '')
+                    
+                    # Handle different response types
+                    if expect_json and 'application/json' in content_type:
+                        response_data = await response.json()
+                    elif not expect_json and 'text/plain' in content_type:
+                        response_data = await response.text()
+                        # For metrics, just check if it contains prometheus metrics
+                        if url == "/metrics" and "avestoai_" in response_data:
+                            log_info(f"Metrics endpoint returned valid Prometheus data")
+                    else:
+                        # Try JSON first, fallback to text
+                        try:
+                            response_data = await response.json()
+                        except:
+                            response_data = await response.text()
+                            
             elif method.upper() == "POST":
                 async with self.session.post(
                     f"{BASE_URL}{url}", 
                     json=data,
                     headers={"Content-Type": "application/json"}
                 ) as response:
-                    response_data = await response.json()
                     status = response.status
+                    try:
+                        response_data = await response.json()
+                    except:
+                        response_data = await response.text()
             
             duration = (time.time() - start_time) * 1000
             
@@ -90,13 +110,12 @@ class AvestoAITester:
                     "name": name,
                     "status": "FAIL",
                     "duration": duration,
-                
                     "error": f"Status mismatch: expected {expected_status}, got {status}"
                 })
                 return False
                 
         except Exception as e:
-            log_error(f"{name} - Exception: {str(e)}")
+            log_error(f"{name} - Exception: {status}, message='{str(e)}', url='{BASE_URL}{url}'")
             self.test_results.append({
                 "name": name,
                 "status": "ERROR",
@@ -109,14 +128,14 @@ class AvestoAITester:
         log_info("Testing Health & Monitoring Endpoints")
         
         tests = [
-            ("Root Endpoint", "GET", "/"),
-            ("Health Check", "GET", "/health"),
-            ("Metrics", "GET", "/metrics")
+            ("Root Endpoint", "GET", "/", None, 200, True),
+            ("Health Check", "GET", "/health", None, 200, True),
+            ("Metrics", "GET", "/metrics", None, 200, False)  # Metrics returns text/plain
         ]
         
         results = []
-        for name, method, url in tests:
-            result = await self.test_endpoint(name, method, url)
+        for name, method, url, data, expected_status, expect_json in tests:
+            result = await self.test_endpoint(name, method, url, data, expected_status, expect_json)
             results.append(result)
             
         return all(results)

@@ -114,7 +114,9 @@ class FiMCPService:
 
             return {
                 "session_id": session_id,
-                "scenario": scenario
+                "scenario": scenario,
+                "requires_authentication": False,  # Since we're using test data
+                "login_url": None  # No authentication required for test scenarios
             }
 
         except Exception as e:
@@ -853,6 +855,85 @@ class FiMCPService:
                 "monthly_expenses": 75000
             }
         }
+
+    async def verify_authentication(self, session_id: str, mobile_number: str, otp: str) -> Dict[str, Any]:
+        """Verify OTP authentication (simplified for test scenarios)"""
+        try:
+            logger.info("🔐 Verifying Fi MCP authentication", 
+                       mobile_number=mobile_number, session_id=session_id)
+            
+            # Get session data
+            session_data = self.active_sessions.get(mobile_number)
+            if not session_data or session_data.get("session_id") != session_id:
+                return {
+                    "success": False,
+                    "message": "Invalid session"
+                }
+            
+            # For test scenarios, accept any 6-digit OTP
+            if len(otp) == 6 and otp.isdigit():
+                # Update session as authenticated
+                session_data["is_authenticated"] = True
+                session_data["last_activity"] = datetime.now()
+                
+                return {
+                    "success": True,
+                    "scenario": session_data.get("scenario", "balanced"),
+                    "message": "Authentication successful"
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "Invalid OTP format"
+                }
+                
+        except Exception as e:
+            logger.error("❌ Failed to verify authentication", error=str(e))
+            return {
+                "success": False,
+                "message": f"Authentication error: {str(e)}"
+            }
+
+    async def get_authentication_status(self, mobile_number: str) -> Dict[str, Any]:
+        """Get authentication status for a mobile number"""
+        try:
+            session_data = self.active_sessions.get(mobile_number)
+            
+            if not session_data:
+                return {
+                    "is_authenticated": False,
+                    "session_id": None,
+                    "scenario": None,
+                    "last_activity": None
+                }
+            
+            # Check if session is still valid (24 hours)
+            last_activity = session_data.get("last_activity", datetime.now())
+            if datetime.now() - last_activity > timedelta(hours=24):
+                # Session expired
+                del self.active_sessions[mobile_number]
+                return {
+                    "is_authenticated": False,
+                    "session_id": None,
+                    "scenario": None,
+                    "last_activity": None
+                }
+            
+            return {
+                "is_authenticated": session_data.get("is_authenticated", False),
+                "session_id": session_data.get("session_id"),
+                "scenario": session_data.get("scenario"),
+                "last_activity": last_activity.isoformat()
+            }
+            
+        except Exception as e:
+            logger.error("❌ Failed to get authentication status", error=str(e))
+            return {
+                "is_authenticated": False,
+                "session_id": None,
+                "scenario": None,
+                "last_activity": None
+            }
 
     async def cleanup(self):
         """Cleanup resources"""

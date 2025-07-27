@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 AvestoAI - Financial Intelligence Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-crystal-ball"></i>
+                <h1>AvestoAI</h1>
+            </div>
+            <div class="status-indicator" id="statusIndicator">
+                <i class="fas fa-circle"></i>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Authentication Section -->
+            <section class="auth-section" id="authSection">
+                <div class="card">
+                    <h2><i class="fas fa-mobile-alt"></i> Fi MCP Authentication</h2>
+                    <p>Enter your mobile number to access your financial data</p>
+                    
+                    <div class="form-group">
+                        <label for="mobileNumber">Mobile Number</label>
+                        <input type="tel" id="mobileNumber" placeholder="Enter 10-digit mobile number" maxlength="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="scenario">Test Scenario</label>
+                        <select id="scenario">
+                            <option value="balanced">Balanced Portfolio</option>
+                            <option value="aggressive">Aggressive Growth</option>
+                            <option value="conservative">Conservative</option>
+                            <option value="debt_heavy">Debt Heavy</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="initiateAuth()">
+                        <i class="fas fa-key"></i> Authenticate
+                    </button>
+                </div>
+
+                <!-- OTP Section (Hidden initially) -->
+                <div class="card" id="otpSection" style="display: none;">
+                    <h3><i class="fas fa-shield-alt"></i> Enter OTP</h3>
+                    <p>Please enter the OTP sent to your mobile number</p>
+                    
+                    <div class="form-group">
+                        <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6">
+                    </div>
+                    
+                    <button class="btn btn-success" onclick="verifyOTP()">
+                        <i class="fas fa-check"></i> Verify OTP
+                    </button>
+                </div>
+            </section>
+
+            <!-- Dashboard Section (Hidden initially) -->
+            <section class="dashboard-section" id="dashboardSection" style="display: none;">
+                <!-- User Info -->
+                <div class="user-info" id="userInfo">
+                    <h2>Welcome back!</h2>
+                    <div class="user-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-wallet"></i>
+                            <div>
+                                <span class="stat-value" id="netWorth">₹0</span>
+                                <span class="stat-label">Net Worth</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-university"></i>
+                            <div>
+                                <span class="stat-value" id="accountsCount">0</span>
+                                <span class="stat-label">Accounts</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-chart-line"></i>
+                            <div>
+                                <span class="stat-value" id="healthScore">0%</span>
+                                <span class="stat-label">Health Score</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Cards -->
+                <div class="action-grid">
+                    <div class="action-card" onclick="analyzeOpportunities()">
+                        <i class="fas fa-search-dollar"></i>
+                        <h3>Analyze Opportunities</h3>
+                        <p>Discover investment and savings opportunities</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="openDecisionAnalyzer()">
+                        <i class="fas fa-brain"></i>
+                        <h3>Decision Analyzer</h3>
+                        <p>Get AI-powered financial decision insights</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="openChat()">
+                        <i class="fas fa-comments"></i>
+                        <h3>AI Chat</h3>
+                        <p>Ask questions about your finances</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="viewDashboard()">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Financial Dashboard</h3>
+                        <p>View comprehensive financial overview</p>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Chat Modal -->
+        <div class="modal" id="chatModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-robot"></i> AI Financial Assistant</h3>
+                    <span class="close" onclick="closeChat()">&times;</span>
+                </div>
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <i class="fas fa-robot"></i>
+                            <div class="message-content">
+                                Hello! I'm your AI financial assistant. How can I help you today?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask me anything about your finances..." onkeypress="handleChatKeyPress(event)">
+                        <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision Analyzer Modal -->
+        <div class="modal" id="decisionModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-brain"></i> Financial Decision Analyzer</h3>
+                    <span class="close" onclick="closeDecisionAnalyzer()">&times;</span>
+                </div>
+                <div class="decision-form">
+                    <div class="form-group">
+                        <label for="decisionAmount">Amount (₹)</label>
+                        <input type="number" id="decisionAmount" placeholder="Enter amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="decisionCategory">Category</label>
+                        <select id="decisionCategory">
+                            <option value="investment">Investment</option>
+                            <option value="purchase">Purchase</option>
+                            <option value="loan">Loan</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="savings">Savings</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="decisionDescription">Description</label>
+                        <textarea id="decisionDescription" placeholder="Describe your financial decision..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="analyzeDecision()">
+                        <i class="fas fa-chart-line"></i> Analyze Decision
+                    </button>
+                </div>
+                <div class="decision-results" id="decisionResults"></div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

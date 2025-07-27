@@ -306,8 +306,7 @@ async def analyze_opportunities(
         # Generate opportunities using AI
         opportunities = await services['opportunity_engine'].generate_opportunities(
             user_data=fi_data,
-            analysis_type=request.analysis_type,
-            mobile_number=request.mobile_number
+            analysis_type=request.analysis_type
         )
 
         # Store analysis results
@@ -363,13 +362,12 @@ async def predict_decision(request: DecisionRequest):
         financial_state = await services['fi_mcp'].get_current_financial_state(request.mobile_number)
 
         # Enhanced decision request with real data
-        enhanced_request = DecisionRequest(
-            **request.dict(),
-            user_context={
-                **request.user_context,
-                **financial_state
-            }
-        )
+        request_dict = request.dict()
+        request_dict["user_context"] = {
+            **request.user_context,
+            **financial_state
+        }
+        enhanced_request = DecisionRequest(**request_dict)
 
         # Analyze decision using Vertex AI
         decision_analysis = await services['vertex_ai'].analyze_financial_decision(enhanced_request)
