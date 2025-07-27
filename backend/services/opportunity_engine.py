@@ -92,6 +92,131 @@ class OpportunityEngine:
                          mobile_number=mobile_number)
             raise
 
+    async def _analyze_investment_opportunities(self, user_data: Dict[str, Any], mobile_number: Optional[str] = None) -> \
+    List[Dict[str, Any]]:
+        """Analyze potential investment opportunities"""
+        opportunities = []
+
+        try:
+            user_profile = user_data.get("user_profile", {})
+            investments = user_data.get("investments", [])
+            accounts = user_data.get("accounts", [])
+
+            age = user_profile.get("age", 30)
+            annual_income = user_profile.get("annual_income", 0)
+
+            # Calculate total liquid assets
+            total_liquid = sum(
+                acc.get("balance", 0) for acc in accounts
+                if acc.get("type") in ["savings", "checking"]
+            )
+
+            # Calculate current investments
+            total_investments = sum(inv.get("current_value", 0) for inv in investments)
+
+            # Check for investment readiness (emergency fund)
+            monthly_expenses = self._calculate_monthly_expenses(user_data)
+            has_emergency_fund = total_liquid >= (monthly_expenses * 3)
+
+            # Diversification check
+            investment_types = set(inv.get("type", "other") for inv in investments)
+            needs_diversification = len(investment_types) < 3 and total_investments > 100000
+
+            # Retirement planning
+            retirement_investments = sum(
+                inv.get("current_value", 0) for inv in investments
+                if inv.get("category") == "retirement"
+            )
+
+            # SIP opportunity if income is good and investments are low
+            if annual_income > 600000 and total_investments < annual_income * 0.5 and has_emergency_fund:
+                monthly_sip = min(annual_income * 0.15 / 12, 25000)  # 15% of income up to ₹25,000/month
+                five_year_returns = self._calculate_sip_returns(monthly_sip, 5, 0.12)  # 12% annual returns
+
+                opportunities.append({
+                    "id": f"sip_investment_{datetime.now().timestamp()}",
+                    "type": "investment_opportunity",
+                    "priority": "high",
+                    "title": "Start Monthly SIP Investment",
+                    "description": f"Invest ₹{monthly_sip:,.0f}/month in diversified mutual funds",
+                    "potential_annual_value": monthly_sip * 12 * 0.12,  # 12% annual returns
+                    "effort_level": "low",
+                    "time_to_implement": "1 week",
+                    "confidence_score": 0.85,
+                    "risk_level": "medium",
+                    "category": "wealth_building",
+                    "mobile_number": mobile_number,
+                    "action_steps": [
+                        "Research top-performing mutual funds",
+                        "Set up SIP with trusted platform",
+                        "Automate monthly transfers",
+                        "Review performance quarterly"
+                    ],
+                    "financial_impact": {
+                        "monthly_investment": monthly_sip,
+                        "5_year_value": five_year_returns,
+                        "implementation_cost": 0
+                    }
+                })
+
+            # Retirement planning opportunity
+            if age > 25 and retirement_investments < annual_income * age * 0.1:
+                required_retirement_corpus = annual_income * 25  # 25x annual income
+                current_gap = required_retirement_corpus - retirement_investments
+
+                if current_gap > 0:
+                    opportunities.append({
+                        "id": f"retirement_planning_{datetime.now().timestamp()}",
+                        "type": "retirement_planning",
+                        "priority": "medium",
+                        "title": "Retirement Planning Gap",
+                        "description": f"Increase retirement investments to build adequate corpus",
+                        "potential_annual_value": current_gap * 0.08 / (60 - age),  # Value of closing the gap
+                        "effort_level": "medium",
+                        "time_to_implement": "1 month",
+                        "confidence_score": 0.8,
+                        "risk_level": "low",
+                        "category": "long_term_planning",
+                        "mobile_number": mobile_number,
+                        "action_steps": [
+                            "Consult with financial advisor",
+                            "Increase NPS/EPF contributions",
+                            "Set up retirement-focused mutual funds",
+                            "Review allocation annually"
+                        ]
+                    })
+
+            # Diversification opportunity
+            if needs_diversification and total_investments > 0:
+                opportunities.append({
+                    "id": f"diversification_{datetime.now().timestamp()}",
+                    "type": "portfolio_optimization",
+                    "priority": "medium",
+                    "title": "Investment Portfolio Diversification",
+                    "description": "Diversify investments across asset classes to reduce risk",
+                    "potential_annual_value": total_investments * 0.02,  # 2% improved risk-adjusted returns
+                    "effort_level": "medium",
+                    "time_to_implement": "1-2 months",
+                    "confidence_score": 0.75,
+                    "risk_level": "low",
+                    "category": "risk_management",
+                    "mobile_number": mobile_number,
+                    "action_steps": [
+                        "Analyze current portfolio allocation",
+                        "Rebalance across equity, debt, and hybrid funds",
+                        "Consider gold and international exposure",
+                        "Set up automatic rebalancing"
+                    ]
+                })
+
+            return opportunities
+
+        except Exception as e:
+            logger.error("❌ Investment opportunity analysis failed",
+                         error=str(e),
+                         mobile_number=mobile_number)
+            return []
+
     async def _analyze_savings_optimization(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Analyze savings account optimization opportunities"""
         opportunities = []
@@ -252,6 +377,7 @@ class OpportunityEngine:
             for category, monthly_amount in spending_by_category.items():
                 if monthly_amount > 10000:  # Categories with significant spending
                     optimization_potential = self._get_category_optimization_potential(category, monthly_amount)
+
 
                     if optimization_potential["savings"] > 2000:  # Meaningful savings
                         annual_savings = optimization_potential["savings"] * 12
