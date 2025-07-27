@@ -294,11 +294,11 @@ async def analyze_opportunities(
             scenario=auth_status.get("scenario", "balanced")
         )
 
-        # Generate opportunities using AI
+        # FIXED: Pass mobile_number as parameter to generate_opportunities
         opportunities = await services['opportunity_engine'].generate_opportunities(
             user_data=fi_data,
             analysis_type=request.analysis_type,
-            mobile_number=request.mobile_number
+            mobile_number=request.mobile_number  # FIXED: Pass as named parameter
         )
 
         # Store analysis results
@@ -330,7 +330,6 @@ async def analyze_opportunities(
                      error=str(e))
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
-
 @app.post("/api/v1/predict-decision", response_model=DecisionResponse, tags=["Intelligence"])
 async def predict_decision(request: DecisionRequest):
     """Score financial decisions with AI prediction"""
@@ -353,13 +352,21 @@ async def predict_decision(request: DecisionRequest):
         # Get current financial state from Fi MCP
         financial_state = await services['fi_mcp'].get_current_financial_state(request.mobile_number)
 
-        # Enhanced decision request with real data
+        # FIXED: Properly merge user_context without duplication
+        enhanced_context = {
+            **request.user_context,  # Start with existing user context
+            **financial_state        # Add financial state data
+        }
+
+        # Create enhanced request with merged context
         enhanced_request = DecisionRequest(
-            **request.dict(),
-            user_context={
-                **request.user_context,
-                **financial_state
-            }
+            mobile_number=request.mobile_number,
+            amount=request.amount,
+            category=request.category,
+            description=request.description,
+            purchase_date=request.purchase_date,
+            financing_method=request.financing_method,
+            user_context=enhanced_context  # Use merged context
         )
 
         # Analyze decision using Vertex AI

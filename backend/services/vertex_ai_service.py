@@ -122,15 +122,22 @@ class VertexAIService:
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     async def analyze_financial_decision(self, decision_request) -> Dict[str, Any]:
-        """Analyze financial decision using Gemini Pro"""
+        """Analyze financial decision using Gemini Pro with robust error handling"""
         logger.info("🎯 Analyzing financial decision with Gemini Pro",
                     amount=decision_request.amount,
                     category=decision_request.category)
 
-        # Create comprehensive analysis prompt
-        prompt = self._create_decision_analysis_prompt(decision_request)
-
         try:
+            # Validate request data
+            if not hasattr(decision_request, 'mobile_number') or not decision_request.mobile_number:
+                logger.warning("No mobile number provided in decision request")
+
+            if decision_request.amount <= 0:
+                raise ValueError("Amount must be positive")
+
+            # Create comprehensive analysis prompt
+            prompt = self._create_decision_analysis_prompt(decision_request)
+
             start_time = time.time()
 
             response = await asyncio.to_thread(
@@ -145,11 +152,15 @@ class VertexAIService:
             # Parse and validate response
             parsed_response = self._parse_json_response(response.text)
 
+            # Ensure all required fields are present
+            parsed_response = self._validate_decision_response(parsed_response, decision_request)
+
             # Add metadata
             parsed_response.update({
                 "processing_time_ms": processing_time,
-                "model_used": "gemini-1.5-pro",
-                "analysis_timestamp": datetime.now().isoformat()
+                "model_used": "gemini-2.5-pro",
+                "analysis_timestamp": datetime.now().isoformat(),
+                "mobile_number": getattr(decision_request, 'mobile_number', 'unknown')
             })
 
             logger.info("✅ Decision analysis completed",
@@ -161,6 +172,53 @@ class VertexAIService:
         except Exception as e:
             logger.error("❌ Decision analysis failed", error=str(e))
             return self._generate_fallback_decision_analysis(decision_request)
+
+    def _validate_decision_response(self, response: Dict[str, Any], decision_request) -> Dict[str, Any]:
+        """Validate and ensure required fields in decision response"""
+
+        # Ensure score is present and valid
+        if "score" not in response or not isinstance(response["score"], (int, float)):
+            response["score"] = 50  # Default neutral score
+
+        response["score"] = max(0, min(100, int(response["score"])))
+
+        # Ensure explanation is present
+        if "explanation" not in response or not response["explanation"]:
+            response["explanation"] = f"Analysis for ₹{decision_request.amount:,} {decision_request.category} purchase."
+
+        # Ensure reasoning structure
+        if "reasoning" not in response or not isinstance(response["reasoning"], dict):
+            response["reasoning"] = {
+                "affordability": response["score"],
+                "opportunity_cost": max(0, 100 - response["score"]),
+                "goal_alignment": response["score"],
+                "timing": 70,
+                "risk_assessment": 70
+            }
+
+        # Ensure alternatives list
+        if "alternatives" not in response or not isinstance(response["alternatives"], list):
+            response["alternatives"] = [{
+                "option": "Save for 3 months and pay cash",
+                "score": min(100, response["score"] + 15),
+                "reasoning": "Reduces financial stress and avoids interest costs",
+                "pros": ["No debt", "Lower risk"],
+                "cons": ["Delayed gratification"],
+                "financial_impact": {"upfront_cost": 0, "monthly_impact": 0,
+                                     "annual_savings": decision_request.amount * 0.1}
+            }]
+
+        # Ensure other required fields
+        response.setdefault("long_term_impact", {
+            "net_worth_impact_1_year": -decision_request.amount * 0.1,
+            "opportunity_cost_5_years": decision_request.amount * 1.5
+        })
+
+        response.setdefault("risk_factors", ["Consider impact on emergency fund", "Evaluate opportunity cost"])
+        response.setdefault("recommendations", ["Review budget alignment", "Consider timing"])
+        response.setdefault("confidence", 0.7)
+
+        return response
 
     async def calculate_financial_health_score(self, financial_data: Dict[str, Any]) -> int:
         """Calculate comprehensive financial health score"""

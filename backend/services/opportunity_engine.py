@@ -21,37 +21,43 @@ class OpportunityEngine:
 
         logger.info("✅ Opportunity engine initialized")
 
-    async def generate_opportunities(self, user_data: Dict[str, Any], analysis_type: str = "comprehensive") -> Dict[
-        str, Any]:
+    async def generate_opportunities(
+            self,
+            user_data: Dict[str, Any],
+            analysis_type: str = "comprehensive",
+            mobile_number: Optional[str] = None  # ADDED: Accept mobile_number parameter
+    ) -> Dict[str, Any]:
         """Main opportunity generation logic"""
 
-        logger.info("🔍 Generating financial opportunities", analysis_type=analysis_type)
+        logger.info("🔍 Generating financial opportunities",
+                    analysis_type=analysis_type,
+                    mobile_number=mobile_number)
 
         try:
             opportunities = []
 
             # 1. Analyze different opportunity categories
-            savings_ops = await self._analyze_savings_optimization(user_data)
+            savings_ops = await self._analyze_savings_optimization(user_data, mobile_number)
             opportunities.extend(savings_ops)
 
-            investment_ops = await self._analyze_investment_opportunities(user_data)
+            investment_ops = await self._analyze_investment_opportunities(user_data, mobile_number)
             opportunities.extend(investment_ops)
 
-            spending_ops = await self._analyze_spending_optimization(user_data)
+            spending_ops = await self._analyze_spending_optimization(user_data, mobile_number)
             opportunities.extend(spending_ops)
 
-            debt_ops = await self._analyze_debt_optimization(user_data)
+            debt_ops = await self._analyze_debt_optimization(user_data, mobile_number)
             opportunities.extend(debt_ops)
 
-            tax_ops = await self._analyze_tax_opportunities(user_data)
+            tax_ops = await self._analyze_tax_opportunities(user_data, mobile_number)
             opportunities.extend(tax_ops)
 
-            income_ops = await self._analyze_income_enhancement(user_data)
+            income_ops = await self._analyze_income_enhancement(user_data, mobile_number)
             opportunities.extend(income_ops)
 
             # 2. Use AI for advanced analysis if enabled
             if analysis_type == "comprehensive":
-                ai_opportunities = await self._get_ai_enhanced_opportunities(user_data, opportunities)
+                ai_opportunities = await self._get_ai_enhanced_opportunities(user_data, opportunities, mobile_number)
                 opportunities.extend(ai_opportunities)
 
             # 3. Score and rank opportunities
@@ -69,17 +75,21 @@ class OpportunityEngine:
                                              scored_opportunities]) if scored_opportunities else 0.5,
                 "recommendations": recommendations,
                 "analysis_timestamp": datetime.now().isoformat(),
-                "market_context": await self._get_market_context()
+                "market_context": await self._get_market_context(),
+                "mobile_number": mobile_number  # ADDED: Include mobile_number in response
             }
 
             logger.info("✅ Opportunities generated",
                         count=len(scored_opportunities),
-                        total_value=total_annual_value)
+                        total_value=total_annual_value,
+                        mobile_number=mobile_number)
 
             return result
 
         except Exception as e:
-            logger.error("❌ Failed to generate opportunities", error=str(e))
+            logger.error("❌ Failed to generate opportunities",
+                         error=str(e),
+                         mobile_number=mobile_number)
             raise
 
     async def _analyze_savings_optimization(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -159,74 +169,66 @@ class OpportunityEngine:
             logger.error("❌ Savings optimization analysis failed", error=str(e))
             return []
 
-    async def _analyze_investment_opportunities(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Analyze investment optimization opportunities"""
+    async def _analyze_savings_optimization(self, user_data: Dict[str, Any], mobile_number: Optional[str] = None) -> \
+    List[Dict[str, Any]]:
+        """Analyze savings account optimization opportunities"""
         opportunities = []
 
         try:
-            investments = user_data.get("investments", [])
             accounts = user_data.get("accounts", [])
-            user_profile = user_data.get("user_profile", {})
+            total_savings = sum(
+                acc.get("balance", 0) for acc in accounts
+                if acc.get("type") in ["savings", "checking"]
+            )
 
-            total_investments = sum(inv.get("current_value", 0) for inv in investments)
-            total_liquid = sum(acc.get("balance", 0) for acc in accounts)
-            annual_income = user_profile.get("annual_income", 0)
+            if total_savings > 50000:
+                # High-yield savings opportunity
+                current_rate = 0.035  # 3.5% typical savings
+                high_yield_rate = 0.075  # 7.5% high-yield
+                annual_gain = total_savings * (high_yield_rate - current_rate)
 
-            # SIP optimization
-            if annual_income > 0:
-                recommended_sip = min(annual_income * 0.2 / 12, 50000)  # 20% of income or max 50k/month
-                current_monthly_investment = total_investments / 12 if total_investments > 0 else 0
-
-                if recommended_sip > current_monthly_investment + 5000:
-                    additional_sip = recommended_sip - current_monthly_investment
-                    projected_returns = self._calculate_sip_returns(additional_sip, 10, 0.12)
-
+                if annual_gain > 5000:  # Only if meaningful impact
                     opportunities.append({
-                        "id": f"sip_optimization_{datetime.now().timestamp()}",
-                        "type": "investment_growth",
-                        "priority": "high",
-                        "title": f"Increase SIP by ₹{additional_sip:,.0f}/month",
-                        "description": f"Optimal SIP based on your income. Projected 10-year value: ₹{projected_returns:,.0f}",
-                        "potential_annual_value": additional_sip * 12 * 0.12,
+                        "id": f"savings_opt_{datetime.now().timestamp()}",
+                        "type": "savings_optimization",
+                        "priority": "high" if annual_gain > 15000 else "medium",
+                        "title": f"High-Yield Savings Optimization",
+                        "description": f"Move ₹{total_savings:,.0f} to high-yield savings account earning 7.5% instead of 3.5%",
+                        "potential_annual_value": annual_gain,
                         "effort_level": "low",
-                        "time_to_implement": "1 week",
-                        "confidence_score": 0.85,
-                        "risk_level": "medium",
-                        "category": "wealth_building",
+                        "time_to_implement": "1-2 days",
+                        "confidence_score": 0.95,
+                        "risk_level": "very_low",
+                        "category": "immediate_gain",
+                        "mobile_number": mobile_number,  # ADDED
+                        "action_steps": [
+                            "Research FDIC-insured high-yield savings accounts",
+                            "Compare rates from digital banks (Marcus, Ally, etc.)",
+                            "Open new account online",
+                            "Transfer funds and update auto-payments"
+                        ],
                         "financial_impact": {
-                            "10_year_corpus": projected_returns,
-                            "monthly_investment": additional_sip,
-                            "expected_annual_return": 0.12
-                        }
-                    })
-
-            # Asset allocation optimization
-            if total_liquid > total_investments * 0.5:  # Too much in liquid assets
-                excess_liquid = total_liquid - (total_investments * 0.3)
-                if excess_liquid > 50000:
-                    potential_returns = excess_liquid * 0.08  # 8% additional returns
-
-                    opportunities.append({
-                        "id": f"asset_rebalancing_{datetime.now().timestamp()}",
-                        "type": "investment_allocation",
-                        "priority": "medium",
-                        "title": f"Rebalance ₹{excess_liquid:,.0f} to Investments",
-                        "description": "Optimize asset allocation by moving excess cash to diversified investments",
-                        "potential_annual_value": potential_returns,
-                        "effort_level": "medium",
-                        "time_to_implement": "2 weeks",
-                        "confidence_score": 0.78,
-                        "risk_level": "medium",
-                        "category": "portfolio_optimization"
+                            "monthly_gain": annual_gain / 12,
+                            "5_year_value": annual_gain * 5.5,  # With compounding
+                            "implementation_cost": 0
+                        },
+                        "prerequisites": [],
+                        "timeline_milestones": [
+                            {"milestone": "Research and compare", "timeline": "Day 1"},
+                            {"milestone": "Open account", "timeline": "Day 2"},
+                            {"milestone": "Transfer funds", "timeline": "Day 3"}
+                        ]
                     })
 
             return opportunities
 
         except Exception as e:
-            logger.error("❌ Investment analysis failed", error=str(e))
+            logger.error("❌ Savings optimization analysis failed",
+                         error=str(e),
+                         mobile_number=mobile_number)
             return []
 
-    async def _analyze_spending_optimization(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def _analyze_spending_optimization(self, user_data: Dict[str, Any], mobile_number: Optional[str] = None) -> List[Dict[str, Any]]:
         """Analyze spending optimization opportunities"""
         opportunities = []
 
@@ -275,7 +277,7 @@ class OpportunityEngine:
             logger.error("❌ Spending analysis failed", error=str(e))
             return []
 
-    async def _analyze_debt_optimization(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def _analyze_debt_optimization(self, user_data: Dict[str, Any], mobile_number: Optional[str] = None) -> List[Dict[str, Any]]:
         """Analyze debt optimization opportunities"""
         opportunities = []
 
@@ -317,7 +319,7 @@ class OpportunityEngine:
             logger.error("❌ Debt analysis failed", error=str(e))
             return []
 
-    async def _analyze_tax_opportunities(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def _analyze_tax_opportunities(self, user_data: Dict[str, Any], mobile_number: Optional[str] = None) -> List[Dict[str, Any]]:
         """Analyze tax optimization opportunities"""
         opportunities = []
 
@@ -360,7 +362,7 @@ class OpportunityEngine:
             logger.error("❌ Tax analysis failed", error=str(e))
             return []
 
-    async def _analyze_income_enhancement(self, user_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    async def _analyze_income_enhancement(self, user_data: Dict[str, Any], mobile_number: Optional[str] = None) -> List[Dict[str, Any]]:
         """Analyze income enhancement opportunities"""
         opportunities = []
 
@@ -396,7 +398,7 @@ class OpportunityEngine:
             return []
 
     async def _get_ai_enhanced_opportunities(self, user_data: Dict[str, Any],
-                                             existing_opportunities: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+                                             existing_opportunities: List[Dict[str, Any]], mobile_number: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get AI-enhanced opportunities using Vertex AI"""
         try:
             # Use Vertex AI to find additional opportunities
