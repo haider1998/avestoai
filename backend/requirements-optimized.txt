@@ -1,102 +1,175 @@
-# Optimized requirements for faster Docker builds and reduced conflicts
+# Flexible requirements for Docker builds - using version ranges to avoid conflicts
 # Core FastAPI and web framework dependencies
-fastapi==0.104.1
-uvicorn[standard]==0.24.0.post1
-starlette==0.27.0
-pydantic==2.5.2
-pydantic-settings==2.1.0
-pydantic-core==2.14.5
+fastapi>=0.104.0,<0.110.0
+uvicorn[standard]>=0.24.0,<0.30.0
+starlette>=0.27.0,<0.40.0
+pydantic>=2.5.0,<3.0.0
+pydantic-settings>=2.1.0,<3.0.0
 
-# HTTP and networking - essential only
-httpx==0.25.2
-httpcore==1.0.2
-h11==0.14.0
-requests==2.31.0
-urllib3==2.1.0
-aiohttp==3.9.1
-aiosignal==1.3.1
+# HTTP and networking
+httpx>=0.25.0,<0.30.0
+requests>=2.31.0,<3.0.0
+aiohttp>=3.9.0,<4.0.0
+websockets>=12.0,<13.0
 
 # Async utilities
-anyio==4.2.0
-asyncer==0.0.2
-nest-asyncio==1.5.8
+anyio>=4.0.0,<5.0.0
+asyncio-mqtt>=0.16.0,<1.0.0; python_version>="3.8"
 
-# Google Cloud dependencies - core only
-google-cloud-aiplatform==1.38.1
-google-cloud-firestore==2.13.1
-google-cloud-storage==2.10.0
-google-cloud-secret-manager==2.16.4
-google-cloud-core==2.4.1
-google-auth==2.25.2
-google-api-core==2.15.0
-googleapis-common-protos==1.62.0
-grpcio==1.60.0
-grpcio-status==1.60.0
-protobuf==4.25.1
+# Google Cloud dependencies - flexible versions
+google-cloud-aiplatform>=1.38.0,<2.0.0
+google-cloud-firestore>=2.13.0,<3.0.0
+google-cloud-storage>=2.10.0,<3.0.0
+google-cloud-secret-manager>=2.16.0,<3.0.0
+google-cloud-core>=2.4.0,<3.0.0
+google-auth>=2.25.0,<3.0.0
+google-api-core>=2.15.0,<3.0.0
+googleapis-common-protos>=1.60.0,<2.0.0
+grpcio>=1.60.0,<2.0.0
+grpcio-status>=1.60.0,<2.0.0
+protobuf>=4.25.0,<5.0.0
 
-# AI and ML dependencies - essential only
-google-generativeai==0.3.2
-anthropic==0.7.8
-tiktoken==0.5.2
-tokenizers==0.15.0
+# AI and ML dependencies
+google-generativeai>=0.3.0,<1.0.0
+vertexai>=1.38.0,<2.0.0
+anthropic>=0.7.0,<1.0.0
+openai>=1.0.0,<2.0.0
+tiktoken>=0.5.0,<1.0.0
+tokenizers>=0.15.0,<1.0.0
+huggingface-hub>=0.19.0,<1.0.0
 
-# Data processing - minimal set
-numpy==1.26.2
-structlog==23.2.0
-tenacity==8.2.3
-cachetools==5.3.2
+# Data processing and utilities
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+structlog>=23.0.0,<24.0.0
+tenacity>=8.2.0,<9.0.0
+cachetools>=5.3.0,<6.0.0
 
 # Authentication and security
-PyJWT==2.8.0
-bcrypt==4.1.2
-cryptography==42.0.8
+PyJWT>=2.8.0,<3.0.0
+bcrypt>=4.1.0,<5.0.0
+cryptography>=42.0.0,<43.0.0
+python-jose[cryptography]>=3.3.0,<4.0.0
 
-# Database
-asyncpg==0.29.0
+# Database and storage
+asyncpg>=0.29.0,<1.0.0
+redis>=4.5.0,<6.0.0
 
-# File handling
-aiofiles==23.2.1
-python-multipart==0.0.6
+# File handling and I/O
+aiofiles>=23.0.0,<24.0.0
+python-multipart>=0.0.6,<1.0.0
+filetype>=1.2.0,<2.0.0
 
-# Configuration
-python-dotenv==1.0.0
-click==8.1.7
+# Configuration and environment
+python-dotenv>=1.0.0,<2.0.0
+click>=8.1.0,<9.0.0
 
-# Monitoring - minimal set
-prometheus-client==0.19.0
-opentelemetry-api==1.21.0
-opentelemetry-sdk==1.21.0
+# Monitoring and observability
+prometheus-client>=0.19.0,<1.0.0
+opentelemetry-api>=1.21.0,<2.0.0
+opentelemetry-sdk>=1.21.0,<2.0.0
+opentelemetry-instrumentation>=0.42b0,<1.0.0
+opentelemetry-instrumentation-fastapi>=0.42b0,<1.0.0
+opentelemetry-instrumentation-requests>=0.42b0,<1.0.0
+opentelemetry-exporter-otlp>=1.21.0,<2.0.0
 
-# WebSocket support
-websockets==12.0
-sse-starlette==1.8.2
+# WebSocket and real-time
+sse-starlette>=1.8.0,<2.0.0
+python-socketio>=5.10.0,<6.0.0
 
-# Templating
-Jinja2==3.1.2
-MarkupSafe==2.1.3
+# Templating and markup
+Jinja2>=3.1.0,<4.0.0
+MarkupSafe>=2.1.0,<3.0.0
 
-# JSON validation
-jsonschema==4.20.0
-marshmallow==3.20.1
+# JSON an.0,<5.0.0
+marshmallow
+attrs
+idna>=3.6,<4.0
+typing-extensions>=4.9.0,<5.0.0
+packaging
+python-dateutil>=2.8.0,<3.0.0
+PyYAML>=6.0.0,<7.0.0
 
-# Essential utilities
-attrs==23.1.0
-certifi==2023.11.17
-charset-normalizer==3.3.2
-idna==3.6
-typing-extensions==4.9.0
-packaging==23.2
-python-dateutil==2.8.2
-PyYAML==6.0.1
+# MCP and custom integrations
+mcp>=0.4.0,<1.0.0
+elevenlabs>=0.2.0,<1.0.0
+pydub>=0.25.0,<1.0.0
 
-# MCP integration
-mcp==0.4.0
+# Additional utilities for financial calculations
+scikit-learn
+motor>=3.3.0,<4.0.0
 
 # Email validation
-email-validator==2.1.0.post1
+email-validator>=2.1.0,<3.0.0
 
-# Additional required utilities
-sniffio==1.3.0
-frozenlist==1.4.0
-multidict==6.0.4
-yarl==1.9.4
+# Regex support
+regex>=2023.10.0,<2024.0.0
+
+# Cryptographic utilities
+pyasn1>=0.5.0,<1.0.0
+rsa>=4.9,<5.0.0
+
+# Additional async utilities
+sniffio>=1.3.0,<2.0.0
+frozenlist>=1.4.0,<2.0.0
+multidict>=6.0.0,<7.0.0
+yarl>=1.9.0,<2.0.0
+
+# Development and testing (optional - can be excluded in production)
+pytest>=7.4.0,<8.0.0
+pytest-asyncio>=0.21.0,<1.0.0
+
+# Development utilities
+watchfiles>=0.21.0,<1.0.0
+
+# Additional plotting for financial data
+plotly>=5.17.0,<6.0.0
+
+# Backoff for retry logic
+backoff>=2.2.0,<3.0.0
+
+# Additional async networking
+aiosignal>=1.3.0,<2.0.0
+aiohappyeyeballs>=2.3.0,<3.0.0
+
+# HTTP core dependencies
+httpcore>=1.0.0,<2.0.0
+h11>=0.14.0,<1.0.0
+httpx-sse>=0.4.0,<1.0.0
+
+# URL handling
+urllib3>=2.1.0,<3.0.0
+
+# Async utilities
+asyncer>=0.0.2,<1.0.0
+nest-asyncio>=1.5.0,<2.0.0
+
+# Additional Cloud utilities
+google-resumable-media>=2.6.0,<3.0.0
+google-crc32c>=1.5.1,<1.0.0
+proto-plus>=1.22.0,<2.0.0
+
+# Additional monitoring
+google-cloud-monitoring>=2.16.0,<3.0.0
+google-cloud-bigquery>=3.13.0,<4.0.0
+
+# Additional async and networking
+h2>=4.1.0,<5.0.0; python_version>="3.8"
+hpack>=4.0.0,<5.0.0; python_version>="3.8"
+hyperframe>=6.0.0,<7.0.0; python_version>="3.8"
+
+# Color support for logging
+colorama>=0.4.6,<1.0.0
+
+# System information
+distro>=1.9.0,<2.0.0
+
+# File system utilities
+fsspec>=2023.12.0,<2024.0.0
+filelock>=3.13.0,<4.0.0
+
+# Progress bars
+tqdm>=4.66.0,<5.0.0
+
+# Additional utilities
+six>=1.16.0,<2.0.0
