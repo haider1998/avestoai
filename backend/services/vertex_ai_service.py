@@ -681,6 +681,61 @@ class VertexAIService:
             }
         }
 
+    # Add this method to VertexAIService class
+
+    async def analyze_market_opportunities(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze market opportunities using AI"""
+        try:
+            prompt = f"""
+            Analyze market opportunities for this user profile:
+
+            Financial Data: {json.dumps(user_data, indent=2)}
+
+            Provide market opportunities in JSON format:
+            {{
+                "market_opportunities": [
+                    {{
+                        "type": "investment",
+                        "title": "Market opportunity title",
+                        "description": "Detailed description",
+                        "potential_annual_value": 50000,
+                        "confidence": 0.8,
+                        "risk_level": "medium",
+                        "time_horizon": "6-12 months",
+                        "action_steps": [
+                            "Step 1",
+                            "Step 2"
+                        ]
+                    }}
+                ]
+            }}
+            """
+
+            response = await asyncio.to_thread(
+                self.gemini_flash.generate_content,
+                prompt,
+                generation_config=self.flash_config
+            )
+
+            return self._parse_json_response(response.text)
+
+        except Exception as e:
+            logger.error("❌ Market opportunity analysis failed", error=str(e))
+            return {
+                "market_opportunities": [
+                    {
+                        "type": "investment",
+                        "title": "Systematic Investment Plan",
+                        "description": "Start SIP in diversified equity funds",
+                        "potential_annual_value": 25000,
+                        "confidence": 0.7,
+                        "risk_level": "medium",
+                        "time_horizon": "12+ months",
+                        "action_steps": ["Research fund options", "Start with ₹5000/month"]
+                    }
+                ]
+            }
+
     async def cleanup(self):
         """Cleanup resources"""
         logger.info("🧹 Vertex AI service cleaned up")

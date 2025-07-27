@@ -545,3 +545,226 @@ class FiMCPService:
         await self.client.aclose()
         self.active_sessions.clear()
         logger.info("🧹 Fi MCP service cleaned up")
+
+    # Add these methods to the FiMCPService class
+
+    async def _fetch_credit_report(self, session_id: str) -> Dict[str, Any]:
+        """Fetch credit report data from Fi MCP"""
+        try:
+            response = await self._make_mcp_call(session_id, "fetch_credit_report", {})
+
+            if response.get("result"):
+                return response["result"]
+            return {}
+
+        except Exception as e:
+            logger.error("❌ Failed to fetch credit report", error=str(e))
+            return {}
+
+    async def _fetch_epf_details(self, session_id: str) -> Dict[str, Any]:
+        """Fetch EPF details from Fi MCP"""
+        try:
+            response = await self._make_mcp_call(session_id, "fetch_epf_details", {})
+
+            if response.get("result"):
+                return response["result"]
+            return {}
+
+        except Exception as e:
+            logger.error("❌ Failed to fetch EPF details", error=str(e))
+            return {}
+
+    async def _fetch_mf_transactions(self, session_id: str) -> Dict[str, Any]:
+        """Fetch mutual fund transactions from Fi MCP"""
+        try:
+            response = await self._make_mcp_call(session_id, "fetch_mf_transactions", {})
+
+            if response.get("result"):
+                return response["result"]
+            return {}
+
+        except Exception as e:
+            logger.error("❌ Failed to fetch MF transactions", error=str(e))
+            return {}
+
+    async def _fetch_bank_transactions(self, session_id: str) -> Dict[str, Any]:
+        """Fetch bank transactions from Fi MCP"""
+        try:
+            response = await self._make_mcp_call(session_id, "fetch_bank_transactions", {})
+
+            if response.get("result"):
+                return response["result"]
+            return {}
+
+        except Exception as e:
+            logger.error("❌ Failed to fetch bank transactions", error=str(e))
+            return {}
+
+    async def _fetch_stock_transactions(self, session_id: str) -> Dict[str, Any]:
+        """Fetch stock transactions from Fi MCP"""
+        try:
+            response = await self._make_mcp_call(session_id, "fetch_stock_transactions", {})
+
+            if response.get("result"):
+                return response["result"]
+            return {}
+
+        except Exception as e:
+            logger.error("❌ Failed to fetch stock transactions", error=str(e))
+            return {}
+
+    def _parse_accounts_data(self, net_worth_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Parse accounts from net worth data"""
+        accounts = []
+        assets = net_worth_data.get("assets", {})
+
+        # Savings accounts
+        savings_amount = assets.get("ASSET_TYPE_SAVINGS_ACCOUNTS", 0)
+        if savings_amount > 0:
+            accounts.append({
+                "id": "savings_001",
+                "type": "savings",
+                "name": "Primary Savings",
+                "balance": savings_amount,
+                "currency": "INR"
+            })
+
+        # Current accounts
+        current_amount = assets.get("ASSET_TYPE_CURRENT_ACCOUNTS", 0)
+        if current_amount > 0:
+            accounts.append({
+                "id": "current_001",
+                "type": "current",
+                "name": "Current Account",
+                "balance": current_amount,
+                "currency": "INR"
+            })
+
+        return accounts
+
+    def _parse_investments_data(self, net_worth_data: Dict[str, Any],
+                                mf_data: Dict[str, Any],
+                                stock_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Parse investments from various data sources"""
+        investments = []
+        assets = net_worth_data.get("assets", {})
+
+        # Mutual funds
+        mf_amount = assets.get("ASSET_TYPE_MUTUAL_FUND", 0)
+        if mf_amount > 0:
+            investments.append({
+                "id": "mf_portfolio",
+                "type": "mutual_fund",
+                "name": "Mutual Fund Portfolio",
+                "current_value": mf_amount,
+                "currency": "INR"
+            })
+
+        # Stocks
+        stock_amount = assets.get("ASSET_TYPE_INDIAN_SECURITIES", 0)
+        if stock_amount > 0:
+            investments.append({
+                "id": "stock_portfolio",
+                "type": "stocks",
+                "name": "Stock Portfolio",
+                "current_value": stock_amount,
+                "currency": "INR"
+            })
+
+        # EPF
+        epf_amount = assets.get("ASSET_TYPE_EPF", 0)
+        if epf_amount > 0:
+            investments.append({
+                "id": "epf_account",
+                "type": "epf",
+                "name": "EPF Account",
+                "current_value": epf_amount,
+                "currency": "INR"
+            })
+
+        return investments
+
+    def _parse_debt_data(self, net_worth_data: Dict[str, Any],
+                         credit_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Parse debt information"""
+        debt = []
+        liabilities = net_worth_data.get("liabilities", {})
+
+        # Credit card debt
+        cc_debt = liabilities.get("LIABILITY_TYPE_CREDIT_CARD", 0)
+        if cc_debt > 0:
+            debt.append({
+                "id": "cc_debt_001",
+                "type": "credit_card",
+                "name": "Credit Card Debt",
+                "balance": cc_debt,
+                "interest_rate": 24.0,
+                "currency": "INR"
+            })
+
+        # Personal loans
+        loan_debt = liabilities.get("LIABILITY_TYPE_PERSONAL_LOAN", 0)
+        if loan_debt > 0:
+            debt.append({
+                "id": "loan_001",
+                "type": "personal_loan",
+                "name": "Personal Loan",
+                "balance": loan_debt,
+                "interest_rate": 12.0,
+                "currency": "INR"
+            })
+
+        return debt
+
+    def _parse_all_transactions(self, bank_data: Dict[str, Any],
+                                mf_data: Dict[str, Any],
+                                stock_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Parse all transactions from various sources"""
+        transactions = []
+
+        # Bank transactions
+        bank_transactions = bank_data.get("transactions", [])
+        for txn in bank_transactions[:20]:  # Last 20 transactions
+            transactions.append({
+                "id": txn.get("id", f"bank_{len(transactions)}"),
+                "date": txn.get("date", "2024-01-01"),
+                "amount": txn.get("amount", 0),
+                "description": txn.get("description", "Bank Transaction"),
+                "category": txn.get("category", "other"),
+                "source": "bank"
+            })
+
+        return transactions
+
+    def _calculate_income_data(self, bank_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate income data from transactions"""
+        transactions = bank_data.get("transactions", [])
+
+        monthly_income = 0
+        income_transactions = [t for t in transactions if t.get("amount", 0) > 0]
+
+        if income_transactions:
+            monthly_income = sum(t.get("amount", 0) for t in income_transactions[-30:])
+
+        return {
+            "monthly": monthly_income,
+            "annual": monthly_income * 12,
+            "sources": ["salary", "other"]
+        }
+
+    def _calculate_expenses_data(self, bank_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate expense data from transactions"""
+        transactions = bank_data.get("transactions", [])
+
+        monthly_expenses = 0
+        expense_transactions = [t for t in transactions if t.get("amount", 0) < 0]
+
+        if expense_transactions:
+            monthly_expenses = sum(abs(t.get("amount", 0)) for t in expense_transactions[-30:])
+
+        return {
+            "monthly": monthly_expenses,
+            "annual": monthly_expenses * 12,
+            "categories": {"food": 15000, "transport": 8000, "utilities": 5000}
+        }
+

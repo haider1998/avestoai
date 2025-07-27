@@ -1,4 +1,4 @@
-# backend/models/config.py
+# backend/models/configs.py (FIXED)
 from pydantic_settings import BaseSettings
 from typing import List, Optional, Dict, Any
 import os
@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Google Cloud
-    GOOGLE_CLOUD_PROJECT: str = "avestoai-466417"  # Default value as fallback
+    GOOGLE_CLOUD_PROJECT: str = os.getenv("GOOGLE_CLOUD_PROJECT", "avestoai-466417")
     VERTEX_AI_LOCATION: str = "us-central1"
     FIRESTORE_DATABASE: str = "(default)"
 
@@ -42,26 +42,19 @@ class Settings(BaseSettings):
         "high_spender": "2525252525"
     }
 
-    # External APIs
-    EXTERNAL_API_TIMEOUT: int = 30
-    MAX_CONCURRENT_REQUESTS: int = 100
-
     # Security
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:8001",
         "http://localhost:8002",
-        "https://avestoai.com"
+        "https://avestoai.com",
+        "https://*.avestoai.com"
     ]
     ALLOWED_HOSTS: List[str] = ["*"]
 
     # Rate Limiting
     RATE_LIMIT_CALLS: int = 100
     RATE_LIMIT_PERIOD: int = 60
-
-    # Caching
-    CACHE_TTL: int = 300
-    REDIS_URL: Optional[str] = None
 
     # Monitoring
     ENABLE_METRICS: bool = True
@@ -74,7 +67,6 @@ class Settings(BaseSettings):
     ENABLE_FI_MCP_INTEGRATION: bool = True
 
     class Config:
-        # Look for .env file in the project root (two levels up from this file)
         env_file = Path(__file__).parent.parent.parent / ".env"
         case_sensitive = True
 
