@@ -603,11 +603,23 @@ async def switch_fi_scenario(request: SwitchScenarioRequest):
         raise HTTPException(status_code=500, detail="Scenario switch failed")
 
 
+# Server startup
 if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8080))
+    host = os.getenv("HOST", "0.0.0.0")
+
+    logger.info(
+        "🚀 Starting AvestoAI API server",
+        host=host,
+        port=port,
+        environment=settings.ENVIRONMENT
+    )
+
     uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", 8080)),
-        reload=settings.ENVIRONMENT == "development",
-        log_level="info"
+        "backend.app.main:app",
+        host=host,
+        port=port,
+        log_level="info",
+        access_log=True,
+        loop="asyncio"
     )

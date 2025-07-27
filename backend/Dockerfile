@@ -38,11 +38,11 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Set working directory
+# Set working directory - changed to /app/backend to match import structure
 WORKDIR /app
 
-# Copy application code
-COPY . .
+# Copy application code with proper structure
+COPY . ./backend/
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
@@ -51,14 +51,14 @@ USER app
 # Expose port
 EXPOSE 8080
 
-# Environment variables
-ENV PYTHONPATH=/app
+# Environment variables - fixed PYTHONPATH to include both /app and /app/backend
+ENV PYTHONPATH=/app:/app/backend
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
+# Health check with longer timeout for startup
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# Start application
-CMD ["python", "app/main.py"]
+# Start application with uvicorn - updated path to match new structure
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--timeout-keep-alive", "120"]
