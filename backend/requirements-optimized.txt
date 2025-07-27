@@ -1,22 +1,21 @@
-# Flexible requirements for Docker builds - using version ranges to avoid conflicts
+# AvestoAI Backend Requirements
 # Core FastAPI and web framework dependencies
 fastapi>=0.104.0,<0.110.0
 uvicorn[standard]>=0.24.0,<0.30.0
 starlette>=0.27.0,<0.40.0
 pydantic>=2.5.0,<3.0.0
 pydantic-settings>=2.1.0,<3.0.0
+pydantic-core>=2.14.0,<3.0.0
 
 # HTTP and networking
 httpx>=0.25.0,<0.30.0
 requests>=2.31.0,<3.0.0
 aiohttp>=3.9.0,<4.0.0
 websockets>=12.0,<13.0
-
-# Async utilities
 anyio>=4.0.0,<5.0.0
-asyncio-mqtt>=0.16.0,<1.0.0; python_version>="3.8"
+asyncio-mqtt>=0.16.0,<1.0.0
 
-# Google Cloud dependencies - flexible versions
+# Google Cloud dependencies - compatible versions
 google-cloud-aiplatform>=1.38.0,<2.0.0
 google-cloud-firestore>=2.13.0,<3.0.0
 google-cloud-storage>=2.10.0,<3.0.0
@@ -81,7 +80,7 @@ python-socketio>=5.10.0,<6.0.0
 Jinja2>=3.1.0,<4.0.0
 MarkupSafe>=2.1.0,<3.0.0
 
-# JSON an.0,<5.0.0
+# JSON and data validation
 marshmallow
 attrs
 idna>=3.6,<4.0
@@ -95,81 +94,33 @@ mcp>=0.4.0,<1.0.0
 elevenlabs>=0.2.0,<1.0.0
 pydub>=0.25.0,<1.0.0
 
-# Additional utilities for financial calculations
+# Additional utilities
 scikit-learn
 motor>=3.3.0,<4.0.0
-
-# Email validation
 email-validator>=2.1.0,<3.0.0
-
-# Regex support
 regex>=2023.10.0,<2024.0.0
-
-# Cryptographic utilities
 pyasn1>=0.5.0,<1.0.0
 rsa>=4.9,<5.0.0
-
-# Additional async utilities
 sniffio>=1.3.0,<2.0.0
 frozenlist>=1.4.0,<2.0.0
 multidict>=6.0.0,<7.0.0
 yarl>=1.9.0,<2.0.0
 
-# Development and testing (optional - can be excluded in production)
+# Testing
 pytest>=7.4.0,<8.0.0
 pytest-asyncio>=0.21.0,<1.0.0
 
 # Development utilities
 watchfiles>=0.21.0,<1.0.0
-
-# Additional plotting for financial data
 plotly>=5.17.0,<6.0.0
-
-# Backoff for retry logic
 backoff>=2.2.0,<3.0.0
-
-# Additional async networking
 aiosignal>=1.3.0,<2.0.0
 aiohappyeyeballs>=2.3.0,<3.0.0
-
-# HTTP core dependencies
 httpcore>=1.0.0,<2.0.0
 h11>=0.14.0,<1.0.0
 httpx-sse>=0.4.0,<1.0.0
-
-# URL handling
 urllib3>=2.1.0,<3.0.0
-
-# Async utilities
 asyncer>=0.0.2,<1.0.0
 nest-asyncio>=1.5.0,<2.0.0
-
-# Additional Cloud utilities
 google-resumable-media>=2.6.0,<3.0.0
-google-crc32c>=1.5.1,<1.0.0
-proto-plus>=1.22.0,<2.0.0
-
-# Additional monitoring
-google-cloud-monitoring>=2.16.0,<3.0.0
-google-cloud-bigquery>=3.13.0,<4.0.0
-
-# Additional async and networking
-h2>=4.1.0,<5.0.0; python_version>="3.8"
-hpack>=4.0.0,<5.0.0; python_version>="3.8"
-hyperframe>=6.0.0,<7.0.0; python_version>="3.8"
-
-# Color support for logging
-colorama>=0.4.6,<1.0.0
-
-# System information
-distro>=1.9.0,<2.0.0
-
-# File system utilities
-fsspec>=2023.12.0,<2024.0.0
-filelock>=3.13.0,<4.0.0
-
-# Progress bars
-tqdm>=4.66.0,<5.0.0
-
-# Additional utilities
-six>=1.16.0,<2.0.0
+flask
